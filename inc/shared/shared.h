@@ -1337,11 +1337,32 @@ ROGUE - VERSIONS
 //#define BASE_1_FRAMETIME        0.03f //0.01f   // 1/BASE_FRAMETIME
 //#define BASE_FRAMETIME_1000     0.03333f //0.1f    // BASE_FRAMETIME/1000
 
+// N&C: Hz Fix.
+#define TICK_RATE 60
+
+#if TICK_RATE == 20
 //N&C 20hz tick
 #define BASE_FRAMERATE          20 //10
 #define BASE_FRAMETIME          50.0f //100
 #define BASE_1_FRAMETIME        0.02f //0.01f   // 1/BASE_FRAMETIME
 #define BASE_FRAMETIME_1000     0.05f //0.1f    // BASE_FRAMETIME/1000
+#endif
+
+#if TICK_RATE == 40
+//N&C 40hz tick
+#define BASE_FRAMERATE          40 //10
+#define BASE_FRAMETIME          25.f //100
+#define BASE_1_FRAMETIME        0.04f //0.01f   // 1/BASE_FRAMETIME
+#define BASE_FRAMETIME_1000     0.05f //0.1f    // BASE_FRAMETIME/1000
+#endif
+
+#if TICK_RATE == 60
+//N&C 60hz tick
+#define BASE_FRAMERATE          20 //10
+#define BASE_FRAMETIME          12.5f //100
+#define BASE_1_FRAMETIME        0.06f //0.01f   // 1/BASE_FRAMETIME
+#define BASE_FRAMETIME_1000     0.05f //0.1f    // BASE_FRAMETIME/1000
+#endif
 
 //N&C 24hz tick
 //#define BASE_FRAMERATE          24 //10

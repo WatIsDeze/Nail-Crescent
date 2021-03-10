@@ -900,10 +900,15 @@ qboolean M_walkmove (edict_t *ent, float yaw, float dist)
 		return false;
 
 	yaw = yaw*M_PI*2 / 360;
-	
+
+	// N&C: Hz Fix.
+	// Scale to FPS.
+	dist = dist * (10 / 20);
+
 	move[0] = cos(yaw)*dist;
 	move[1] = sin(yaw)*dist;
 	move[2] = 0;
+
 
 	return SV_movestep(ent, move, true);
 }

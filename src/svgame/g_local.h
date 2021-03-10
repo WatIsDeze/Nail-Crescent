@@ -626,6 +626,7 @@ typedef struct
 	int			lastframe;
 	mframe_t	*frame;
 	void		(*endfunc)(edict_t *self);
+	int			fpsHack;	// N&C: Hz Fix.
 } mmove_t;
 
 typedef struct

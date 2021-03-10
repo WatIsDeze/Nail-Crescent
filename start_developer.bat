@@ -1,0 +1,1 @@
+nac.exe +set developer 1 +set sv_cheats 1
