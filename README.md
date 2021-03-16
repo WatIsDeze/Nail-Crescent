@@ -35,7 +35,7 @@ Here is a list of plans for the technology behind **Nail & Crescent**. Note that
 
 ## License
 
-**Nail & Crescet** its code is licensed under the same terms as **Quake II RTX**. It's hard not to be.
+**Nail & Crescent** its code is licensed under the same terms as **Quake II RTX**. It's hard not to be.
 
 **Nail & Crescent** is licensed under the terms of the **GPL v.2** (GNU General Public License).
 You can find the entire license in the [license.txt](license.txt) file.
