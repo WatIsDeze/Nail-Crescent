@@ -1338,7 +1338,7 @@ ROGUE - VERSIONS
 //#define BASE_FRAMETIME_1000     0.03333f //0.1f    // BASE_FRAMETIME/1000
 
 // N&C: Hz Fix.
-#define TICK_RATE 60
+#define TICK_RATE 20
 
 #if TICK_RATE == 20
 //N&C 20hz tick
