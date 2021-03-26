@@ -121,20 +121,20 @@ void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, f
 void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal);
 void PerpendicularVector(vec3_t dst, const vec3_t src);
 
-void AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
-vec_t VectorNormalize(vec3_t v);        // returns vector length
-vec_t VectorNormalize2(vec3_t v, vec3_t out);
-void ClearBounds(vec3_t mins, vec3_t maxs);
-void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs);
-vec_t RadiusFromBounds(const vec3_t mins, const vec3_t maxs);
-void UnionBounds(vec3_t a[2], vec3_t b[2], vec3_t c[2]);
+void AngleVectors(vec3_t &angles, vec3_t *forward, vec3_t *right, vec3_t *up);
+vec_t VectorNormalize(vec3_t &v);        // returns vector length
+vec_t VectorNormalize2(const vec3_t &v, vec3_t &out);
+void ClearBounds(vec3_t &mins, vec3_t &maxs);
+void AddPointToBounds(const vec3_t &v, vec3_t &mins, vec3_t &maxs);
+vec_t RadiusFromBounds(const vec3_t &mins, const vec3_t &maxs);
+void UnionBounds(vec3_t *a[2], vec3_t *b[2], vec3_t *c[2]);
 
 
 #define NUMVERTEXNORMALS    162
 
-void vectoangles2(const vec3_t value1, vec3_t angles);
+void vectoangles2(const vec3_t &value1, vec3_t &angles);
 
-void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up);
+void MakeNormalVectors(const vec3_t &forward, vec3_t &right, vec3_t &up);
 
 extern const vec3_t bytedirs[NUMVERTEXNORMALS];
 

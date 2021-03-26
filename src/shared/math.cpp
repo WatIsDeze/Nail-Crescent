@@ -26,22 +26,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 vectoangles2 - this is duplicated in the game DLL, but I need it here.
 ======
 */
-void vectoangles2(const vec3_t *value1, vec3_t *angles)
+void vectoangles2(const vec3_t &value1, vec3_t &angles)
 {
     float   forward;
     float   yaw, pitch;
 
-    if (value1->xyz[1] == 0 && value1->xyz[0] == 0) {
+    if (value1.xyz[1] == 0 && value1.xyz[0] == 0) {
         yaw = 0;
-        if (value1->xyz[2] > 0)
+        if (value1.xyz[2] > 0)
             pitch = 90;
         else
             pitch = 270;
     }
     else {
-        if (value1->xyz[0])
-            yaw = atan2(value1->xyz[1], value1->xyz[0]) * 180 / M_PI;
-        else if (value1->xyz[1] > 0)
+        if (value1.xyz[0])
+            yaw = atan2(value1.xyz[1], value1.xyz[0]) * 180 / M_PI;
+        else if (value1.xyz[1] > 0)
             yaw = 90;
         else
             yaw = 270;
@@ -49,26 +49,26 @@ void vectoangles2(const vec3_t *value1, vec3_t *angles)
         if (yaw < 0)
             yaw += 360;
 
-        forward = sqrt(value1->xyz[0] * value1->xyz[0] + value1->xyz[1] * value1->xyz[1]);
-        pitch = atan2(value1->xyz[2], forward) * 180 / M_PI;
+        forward = sqrt(value1.xyz[0] * value1.xyz[0] + value1.xyz[1] * value1.xyz[1]);
+        pitch = atan2(value1.xyz[2], forward) * 180 / M_PI;
         if (pitch < 0)
             pitch += 360;
     }
 
-    angles->xyz[PITCH] = -pitch;
-    angles->xyz[YAW] = yaw;
-    angles->xyz[ROLL] = 0;
+    angles.xyz[PITCH] = -pitch;
+    angles.xyz[YAW] = yaw;
+    angles.xyz[ROLL] = 0;
 }
 
-void MakeNormalVectors(const vec3_t *forward, vec3_t *right, vec3_t *up)
+void MakeNormalVectors(const vec3_t &forward, vec3_t &right, vec3_t &up)
 {
     float       d;
 
     // this rotate and negate guarantees a vector
     // not colinear with the original
-    right->xyz[1] = -forward->xyz[0];
-    right->xyz[2] = forward->xyz[1];
-    right->xyz[0] = forward->xyz[2];
+    right.xyz[1] = -forward.xyz[0];
+    right.xyz[2] = forward.xyz[1];
+    right.xyz[0] = forward.xyz[2];
 
     d = Vec3_Dot(right, forward);
     Vec3_MA(right, -d, forward, right);
