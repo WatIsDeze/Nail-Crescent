@@ -27,17 +27,17 @@ vec3_t vec3_origin = { 0, 0, 0 };
 // Calculate the forward, right, and up vectors for the given angles.
 //===============
 //
-void AngleVectors(const vec3_t *angles, vec3_t *forward, vec3_t *right, vec3_t *up) {
+void AngleVectors(const vec3_t &angles, vec3_t *forward, vec3_t *right, vec3_t *up) {
     float        angle;
     float        sr, sp, sy, cr, cp, cy;
 
-    angle = angles->xyz[YAW] * (M_PI * 2 / 360);
+    angle = angles.xyz[YAW] * (M_PI * 2 / 360);
     sy = sin(angle);
     cy = cos(angle);
-    angle = angles->xyz[PITCH] * (M_PI * 2 / 360);
+    angle = angles.xyz[PITCH] * (M_PI * 2 / 360);
     sp = sin(angle);
     cp = cos(angle);
-    angle = angles->xyz[ROLL] * (M_PI * 2 / 360);
+    angle = angles.xyz[ROLL] * (M_PI * 2 / 360);
     sr = sin(angle);
     cr = cos(angle);
 
@@ -65,18 +65,18 @@ void AngleVectors(const vec3_t *angles, vec3_t *forward, vec3_t *right, vec3_t *
 // Normalizes the input vector ptr, and returns its length.
 //===============
 //
-vec_t VectorNormalize(vec3_t *v)
+vec_t VectorNormalize(vec3_t &v)
 {
     float    length, ilength;
 
-    length = v->xyz[0] * v->xyz[0] + v->xyz[1] * v->xyz[1] + v->xyz[2] * v->xyz[2];
+    length = v.xyz[0] * v,xyz[0] + v.xyz[1] * v.xyz[1] + v.xyz[2] * v.xyz[2];
     length = sqrtf(length);         // FIXME
 
     if (length) {
         ilength = 1 / length;
-        v->xyz[0] *= ilength;
-        v->xyz[1] *= ilength;
-        v->xyz[2] *= ilength;
+        v.xyz[0] *= ilength;
+        v.xyz[1] *= ilength;
+        v.xyz[2] *= ilength;
     }
 
     return length;
@@ -91,18 +91,18 @@ vec_t VectorNormalize(vec3_t *v)
 // Returns the vector's length.
 //===============
 //
-vec_t VectorNormalize2(const vec3_t *v, vec3_t *out)
+vec_t VectorNormalize2(const vec3_t &v, vec3_t &out)
 {
     float    length, ilength;
 
-    length = v->xyz[0] * v->xyz[0] + v->xyz[1] * v->xyz[1] + v->xyz[2] * v->xyz[2];
+    length = v.xyz[0] * v.xyz[0] + v.xyz[1] * v.xyz[1] + v.xyz[2] * v.xyz[2];
     length = sqrtf(length);         // FIXME
 
     if (length) {
         ilength = 1 / length;
-        out->xyz[0] = v->xyz[0] * ilength;
-        out->xyz[1] = v->xyz[1] * ilength;
-        out->xyz[2] = v->xyz[2] * ilength;
+        out.xyz[0] = v.xyz[0] * ilength;
+        out.xyz[1] = v.xyz[1] * ilength;
+        out.xyz[2] = v.xyz[2] * ilength;
     }
 
     return length;
@@ -116,10 +116,10 @@ vec_t VectorNormalize2(const vec3_t *v, vec3_t *out)
 // Clears the Min and Max bounds pointers.
 //===============
 //
-void ClearBounds(vec3_t *mins, vec3_t *maxs)
+void ClearBounds(vec3_t &mins, vec3_t &maxs)
 {
-    mins->xyz[0] = mins->xyz[1] = mins->xyz[2] = 99999;
-    maxs->xyz[0] = maxs->xyz[1] = maxs->xyz[2] = -99999;
+    mins.xyz[0] = mins.xyz[1] = mins.xyz[2] = 99999;
+    maxs.xyz[0] = maxs.xyz[1] = maxs.xyz[2] = -99999;
 }
 
 //
@@ -130,17 +130,17 @@ void ClearBounds(vec3_t *mins, vec3_t *maxs)
 // current bounds, it will automatically resize them accordingly.
 //===============
 //
-void AddPointToBounds(const vec3_t *v, vec3_t *mins, vec3_t *maxs)
+void AddPointToBounds(const vec3_t &v, vec3_t &mins, vec3_t &maxs)
 {
     int        i;
     vec_t    val;
 
     for (i = 0; i < 3; i++) {
-        val = v->xyz[i];
-        if (val < mins->xyz[i])
-            mins->xyz[i] = val;
-        if (val > maxs->xyz[i])
-            maxs->xyz[i] = val;
+        val = v.xyz[i];
+        if (val < mins.xyz[i])
+            mins.xyz[i] = val;
+        if (val > maxs.xyz[i])
+            maxs.xyz[i] = val;
     }
 }
 
@@ -169,16 +169,16 @@ void UnionBounds(vec3_t *a[2], vec3_t *b[2], vec3_t *c[2])
 // Returns the radius length for the given boundaries.
 //===============
 //
-vec_t RadiusFromBounds(const vec3_t *mins, const vec3_t *maxs)
+vec_t RadiusFromBounds(const vec3_t &mins, const vec3_t &maxs)
 {
     int     i;
     vec3_t  corner;
     vec_t   a, b;
 
     for (i = 0; i < 3; i++) {
-        a = Q_fabs(mins[i]);
-        b = Q_fabs(maxs[i]);
-        corner[i] = a > b ? a : b;
+        a = Q_fabs(mins.xyz[i]);
+        b = Q_fabs(maxs.xyz[i]);
+        corner.xyz[i] = a > b ? a : b;
     }
 
     return Vec3_Length(corner);
