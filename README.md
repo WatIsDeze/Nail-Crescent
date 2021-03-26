@@ -33,6 +33,8 @@ When finished we have a stable base to work from, one that we can start making t
     - [X] Change MSG_Write/ReadPos to use MSG_Write/ReadFloat instead, this is safe after fixing the above.
     
 - [ ] Math Library
+  - [ ] Move all functions into a proper location.
+  - [ ] Document math functions.
   - [ ] Move macro functions over to inlined C functions.
   - [ ] Change PITCH, YAW, ROLL defines to a vec3_t::PITCH, etc._
   - [ ] Use references/pointers, and const correctness.

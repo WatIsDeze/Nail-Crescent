@@ -20,111 +20,156 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 vec3_t vec3_origin = { 0, 0, 0 };
 
-void AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
-{
+//
+//===============
+// AngleVectors
+// 
+// Calculate the forward, right, and up vectors for the given angles.
+//===============
+//
+void AngleVectors(const vec3_t *angles, vec3_t *forward, vec3_t *right, vec3_t *up) {
     float        angle;
     float        sr, sp, sy, cr, cp, cy;
 
-    angle = angles[YAW] * (M_PI * 2 / 360);
+    angle = angles->xyz[YAW] * (M_PI * 2 / 360);
     sy = sin(angle);
     cy = cos(angle);
-    angle = angles[PITCH] * (M_PI * 2 / 360);
+    angle = angles->xyz[PITCH] * (M_PI * 2 / 360);
     sp = sin(angle);
     cp = cos(angle);
-    angle = angles[ROLL] * (M_PI * 2 / 360);
+    angle = angles->xyz[ROLL] * (M_PI * 2 / 360);
     sr = sin(angle);
     cr = cos(angle);
 
     if (forward) {
-        forward[0] = cp * cy;
-        forward[1] = cp * sy;
-        forward[2] = -sp;
+        forward->xyz[0] = cp * cy;
+        forward->xyz[1] = cp * sy;
+        forward->xyz[2] = -sp;
     }
     if (right) {
-        right[0] = (-1 * sr * sp * cy + -1 * cr * -sy);
-        right[1] = (-1 * sr * sp * sy + -1 * cr * cy);
-        right[2] = -1 * sr * cp;
+        right->xyz[0] = (-1 * sr * sp * cy + -1 * cr * -sy);
+        right->xyz[1] = (-1 * sr * sp * sy + -1 * cr * cy);
+        right->xyz[2] = -1 * sr * cp;
     }
     if (up) {
-        up[0] = (cr * sp * cy + -sr * -sy);
-        up[1] = (cr * sp * sy + -sr * cy);
-        up[2] = cr * cp;
+        up->xyz[0] = (cr * sp * cy + -sr * -sy);
+        up->xyz[1] = (cr * sp * sy + -sr * cy);
+        up->xyz[2] = cr * cp;
     }
 }
 
-vec_t VectorNormalize(vec3_t v)
+//
+//===============
+// VectorNormalize
+// 
+// Normalizes the input vector ptr, and returns its length.
+//===============
+//
+vec_t VectorNormalize(vec3_t *v)
 {
     float    length, ilength;
 
-    length = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+    length = v->xyz[0] * v->xyz[0] + v->xyz[1] * v->xyz[1] + v->xyz[2] * v->xyz[2];
     length = sqrtf(length);         // FIXME
 
     if (length) {
         ilength = 1 / length;
-        v[0] *= ilength;
-        v[1] *= ilength;
-        v[2] *= ilength;
+        v->xyz[0] *= ilength;
+        v->xyz[1] *= ilength;
+        v->xyz[2] *= ilength;
     }
 
     return length;
 
 }
 
-vec_t VectorNormalize2(vec3_t v, vec3_t out)
+//
+//===============
+// VectorNormalize
+// 
+// Normalizes the input vector, and stores its results in the out ptr.
+// Returns the vector's length.
+//===============
+//
+vec_t VectorNormalize2(const vec3_t *v, vec3_t *out)
 {
     float    length, ilength;
 
-    length = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+    length = v->xyz[0] * v->xyz[0] + v->xyz[1] * v->xyz[1] + v->xyz[2] * v->xyz[2];
     length = sqrtf(length);         // FIXME
 
     if (length) {
         ilength = 1 / length;
-        out[0] = v[0] * ilength;
-        out[1] = v[1] * ilength;
-        out[2] = v[2] * ilength;
+        out->xyz[0] = v->xyz[0] * ilength;
+        out->xyz[1] = v->xyz[1] * ilength;
+        out->xyz[2] = v->xyz[2] * ilength;
     }
 
     return length;
 
 }
 
-void ClearBounds(vec3_t mins, vec3_t maxs)
+//
+//===============
+// ClearBounds
+// 
+// Clears the Min and Max bounds pointers.
+//===============
+//
+void ClearBounds(vec3_t *mins, vec3_t *maxs)
 {
-    mins[0] = mins[1] = mins[2] = 99999;
-    maxs[0] = maxs[1] = maxs[2] = -99999;
+    mins->xyz[0] = mins->xyz[1] = mins->xyz[2] = 99999;
+    maxs->xyz[0] = maxs->xyz[1] = maxs->xyz[2] = -99999;
 }
 
-void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs)
+//
+//===============
+// AddPointToBounds
+// 
+// Adds the given vector point to the bounds, in case it exceeds the
+// current bounds, it will automatically resize them accordingly.
+//===============
+//
+void AddPointToBounds(const vec3_t *v, vec3_t *mins, vec3_t *maxs)
 {
     int        i;
     vec_t    val;
 
     for (i = 0; i < 3; i++) {
-        val = v[i];
-        if (val < mins[i])
-            mins[i] = val;
-        if (val > maxs[i])
-            maxs[i] = val;
+        val = v->xyz[i];
+        if (val < mins->xyz[i])
+            mins->xyz[i] = val;
+        if (val > maxs->xyz[i])
+            maxs->xyz[i] = val;
     }
 }
 
-void UnionBounds(vec3_t a[2], vec3_t b[2], vec3_t c[2])
+//
+//===============
+// UnionBounds
+// 
+// Merges 2 bounding boxes together, into the outptr.
+//===============
+//
+void UnionBounds(vec3_t *a[2], vec3_t *b[2], vec3_t *c[2])
 {
-    c[0][0] = b[0][0] < a[0][0] ? b[0][0] : a[0][0];
-    c[0][1] = b[0][1] < a[0][1] ? b[0][1] : a[0][1];
-    c[0][2] = b[0][2] < a[0][2] ? b[0][2] : a[0][2];
+    c[0]->xyz[0] = b[0]->xyz[0] < a[0]->xyz[0] ? b[0]->xyz[0] : a[0]->xyz[0];
+    c[0]->xyz[1] = b[0]->xyz[1] < a[0]->xyz[1] ? b[0]->xyz[1] : a[0]->xyz[1];
+    c[0]->xyz[2] = b[0]->xyz[2] < a[0]->xyz[2] ? b[0]->xyz[2] : a[0]->xyz[2];
 
-    c[1][0] = b[1][0] > a[1][0] ? b[1][0] : a[1][0];
-    c[1][1] = b[1][1] > a[1][1] ? b[1][1] : a[1][1];
-    c[1][2] = b[1][2] > a[1][2] ? b[1][2] : a[1][2];
+    c[1]->xyz[0] = b[1]->xyz[0] > a[1]->xyz[0] ? b[1]->xyz[0] : a[1]->xyz[0];
+    c[1]->xyz[1] = b[1]->xyz[1] > a[1]->xyz[1] ? b[1]->xyz[1] : a[1]->xyz[1];
+    c[1]->xyz[2] = b[1]->xyz[2] > a[1]->xyz[2] ? b[1]->xyz[2] : a[1]->xyz[2];
 }
 
-/*
-=================
-RadiusFromBounds
-=================
-*/
-vec_t RadiusFromBounds(const vec3_t mins, const vec3_t maxs)
+//
+//===============
+// RadiusFromBounds
+// 
+// Returns the radius length for the given boundaries.
+//===============
+//
+vec_t RadiusFromBounds(const vec3_t *mins, const vec3_t *maxs)
 {
     int     i;
     vec3_t  corner;
