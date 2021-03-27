@@ -541,19 +541,19 @@ void MSG_WriteDeltaEntity(const entity_packed_t *from,
     bits = 0;
 
     if (!(flags & MSG_ES_FIRSTPERSON)) {
-        if (to->origin.x != from->origin.x)
+        if (!EqualEpsilonf(to->origin.x, from->origin.x)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
             bits |= U_ORIGIN1;
-        if (to->origin.y != from->origin.y)
+        if (!EqualEpsilonf(to->origin.y, from->origin.y)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
             bits |= U_ORIGIN2;
-        if (to->origin.z != from->origin.z)
+        if (!EqualEpsilonf(to->origin.z, from->origin.z)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
             bits |= U_ORIGIN3;
 
         // N&C: Full float precision.
-        if (to->angles[0] != from->angles[0])
+        if (!EqualEpsilonf(to->angles.x, from->angles.x)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
             bits |= U_ANGLE1 | U_ANGLE16;
-        if (to->angles[1] != from->angles[1])
+        if (!EqualEpsilonf(to->angles.y, from->angles.y)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
             bits |= U_ANGLE2 | U_ANGLE16;
-        if (to->angles[2] != from->angles[2])
+        if (!EqualEpsilonf(to->angles.z, from->angles.z)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
             bits |= U_ANGLE3 | U_ANGLE16;
         //if (flags & MSG_ES_SHORTANGLES) {
         //    if (to->angles[0] != from->angles[0])
@@ -572,9 +572,9 @@ void MSG_WriteDeltaEntity(const entity_packed_t *from,
         //}
 
         if (flags & MSG_ES_NEWENTITY) {
-            if (to->old_origin[0] != from->origin[0] ||
-                to->old_origin[1] != from->origin[1] ||
-                to->old_origin[2] != from->origin[2])
+            if (!EqualEpsilonf(to->old_origin.x, from->origin.x) ||   // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
+                !EqualEpsilonf(to->old_origin.y, from->origin.y) ||   // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
+                !EqualEpsilonf(to->old_origin.z, from->origin.z))     
                 bits |= U_OLDORIGIN;
         }
     }
@@ -641,9 +641,9 @@ void MSG_WriteDeltaEntity(const entity_packed_t *from,
         bits |= U_OLDORIGIN;
     } else if (to->renderfx & RF_BEAM) {
         if (flags & MSG_ES_BEAMORIGIN) {
-            if (to->old_origin[0] != from->old_origin[0] ||
-                to->old_origin[1] != from->old_origin[1] ||
-                to->old_origin[2] != from->old_origin[2])
+            if (!EqualEpsilonf(to->old_origin.x, from->old_origin.x) ||   // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
+                !EqualEpsilonf(to->old_origin.y, from->old_origin.y) ||   // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
+                !EqualEpsilonf(to->old_origin.z, from->old_origin.z))     // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
                 bits |= U_OLDORIGIN;
         } else {
             bits |= U_OLDORIGIN;
@@ -728,28 +728,28 @@ void MSG_WriteDeltaEntity(const entity_packed_t *from,
     
     // N&C: Full float precision.
     if (bits & U_ORIGIN1)
-        MSG_WriteFloat(to->origin[0]);
+        MSG_WriteFloat(to->origin.x);
     if (bits & U_ORIGIN2)
-        MSG_WriteFloat(to->origin[1]);
+        MSG_WriteFloat(to->origin.y);
     if (bits & U_ORIGIN3)
-        MSG_WriteFloat(to->origin[2]);
+        MSG_WriteFloat(to->origin.z);
 
     // N&C: Full float precision.
     //if ((flags & MSG_ES_SHORTANGLES) && (bits & U_ANGLE16)) {
     if (bits & U_ANGLE16) {
         if (bits & U_ANGLE1)
-            MSG_WriteFloat(to->angles[0]);
+            MSG_WriteFloat(to->angles.x);
         if (bits & U_ANGLE2)
-            MSG_WriteFloat(to->angles[1]);
+            MSG_WriteFloat(to->angles.y);
         if (bits & U_ANGLE3)
-            MSG_WriteFloat(to->angles[2]);
+            MSG_WriteFloat(to->angles.z);
     }
 
     // N&C: Full float precision.
     if (bits & U_OLDORIGIN) {
-        MSG_WriteFloat(to->old_origin[0]);
-        MSG_WriteFloat(to->old_origin[1]);
-        MSG_WriteFloat(to->old_origin[2]);
+        MSG_WriteFloat(to->old_origin.x);
+        MSG_WriteFloat(to->old_origin.y);
+        MSG_WriteFloat(to->old_origin.z);
     }
 
     if (bits & U_SOUND)
@@ -769,9 +769,9 @@ void MSG_PackPlayer(player_packed_t *out, const player_state_t *in)
     int i;
 
     out->pmove = in->pmove;
-    out->viewangles[0] = ANGLE2SHORT(in->viewangles[0]);
-    out->viewangles[1] = ANGLE2SHORT(in->viewangles[1]);
-    out->viewangles[2] = ANGLE2SHORT(in->viewangles[2]);
+    out->viewangles[0] = ANGLE2SHORT(in->viewangles.x);
+    out->viewangles[1] = ANGLE2SHORT(in->viewangles.y);
+    out->viewangles[2] = ANGLE2SHORT(in->viewangles.z);
     out->viewoffset[0] = in->viewoffset[0] * 4;
     out->viewoffset[1] = in->viewoffset[1] * 4;
     out->viewoffset[2] = in->viewoffset[2] * 4;

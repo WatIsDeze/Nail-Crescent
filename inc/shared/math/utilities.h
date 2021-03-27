@@ -26,7 +26,7 @@
 // Returns true if `fabsf(a - b) <= epsilon`.
 //===============
 //
-static inline bool EqualEpsilonf(float a, float b, float epsilon) {
+static inline bool EqualEpsilonf(float a, float b, float epsilon = FLT_EPSILON) {
     return std::fabsf(a - b) <= epsilon;
 }
 
