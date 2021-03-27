@@ -1695,10 +1695,10 @@ static int precache_spawncount;
 //===============
 //
 void CL_UpdateListenerOrigin(void) {
-    Vec3_Copy(cl.refdef.vieworg, listener_origin);
-    Vec3_Copy(cl.v_forward, listener_forward);
-    Vec3_Copy(cl.v_right, listener_right);
-    Vec3_Copy(cl.v_up, listener_up);
+    listener_origin  = cl.refdef.vieworg;   // MATHLIB: Vec3_Copy(cl.refdef.vieworg, listener_origin);
+    listener_forward = cl.v_forward;        // MATHLIB: Vec3_Copy(cl.v_forward, listener_forward);
+    listener_right   = cl.v_right;          // MATHLIB: Vec3_Copy(cl.v_right, listener_right);
+    listener_up      = cl.v_up;             // MATHLIB: Vec3_Copy(cl.v_up, listener_up);
 }
 
 /*

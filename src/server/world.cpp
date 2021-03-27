@@ -484,7 +484,7 @@ SV_ClipMoveToEntities
 
 ====================
 */
-static void SV_ClipMoveToEntities(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
+static void SV_ClipMoveToEntities(const vec3_t &start, const vec3_t &mins, const vec3_t &maxs, const vec3_t &end,
                                   edict_t *passedict, int contentmask, trace_t *tr)
 {
     vec3_t      boxmins, boxmaxs;
@@ -562,21 +562,30 @@ trace_t q_gameabi SV_Trace(const vec3_t &start, vec3_t *mins, vec3_t *maxs, cons
         sv.tracecount = 0;
         return trace;
     }
+    
+    vec3_t _mins;
+    vec3_t _maxs;
 
     if (!mins)
-        mins = &vec3_origin;
+        _mins = Vec3_Zero();
+    else
+        _mins = { mins->x, mins->y, mins->z };
+
     if (!maxs)
-        maxs = &vec3_origin;
+        _maxs = Vec3_Zero();
+    else
+        _maxs = { maxs->x, maxs->y, maxs->z };
+
 
     // clip to world
-    CM_BoxTrace(&trace, start, end, mins, maxs, sv.cm.cache->nodes, contentmask);
+    CM_BoxTrace(&trace, start, end, _mins, _maxs, sv.cm.cache->nodes, contentmask);
     trace.ent = ge->edicts;
     if (trace.fraction == 0) {
         return trace;   // blocked by the world
     }
 
     // clip to other solid entities
-    SV_ClipMoveToEntities(start, mins, maxs, end, passedict, contentmask, &trace);
+    SV_ClipMoveToEntities(start, _mins, _maxs, end, passedict, contentmask, &trace);
     return trace;
 }
 

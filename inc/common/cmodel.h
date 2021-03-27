@@ -54,12 +54,12 @@ typedef struct {
 
 
     // returns an ORed contents mask
-    int         CM_PointContents(vec3_t p, mnode_t *headnode);
+    int         CM_PointContents(const vec3_t &p, mnode_t *headnode);
     int         CM_TransformedPointContents(vec3_t p, mnode_t *headnode,
                                             vec3_t origin, vec3_t angles);
 
     void        CM_BoxTrace(trace_t *trace, const vec3_t &start, const vec3_t &end,
-                            vec3_t *mins, vec3_t *maxs,
+                            const vec3_t &mins, const vec3_t &maxs,
                             mnode_t *headnode, int brushmask);
     void        CM_TransformedBoxTrace(trace_t *trace, vec3_t start, vec3_t end,
                                     vec3_t mins, vec3_t maxs,

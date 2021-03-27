@@ -286,7 +286,7 @@ CM_PointContents
 
 ==================
 */
-int CM_PointContents(vec3_t p, mnode_t *headnode)
+int CM_PointContents(const vec3_t &p, mnode_t *headnode)
 {
     mleaf_t     *leaf;
 

@@ -1462,12 +1462,12 @@ overrun:
     return mask;
 }
 
-mleaf_t *BSP_PointLeaf(mnode_t *node, vec3_t p)
+mleaf_t *BSP_PointLeaf(mnode_t *node, const vec3_t &p)
 {
     float d;
 
     while (node->plane) {
-        d = PlaneDiffFast(p, node->plane);
+        d = PlaneDiffFast_(p, node->plane);
         if (d < 0)
             node = node->children[1];
         else
