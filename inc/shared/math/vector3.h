@@ -437,6 +437,30 @@ static inline vec3_t Vec3_VmaF(const vec3_t& add, const vec3_t& multiply, const 
 
 //
 //===============
+// Vec3_EqualEpsilon
+// 
+// Returns true if `a` and `b` are equal using the specified epsilon.
+//===============
+//
+static inline bool Vec3_EqualEpsilon(const vec3_t &a, const vec3_t &b, float epsilon) {
+    return EqualEpsilonf(a.x, b.x, epsilon) &&
+        EqualEpsilonf(a.y, b.y, epsilon) &&
+        EqualEpsilonf(a.z, b.z, epsilon);
+}
+
+//
+//===============
+// Vec3_Equal
+// 
+// Returns true if `a` and `b` are equal.
+//===============
+//
+static inline bool Vec3_Equal(const vec3_t &a, const vec3_t &b) {
+    return Vec3_EqualEpsilon(a, b, FLT_EPSILON);
+}
+
+//
+//===============
 // LEGACY: Vec3_MA
 // 
 // ALTERNATIVE: Use Vec3_FmaF
@@ -450,10 +474,6 @@ static inline void Vec3_VectorMA_(const vec3_t& add, const vec3_t& multiply, con
     };
 }
 
-//#define Vec3_Empty(v) ((v)[0]==0&&(v)[1]==0&&(v)[2]==0)
-//#define Vec3_Compare(v1,v2)    ((v1)[0]==(v2)[0]&&(v1)[1]==(v2)[1]&&(v1)[2]==(v2)[2]) ////////////
-//#define Vec3_Length(v)     (sqrt(Vec3_Dot((v),(v))))
-//#define Vec3_LengthSquared(v)      (Vec3_Dot((v),(v)))
 //
 //===============
 // LEGACY: Vec3_Empty_
@@ -593,10 +613,10 @@ static inline void Vec3_Lerp2(const vec3_t& a, const vec3_t& b, const float& c, 
 
 //---------------------------------------------------------------------------------
 
-void SetupRotationMatrix(vec3_t matrix[3], const vec3_t dir, float degrees);
-void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees);
-void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal);
-void PerpendicularVector(vec3_t dst, const vec3_t src);
+void SetupRotationMatrix(vec3_t *matrix, const vec3_t &dir, float degrees);
+void RotatePointAroundVector(vec3_t &dst, const vec3_t &dir, const vec3_t &point, float degrees);
+void ProjectPointOnPlane(vec3_t &dst, const vec3_t &p, const vec3_t &normal);
+void PerpendicularVector(vec3_t &dst, const vec3_t &src);
 
 void AngleVectors(const vec3_t& angles, vec3_t* forward, vec3_t* right, vec3_t* up);
 vec_t VectorNormalize(vec3_t& v);        // returns vector length
@@ -611,7 +631,7 @@ void vectoangles2(const vec3_t& value1, vec3_t& angles);
 
 void MakeNormalVectors(const vec3_t& forward, vec3_t& right, vec3_t& up);
 
-int DirToByte(const vec3_t* dir);
+int DirToByte(const vec3_t &dir);
 //void ByteToDir(int index, vec3_t dir);
 // 
 //

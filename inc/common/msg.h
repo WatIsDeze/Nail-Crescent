@@ -151,7 +151,7 @@ void    MSG_WriteShort(int c);
 void    MSG_WriteLong(int c);
 void    MSG_WriteFloat(float c);
 void    MSG_WriteString(const char *s);
-void    MSG_WritePos(const vec3_t pos);
+void    MSG_WritePos(const vec3_t &pos);
 void    MSG_WriteAngle(float f);
 #if USE_CLIENT
 void    MSG_WriteBits(int value, int bits);
@@ -188,8 +188,8 @@ float   MSG_ReadFloat(void);
 size_t  MSG_ReadString(char *dest, size_t size);
 size_t  MSG_ReadStringLine(char *dest, size_t size);
 #if USE_CLIENT
-void    MSG_ReadPos(vec3_t pos);
-void    MSG_ReadDir(vec3_t vector);
+void    MSG_ReadPos(vec3_t &pos);
+void    MSG_ReadDir(vec3_t &vector);
 #endif
 int     MSG_ReadBits(int bits);
 void    MSG_ReadDeltaUsercmd(const usercmd_t *from, usercmd_t *cmd);

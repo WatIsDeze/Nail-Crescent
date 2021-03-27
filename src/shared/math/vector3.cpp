@@ -55,9 +55,9 @@ void MakeNormalVectors(const vec3_t& forward, vec3_t& right, vec3_t& up)
     right.xyz[0] = forward.xyz[2];
 
     d = Vec3_Dot(right, forward);
-    Vec3_MA(right, -d, forward, right);
+    Vec3_MA_(right, -d, forward, right);
     VectorNormalize(right);
-    Vec3_Cross(right, forward, up);
+    Vec3_Cross_(right, forward, up);
 }
 
 //#endif  // USE_CLIENT
@@ -227,19 +227,15 @@ const vec3_t bytedirs[NUMVERTEXNORMALS] = {
     {-0.688191, -0.587785, -0.425325},
 };
 
-int DirToByte(const vec3_t* dir)
+int DirToByte(const vec3_t &dir)
 {
     int     i, best;
     float   d, bestd;
 
-    if (!dir) {
-        return 0;
-    }
-
     bestd = 0;
     best = 0;
     for (i = 0; i < NUMVERTEXNORMALS; i++) {
-        d = Vec3_Dot(*dir, bytedirs[i]); // VEC3_T !! May be broken.
+        d = Vec3_Dot(dir, bytedirs[i]); // VEC3_T !! May be broken.
         if (d > bestd) {
             bestd = d;
             best = i;
@@ -260,19 +256,6 @@ void ByteToDir(int index, vec3_t dir)
 }
 #endif
 
-
-
-void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees)
-{
-    vec3_t  matrix[3];
-
-    SetupRotationMatrix(matrix, dir, degrees);
-
-    dst[0] = Vec3_Dot(matrix[0], point);
-    dst[1] = Vec3_Dot(matrix[1], point);
-    dst[2] = Vec3_Dot(matrix[2], point);
-}
-
 /*
 ==================
 SetupRotationMatrix
@@ -281,7 +264,7 @@ Setup rotation matrix given the normalized direction vector and angle to rotate
 around this vector. Adapted from Mesa 3D implementation of _math_matrix_rotate.
 ==================
 */
-void SetupRotationMatrix(vec3_t matrix[3], const vec3_t dir, float degrees)
+void SetupRotationMatrix(vec3_t* matrix, const vec3_t& dir, float degrees)
 {
     vec_t   angle, s, c, one_c, xx, yy, zz, xy, yz, zx, xs, ys, zs;
 
@@ -290,27 +273,39 @@ void SetupRotationMatrix(vec3_t matrix[3], const vec3_t dir, float degrees)
     c = cos(angle);
     one_c = 1.0F - c;
 
-    xx = dir[0] * dir[0];
-    yy = dir[1] * dir[1];
-    zz = dir[2] * dir[2];
-    xy = dir[0] * dir[1];
-    yz = dir[1] * dir[2];
-    zx = dir[2] * dir[0];
-    xs = dir[0] * s;
-    ys = dir[1] * s;
-    zs = dir[2] * s;
+    xx = dir.xyz[0] * dir.xyz[0];
+    yy = dir.xyz[1] * dir.xyz[1];
+    zz = dir.xyz[2] * dir.xyz[2];
+    xy = dir.xyz[0] * dir.xyz[1];
+    yz = dir.xyz[1] * dir.xyz[2];
+    zx = dir.xyz[2] * dir.xyz[0];
+    xs = dir.xyz[0] * s;
+    ys = dir.xyz[1] * s;
+    zs = dir.xyz[2] * s;
 
-    matrix[0][0] = (one_c * xx) + c;
-    matrix[0][1] = (one_c * xy) - zs;
-    matrix[0][2] = (one_c * zx) + ys;
+    matrix[0].xyz[0] = (one_c * xx) + c;
+    matrix[0].xyz[1] = (one_c * xy) - zs;
+    matrix[0].xyz[2] = (one_c * zx) + ys;
 
-    matrix[1][0] = (one_c * xy) + zs;
-    matrix[1][1] = (one_c * yy) + c;
-    matrix[1][2] = (one_c * yz) - xs;
+    matrix[1].xyz[0] = (one_c * xy) + zs;
+    matrix[1].xyz[1] = (one_c * yy) + c;
+    matrix[1].xyz[2] = (one_c * yz) - xs;
 
-    matrix[2][0] = (one_c * zx) - ys;
-    matrix[2][1] = (one_c * yz) + xs;
-    matrix[2][2] = (one_c * zz) + c;
+    matrix[2].xyz[0] = (one_c * zx) - ys;
+    matrix[2].xyz[1] = (one_c * yz) + xs;
+    matrix[2].xyz[2] = (one_c * zz) + c;
+}
+
+
+void RotatePointAroundVector(vec3_t &dst, const vec3_t &dir, const vec3_t &point, float degrees)
+{
+    vec3_t  matrix[3];
+
+    SetupRotationMatrix(matrix, dir, degrees);
+
+    dst.x = Vec3_Dot(matrix[0], point);
+    dst.y = Vec3_Dot(matrix[1], point);
+    dst.z = Vec3_Dot(matrix[2], point);
 }
 
 
@@ -318,7 +313,7 @@ void SetupRotationMatrix(vec3_t matrix[3], const vec3_t dir, float degrees)
 
 #if USE_REF == REF_SOFT
 
-void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal)
+void ProjectPointOnPlane(vec3_t &dst, const vec3_t &p, const vec3_t &normal)
 {
     float d;
     vec3_t n;
@@ -340,7 +335,7 @@ void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal)
 /*
 ** assumes "src" is normalized
 */
-void PerpendicularVector(vec3_t dst, const vec3_t src)
+void PerpendicularVector(vec3_t &dst, const vec3_t &src)
 {
     int pos;
     int i;

@@ -338,8 +338,8 @@ static void PF_setmodel(edict_t *ent, const char *name)
 // if it is an inline model, get the size information for it
     if (name[0] == '*') {
         mod = CM_InlineModel(&sv.cm, name);
-        Vec3_Copy(mod->mins, ent->mins);
-        Vec3_Copy(mod->maxs, ent->maxs);
+        Vec3_Copy_(mod->mins, ent->mins);
+        Vec3_Copy_(mod->maxs, ent->maxs);
         PF_LinkEdict(ent);
     }
 

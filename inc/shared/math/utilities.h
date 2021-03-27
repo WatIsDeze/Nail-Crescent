@@ -21,6 +21,17 @@
 
 //
 //===============
+// EqualEpsilonf
+// 
+// Returns true if `fabsf(a - b) <= epsilon`.
+//===============
+//
+static inline bool EqualEpsilonf(float a, float b, float epsilon) {
+    return std::fabsf(a - b) <= epsilon;
+}
+
+//
+//===============
 // npo32
 // 
 // Returns whether the value of k is npot32

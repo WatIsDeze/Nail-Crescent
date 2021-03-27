@@ -197,11 +197,11 @@ void MSG_WriteString(const char *string)
 MSG_WritePos
 =============
 */
-void MSG_WritePos(const vec3_t pos)
+void MSG_WritePos(const vec3_t &pos)
 {
-    MSG_WriteFloat(pos[0]);
-    MSG_WriteFloat(pos[1]);
-    MSG_WriteFloat(pos[2]);
+    MSG_WriteFloat(pos.x);
+    MSG_WriteFloat(pos.y);
+    MSG_WriteFloat(pos.z);
 }
 
 /*
@@ -453,7 +453,7 @@ int MSG_WriteDeltaUsercmd_Enhanced(const usercmd_t *from,
 
 #endif // USE_CLIENT
 
-void MSG_WriteDir(const vec3_t dir)
+void MSG_WriteDir(const vec3_t &dir)
 {
     int     best;
 
@@ -469,12 +469,12 @@ void MSG_PackEntity(entity_packed_t *out, const entity_state_t *in, qboolean sho
 
     // N&C: Full float precision.
     out->number = in->number;
-    out->origin[0] = in->origin[0];
-    out->origin[1] = in->origin[1];
-    out->origin[2] = in->origin[2];
-    out->angles[0] = in->angles[0];
-    out->angles[1] = in->angles[1];
-    out->angles[2] = in->angles[2];
+    out->origin.x = in->origin.z;
+    out->origin.y = in->origin.y;
+    out->origin.z = in->origin.z;
+    out->angles.x = in->angles.x;
+    out->angles.y = in->angles.y;
+    out->angles.z = in->angles.z;
     //if (short_angles) {
     //    out->angles[0] = in->angles[0];
     //    out->angles[1] = in->angles[1];
@@ -486,9 +486,9 @@ void MSG_PackEntity(entity_packed_t *out, const entity_state_t *in, qboolean sho
     //    out->angles[1] = ANGLE2BYTE(in->angles[1]) << 8;
     //    out->angles[2] = ANGLE2BYTE(in->angles[2]) << 8;
     //}
-    out->old_origin[0] = in->old_origin[0];
-    out->old_origin[1] = in->old_origin[1];
-    out->old_origin[2] = in->old_origin[2];
+    out->old_origin.x = in->old_origin.x;
+    out->old_origin.y = in->old_origin.y;
+    out->old_origin.z = in->old_origin.z;
     out->modelindex = in->modelindex;
     out->modelindex2 = in->modelindex2;
     out->modelindex3 = in->modelindex3;
@@ -541,11 +541,11 @@ void MSG_WriteDeltaEntity(const entity_packed_t *from,
     bits = 0;
 
     if (!(flags & MSG_ES_FIRSTPERSON)) {
-        if (to->origin[0] != from->origin[0])
+        if (to->origin.x != from->origin.x)
             bits |= U_ORIGIN1;
-        if (to->origin[1] != from->origin[1])
+        if (to->origin.y != from->origin.y)
             bits |= U_ORIGIN2;
-        if (to->origin[2] != from->origin[2])
+        if (to->origin.z != from->origin.z)
             bits |= U_ORIGIN3;
 
         // N&C: Full float precision.
@@ -1605,11 +1605,11 @@ size_t MSG_ReadStringLine(char *dest, size_t size)
     return len;
 }
 
-void MSG_ReadPos(vec3_t pos)
+void MSG_ReadPos(vec3_t &pos)
 {
-    pos[0] = MSG_ReadFloat();
-    pos[1] = MSG_ReadFloat();
-    pos[2] = MSG_ReadFloat();
+    pos.x = MSG_ReadFloat();
+    pos.y = MSG_ReadFloat();
+    pos.z = MSG_ReadFloat();
 }
 
 static inline float MSG_ReadAngle(void)
@@ -1622,14 +1622,14 @@ static inline float MSG_ReadAngle16(void)
     return SHORT2ANGLE(MSG_ReadShort());
 }
 
-void MSG_ReadDir(vec3_t dir)
+void MSG_ReadDir(vec3_t &dir)
 {
     int     b;
 
     b = MSG_ReadByte();
     if (b < 0 || b >= NUMVERTEXNORMALS)
         Com_Error(ERR_DROP, "MSG_ReadDir: out of range");
-    Vec3_Copy(bytedirs[b], dir);
+    Vec3_Copy_(bytedirs[b], dir);
 }
 
 void MSG_ReadDeltaUsercmd(const usercmd_t *from, usercmd_t *to)

@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cinttypes>
 #include <climits>
 #include <ctime>
+#include <cfloat>
 
 //-----------------
 // C++ STL

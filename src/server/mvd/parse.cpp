@@ -110,18 +110,18 @@ void MVD_ParseEntityString(mvd_t *mvd, const char *data)
 
             p = value;
             if (!strcmp(key, "origin")) {
-                origin[0] = atof(COM_Parse(&p));
-                origin[1] = atof(COM_Parse(&p));
-                origin[2] = atof(COM_Parse(&p));
+                origin.x = atof(COM_Parse(&p));
+                origin.y = atof(COM_Parse(&p));
+                origin.z = atof(COM_Parse(&p));
             } else if (!strncmp(key, "angle", 5)) {
                 if (key[5] == 0) {
-                    angles[0] = 0;
-                    angles[1] = atof(COM_Parse(&p));
-                    angles[2] = 0;
+                    angles.x = 0;
+                    angles.y = atof(COM_Parse(&p));
+                    angles.z = 0;
                 } else if (key[5] == 's' && key[6] == 0) {
-                    angles[0] = atof(COM_Parse(&p));
-                    angles[1] = atof(COM_Parse(&p));
-                    angles[2] = atof(COM_Parse(&p));
+                    angles.x = atof(COM_Parse(&p));
+                    angles.y = atof(COM_Parse(&p));
+                    angles.z = atof(COM_Parse(&p));
                 }
             }
         }
@@ -135,15 +135,15 @@ void MVD_ParseEntityString(mvd_t *mvd, const char *data)
         }
 
         if (!strcmp(classname + 12, "intermission")) {
-            Vec3_Copy(origin, mvd->spawnOrigin);
-            Vec3_Copy(angles, mvd->spawnAngles);
+            mvd->spawnOrigin = origin; // MATHLIB: Vec3_Copy(origin, mvd->spawnOrigin);
+            mvd->spawnAngles = angles; // MATHLIB: Vec3_Copy(angles, mvd->spawnAngles);
             break;
         }
 
         if (!strcmp(classname + 12, "start") ||
             !strcmp(classname + 12, "deathmatch")) {
-            Vec3_Copy(origin, mvd->spawnOrigin);
-            Vec3_Copy(angles, mvd->spawnAngles);
+            mvd->spawnOrigin = origin; // MATHLIB:  Vec3_Copy(origin, mvd->spawnOrigin);
+            mvd->spawnAngles = angles; // MATHLIB: Vec3_Copy(angles, mvd->spawnAngles);
         }
 
     }
@@ -233,7 +233,7 @@ static void MVD_ParseMulticast(mvd_t *mvd, mvd_ops_t op, int extrabits)
             // uses entity origin for PVS/PHS culling, not the view origin
             
             // N&C: FF Precision.
-            Vec3_Copy(ps->pmove.origin, org);
+            Vec3_Copy_(ps->pmove.origin, org);
             //Vec3_Scale(ps->pmove.origin, 0.125f, org);
 #endif
             leaf2 = CM_PointLeaf(&mvd->cm, org);
@@ -544,7 +544,7 @@ static void MVD_ParseSound(mvd_t *mvd, int extrabits)
             // get client viewpos
             ps = &client->ps;
             // N&C: FF Precision.
-            Vec3_Add(ps->viewoffset, ps->pmove.origin, origin);
+            Vec3_Add_(ps->viewoffset, ps->pmove.origin, origin);
             //Vec3_MA(ps->viewoffset, 0.125f, ps->pmove.origin, origin);
             leaf = CM_PointLeaf(&mvd->cm, origin);
             area = CM_LeafArea(leaf);
@@ -563,10 +563,10 @@ static void MVD_ParseSound(mvd_t *mvd, int extrabits)
 
         // use the entity origin unless it is a bmodel
         if (entity->solid == SOLID_BSP) {
-            Vec3_Average(entity->mins, entity->maxs, origin);
-            Vec3_Add(entity->s.origin, origin, origin);
+            Vec3_Average_(entity->mins, entity->maxs, origin);
+            Vec3_Add_(entity->s.origin, origin, origin);
         } else {
-            Vec3_Copy(entity->s.origin, origin);
+            Vec3_Copy_(entity->s.origin, origin);
         }
 
         // reliable sounds will always have position explicitly set,
@@ -613,7 +613,7 @@ static void MVD_ParseSound(mvd_t *mvd, int extrabits)
         msg->sendchan = sendchan;
 
         // N&C: FF Precision.
-        Vec3_Copy(msg->pos, origin);
+        Vec3_Copy_(msg->pos, origin);
         //for (i = 0; i < 3; i++) {
         //    msg->pos[i] = origin[i] * 8;
         //}
@@ -756,7 +756,7 @@ static void MVD_ParsePacketEntities(mvd_t *mvd)
         if (bits & U_REMOVE) {
             SHOWNET(2, "   remove: %d\n", number);
             if (!(ent->s.renderfx & RF_BEAM)) {
-                Vec3_Copy(ent->s.origin, ent->s.old_origin);
+                Vec3_Copy_(ent->s.origin, ent->s.old_origin);
             }
             ent->inuse = false;
             continue;
