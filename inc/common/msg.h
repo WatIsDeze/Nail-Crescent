@@ -222,45 +222,45 @@ const char *MSG_ServerCommandString(int cmd);
 
 //============================================================================
 
-static inline int MSG_PackSolid16(const vec3_t mins, const vec3_t maxs)
+static inline int MSG_PackSolid16(const vec3_t &mins, const vec3_t &maxs)
 {
     int x, zd, zu;
 
     // assume that x/y are equal and symetric
-    x = maxs[0] / 8;
+    x = maxs.xyz[0] / 8;
     clamp(x, 1, 31);
 
     // z is not symetric
-    zd = -mins[2] / 8;
+    zd = -mins.xyz[2] / 8;
     clamp(zd, 1, 31);
 
     // and z maxs can be negative...
-    zu = (maxs[2] + 32) / 8;
+    zu = (maxs.xyz[2] + 32) / 8;
     clamp(zu, 1, 63);
 
     return (zu << 10) | (zd << 5) | x;
 }
 
-static inline int MSG_PackSolid32(const vec3_t mins, const vec3_t maxs)
+static inline int MSG_PackSolid32(const vec3_t &mins, const vec3_t &maxs)
 {
     int x, zd, zu;
 
     // assume that x/y are equal and symetric
-    x = maxs[0];
+    x = maxs.xyz[0];
     clamp(x, 1, 255);
 
     // z is not symetric
-    zd = -mins[2];
+    zd = -mins.xyz[2];
     clamp(zd, 1, 255);
 
     // and z maxs can be negative...
-    zu = maxs[2] + 32768;
+    zu = maxs.xyz[2] + 32768;
     clamp(zu, 1, 65535);
 
     return (zu << 16) | (zd << 8) | x;
 }
 
-static inline void MSG_UnpackSolid16(int solid, vec3_t mins, vec3_t maxs)
+static inline void MSG_UnpackSolid16(int solid, vec3_t &mins, vec3_t &maxs)
 {
     int x, zd, zu;
 
@@ -268,13 +268,13 @@ static inline void MSG_UnpackSolid16(int solid, vec3_t mins, vec3_t maxs)
     zd = 8 * ((solid >> 5) & 31);
     zu = 8 * ((solid >> 10) & 63) - 32;
 
-    mins[0] = mins[1] = -x;
-    maxs[0] = maxs[1] = x;
-    mins[2] = -zd;
-    maxs[2] = zu;
+    mins.xyz[0] = mins.xyz[1] = -x;
+    maxs.xyz[0] = maxs.xyz[1] = x;
+    mins.xyz[2] = -zd;
+    maxs.xyz[2] = zu;
 }
 
-static inline void MSG_UnpackSolid32(int solid, vec3_t mins, vec3_t maxs)
+static inline void MSG_UnpackSolid32(int solid, vec3_t &mins, vec3_t &maxs)
 {
     int x, zd, zu;
 
@@ -282,10 +282,10 @@ static inline void MSG_UnpackSolid32(int solid, vec3_t mins, vec3_t maxs)
     zd = (solid >> 8) & 255;
     zu = ((solid >> 16) & 65535) - 32768;
 
-    mins[0] = mins[1] = -x;
-    maxs[0] = maxs[1] = x;
-    mins[2] = -zd;
-    maxs[2] = zu;
+    mins.xyz[0] = mins.xyz[1] = -x;
+    maxs.xyz[0] = maxs.xyz[1] = x;
+    mins.xyz[2] = -zd;
+    maxs.xyz[2] = zu;
 }
 
 #endif // MSG_H

@@ -267,7 +267,6 @@ SET(SRC_COMMON
 	common/field.cpp
 	common/fifo.cpp
 	common/files.cpp
-	common/math.cpp
 	common/mdfour.cpp
 	common/msg.cpp
 	common/prompt.cpp
@@ -336,13 +335,20 @@ SET(HEADERS_SHARED
 	../inc/shared/cl_game.h
 	../inc/shared/cl_types.h
 	../inc/shared/config.h
+	../inc/shared/endian.h 
 	../inc/shared/game.h 
+	../inc/shared/keys.h 
 	../inc/shared/list.h 
 	../inc/shared/math.h 
 	../inc/shared/platform.h
+	../inc/shared/refresh.h 
 	../inc/shared/shared.h 
+	../inc/shared/ui.h 
 )
 SET(SRC_SHARED
+	shared/math/plane.cpp
+	shared/math/vector3.cpp
+
 	shared/m_flash.cpp
 	shared/math.cpp
 	shared/shared.cpp
