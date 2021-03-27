@@ -214,9 +214,9 @@ typedef enum {
 // r1q2 protocol specific extra flags
 #define EPS_GUNOFFSET       (1<<0)
 #define EPS_GUNANGLES       (1<<1)
-#define EPS_M_VELOCITY2     (1<<2)
-#define EPS_M_ORIGIN2       (1<<3)
-#define EPS_VIEWANGLE2      (1<<4)
+#define EPS_M_VELOCITY_Z    (1<<2)
+#define EPS_M_ORIGIN_Z      (1<<3)
+#define EPS_VIEWANGLE_Z     (1<<4)
 #define EPS_STATS           (1<<5)
 
 // q2pro protocol specific extra flags
@@ -231,11 +231,11 @@ typedef enum {
 
 #define PPS_M_TYPE          (1<<0)
 #define PPS_M_ORIGIN        (1<<1)
-#define PPS_M_ORIGIN2       (1<<2)
+#define PPS_M_ORIGIN_Z      (1<<2)
 
 #define PPS_VIEWOFFSET      (1<<3)
 #define PPS_VIEWANGLES      (1<<4)
-#define PPS_VIEWANGLE2      (1<<5)
+#define PPS_VIEWANGLE_Z     (1<<5)
 #define PPS_KICKANGLES      (1<<6)
 #define PPS_BLEND           (1<<7)
 #define PPS_FOV             (1<<8)
@@ -290,10 +290,10 @@ typedef enum {
 // entity_state_t communication
 
 // try to pack the common update flags into the first byte
-#define U_ORIGIN1   (1<<0)
-#define U_ORIGIN2   (1<<1)
-#define U_ANGLE2    (1<<2)
-#define U_ANGLE3    (1<<3)
+#define U_ORIGIN_X   (1<<0)
+#define U_ORIGIN_Y   (1<<1)
+#define U_ANGLE_Y    (1<<2)
+#define U_ANGLE_Z    (1<<3)
 #define U_FRAME8    (1<<4)        // frame is a byte
 #define U_EVENT     (1<<5)
 #define U_REMOVE    (1<<6)        // REMOVE this entity, don't add it
@@ -301,8 +301,8 @@ typedef enum {
 
 // second byte
 #define U_NUMBER16  (1<<8)        // NUMBER8 is implicit if not set
-#define U_ORIGIN3   (1<<9)
-#define U_ANGLE1    (1<<10)
+#define U_ORIGIN_Z   (1<<9)
+#define U_ANGLE_X    (1<<10)
 #define U_MODEL     (1<<11)
 #define U_RENDERFX8 (1<<12)        // fullbright, etc
 #define U_ANGLE16   (1<<13)
