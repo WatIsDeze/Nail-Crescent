@@ -712,8 +712,8 @@ recheck:
 CM_BoxTrace
 ==================
 */
-void CM_BoxTrace(trace_t *trace, vec3_t start, vec3_t end,
-                 vec3_t mins, vec3_t maxs,
+void CM_BoxTrace(trace_t *trace, const vec3_t &start, const vec3_t &end,
+                 const vec3_t &mins, const vec3_t &maxs,
                  mnode_t *headnode, int brushmask)
 {
     checkcount++;       // for multi-check avoidance
@@ -729,21 +729,21 @@ void CM_BoxTrace(trace_t *trace, vec3_t start, vec3_t end,
     }
 
     trace_contents = brushmask;
-    Vec3_Copy(start, trace_start);
-    Vec3_Copy(end, trace_end);
-    Vec3_Copy(mins, trace_mins);
-    Vec3_Copy(maxs, trace_maxs);
+    Vec3_Copy_(start, trace_start);
+    Vec3_Copy_(end, trace_end);
+    Vec3_Copy_(mins, trace_mins);
+    Vec3_Copy_(maxs, trace_maxs);
 
     //
     // check for position test special case
     //
-    if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2]) {
+    if (start.xyz[0] == end.xyz[0] && start.xyz[1] == end.xyz[1] && start.xyz[2] == end.xyz[2]) {
         mleaf_t     *leafs[1024];
         int     i, numleafs;
         vec3_t  c1, c2;
 
-        Vec3_Add(start, mins, c1);
-        Vec3_Add(start, maxs, c2);
+        Vec3_Add_(start, mins, c1);
+        Vec3_Add_(start, maxs, c2);
         for (i = 0; i < 3; i++) {
             c1[i] -= 1;
             c2[i] += 1;
@@ -755,51 +755,51 @@ void CM_BoxTrace(trace_t *trace, vec3_t start, vec3_t end,
             if (trace_trace->allsolid)
                 break;
         }
-        Vec3_Copy(start, trace_trace->endpos);
+        Vec3_Copy_(start, trace_trace->endpos);
         return;
     }
 
     //
     // check for point special case
     //
-    if (mins[0] == 0 && mins[1] == 0 && mins[2] == 0
-        && maxs[0] == 0 && maxs[1] == 0 && maxs[2] == 0) {
+    if (mins.xyz[0] == 0 && mins.xyz[1] == 0 && mins.xyz[2] == 0
+        && maxs.xyz[0] == 0 && maxs.xyz[1] == 0 && maxs.xyz[2] == 0) {
         trace_ispoint = true;
         Vec3_Clear(trace_extents);
     } else {
         trace_ispoint = false;
-        trace_extents[0] = -mins[0] > maxs[0] ? -mins[0] : maxs[0];
-        trace_extents[1] = -mins[1] > maxs[1] ? -mins[1] : maxs[1];
-        trace_extents[2] = -mins[2] > maxs[2] ? -mins[2] : maxs[2];
+        trace_extents.xyz[0] = -mins.xyz[0] > maxs.xyz[0] ? -mins.xyz[0] : maxs.xyz[0];
+        trace_extents.xyz[1] = -mins.xyz[1] > maxs.xyz[1] ? -mins.xyz[1] : maxs.xyz[1];
+        trace_extents.xyz[2] = -mins.xyz[2] > maxs.xyz[2] ? -mins.xyz[2] : maxs.xyz[2];
 
         // N&C: Q3 - FF Precision. Hopefully...
-        Vec3_Copy(maxs, trace_trace->offsets[0]);
+        Vec3_Copy_(maxs, trace_trace->offsets[0]);
 
-        trace_trace->offsets[1][0] = maxs[0];
-        trace_trace->offsets[1][1] = mins[1];
-        trace_trace->offsets[1][2] = mins[2];
+        trace_trace->offsets[1].xyz[0] = maxs.xyz[0];
+        trace_trace->offsets[1].xyz[1] = mins.xyz[1];
+        trace_trace->offsets[1].xyz[2] = mins.xyz[2];
 
-        trace_trace->offsets[2][0] = mins[0];
-        trace_trace->offsets[2][1] = maxs[1];
-        trace_trace->offsets[2][2] = mins[2];
+        trace_trace->offsets[2].xyz[0] = mins.xyz[0];
+        trace_trace->offsets[2].xyz[1] = maxs.xyz[1];
+        trace_trace->offsets[2].xyz[2] = mins.xyz[2];
 
-        trace_trace->offsets[3][0] = maxs[0];
-        trace_trace->offsets[3][1] = maxs[1];
-        trace_trace->offsets[3][2] = mins[2];
+        trace_trace->offsets[3].xyz[0] = maxs.xyz[0];
+        trace_trace->offsets[3].xyz[1] = maxs.xyz[1];
+        trace_trace->offsets[3].xyz[2] = mins.xyz[2];
 
-        trace_trace->offsets[4][0] = mins[0];
-        trace_trace->offsets[4][1] = mins[1];
-        trace_trace->offsets[4][2] = maxs[2];
+        trace_trace->offsets[4].xyz[0] = mins.xyz[0];
+        trace_trace->offsets[4].xyz[1] = mins.xyz[1];
+        trace_trace->offsets[4].xyz[2] = maxs.xyz[2];
 
-        trace_trace->offsets[5][0] = maxs[0];
-        trace_trace->offsets[5][1] = mins[1];
-        trace_trace->offsets[5][2] = maxs[2];
+        trace_trace->offsets[5].xyz[0] = maxs.xyz[0];
+        trace_trace->offsets[5].xyz[1] = mins.xyz[1];
+        trace_trace->offsets[5].xyz[2] = maxs.xyz[2];
 
         trace_trace->offsets[6][0] = mins[0];
         trace_trace->offsets[6][1] = maxs[1];
         trace_trace->offsets[6][2] = maxs[2];
 
-        Vec3_Copy(maxs, trace_trace->offsets[7]);
+        Vec3_Copy_(maxs, trace_trace->offsets[7]);
 //        trace_trace->offsets[7] = maxs0;
     }
 
@@ -809,7 +809,7 @@ void CM_BoxTrace(trace_t *trace, vec3_t start, vec3_t end,
     CM_RecursiveHullCheck(headnode, 0, 1, start, end);
 
     if (trace_trace->fraction == 1)
-        Vec3_Copy(end, trace_trace->endpos);
+        Vec3_Copy_(end, trace_trace->endpos);
     else
         Vec3_Lerp(start, end, trace_trace->fraction, trace_trace->endpos);
 }

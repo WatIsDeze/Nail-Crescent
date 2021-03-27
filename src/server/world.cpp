@@ -42,7 +42,7 @@ typedef struct areanode_s {
 static areanode_t   sv_areanodes[AREA_NODES];
 static int          sv_numareanodes;
 
-static float    *area_mins, *area_maxs;
+static vec3_t    area_mins, area_maxs; // MATHLIB: !! Changed from float* to vec3_t and copies in the mins and maxs.
 static edict_t  **area_list;
 static int      area_count, area_maxcount;
 static int      area_type;
@@ -73,7 +73,7 @@ static areanode_t *SV_CreateAreaNode(int depth, vec3_t mins, vec3_t maxs)
     }
 
     Vec3_Subtract_(maxs, mins, size);
-    if (size[0] > size[1])
+    if (size.xyz[0] > size.xyz[1])
         anode->axis = 0;
     else
         anode->axis = 1;
@@ -167,7 +167,7 @@ void SV_LinkEdict(cm_t *cm, edict_t *ent)
 
     // set the abs box
     if (ent->solid == SOLID_BSP &&
-        (ent->s.angles[0] || ent->s.angles[1] || ent->s.angles[2])) {
+        (ent->s.angles.xyz[0] || ent->s.angles.xyz[1] || ent->s.angles.xyz[2])) {
         // expand for rotation
         float   max, v;
         int     i;
@@ -182,8 +182,8 @@ void SV_LinkEdict(cm_t *cm, edict_t *ent)
                 max = v;
         }
         for (i = 0; i < 3; i++) {
-            ent->absmin[i] = ent->s.origin[i] - max;
-            ent->absmax[i] = ent->s.origin[i] + max;
+            ent->absmin.xyz[i] = ent->s.origin.xyz[i] - max;
+            ent->absmax.xyz[i] = ent->s.origin.xyz[i] + max;
         }
     } else {
         // normal
@@ -219,7 +219,7 @@ void SV_LinkEdict(cm_t *cm, edict_t *ent)
             if (ent->areanum && ent->areanum != area) {
                 if (ent->areanum2 && ent->areanum2 != area && sv.state == ss_loading) {
                     Com_DPrintf("Object touching 3 areas at %f %f %f\n",
-                                ent->absmin[0], ent->absmin[1], ent->absmin[2]);
+                                ent->absmin.x, ent->absmin.y, ent->absmin.z);
                 }
                 ent->areanum2 = area;
             } else
@@ -291,7 +291,7 @@ void PF_LinkEdict(edict_t *ent)
     // encode the size into the entity_state for client prediction
     switch (ent->solid) {
     case SOLID_BBOX:
-        if ((ent->svflags & SVF_DEADMONSTER) || Vec3_Compare(ent->mins, ent->maxs)) {
+        if ((ent->svflags & SVF_DEADMONSTER) || Vec3_Compare_(ent->mins, ent->maxs)) {
             ent->s.solid = 0;
             sent->solid32 = 0;
         } else {
@@ -313,9 +313,9 @@ void PF_LinkEdict(edict_t *ent)
 
     // if first time, make sure old_origin is valid
     if (!ent->linkcount) {
-        Vec3_Copy(ent->s.origin, ent->s.old_origin);
+        Vec3_Copy_(ent->s.origin, ent->s.old_origin);
 #if USE_FPS
-        Vec3_Copy(ent->s.origin, sent->create_origin);
+        Vec3_Copy_(ent->s.origin, sent->create_origin);
         sent->create_framenum = sv.framenum;
 #endif
     }
@@ -324,7 +324,7 @@ void PF_LinkEdict(edict_t *ent)
 #if USE_FPS
     // save origin for later recovery
     i = sv.framenum & ENT_HISTORY_MASK;
-    Vec3_Copy(ent->s.origin, sent->history[i].origin);
+    Vec3_Copy_(ent->s.origin, sent->history[i].origin);
     sent->history[i].framenum = sv.framenum;
 #endif
 
@@ -336,9 +336,9 @@ void PF_LinkEdict(edict_t *ent)
     while (1) {
         if (node->axis == -1)
             break;
-        if (ent->absmin[node->axis] > node->dist)
+        if (ent->absmin.xyz[node->axis] > node->dist)
             node = node->children[0];
-        else if (ent->absmax[node->axis] < node->dist)
+        else if (ent->absmax.xyz[node->axis] < node->dist)
             node = node->children[1];
         else
             break;        // crosses the node
@@ -372,12 +372,12 @@ static void SV_AreaEdicts_r(areanode_t *node)
     LIST_FOR_EACH(edict_t, check, start, area) {
         if (check->solid == SOLID_NOT)
             continue;        // deactivated
-        if (check->absmin[0] > area_maxs[0]
-            || check->absmin[1] > area_maxs[1]
-            || check->absmin[2] > area_maxs[2]
-            || check->absmax[0] < area_mins[0]
-            || check->absmax[1] < area_mins[1]
-            || check->absmax[2] < area_mins[2])
+        if (check->absmin.xyz[0] > area_maxs.xyz[0]
+            || check->absmin.xyz[1] > area_maxs.xyz[1]
+            || check->absmin.xyz[2] > area_maxs.xyz[2]
+            || check->absmax.xyz[0] < area_mins.xyz[0]
+            || check->absmax.xyz[1] < area_mins.xyz[1]
+            || check->absmax.xyz[2] < area_mins.xyz[2])
             continue;        // not touching
 
         if (area_count == area_maxcount) {
@@ -393,9 +393,9 @@ static void SV_AreaEdicts_r(areanode_t *node)
         return;        // terminal node
 
     // recurse down both sides
-    if (area_maxs[node->axis] > node->dist)
+    if (area_maxs.xyz[node->axis] > node->dist)
         SV_AreaEdicts_r(node->children[0]);
-    if (area_mins[node->axis] < node->dist)
+    if (area_mins.xyz[node->axis] < node->dist)
         SV_AreaEdicts_r(node->children[1]);
 }
 
@@ -404,11 +404,11 @@ static void SV_AreaEdicts_r(areanode_t *node)
 SV_AreaEdicts
 ================
 */
-int SV_AreaEdicts(vec3_t mins, vec3_t maxs, edict_t **list,
+int SV_AreaEdicts(const vec3_t &mins, const vec3_t &maxs, edict_t **list,
                   int maxcount, int areatype)
 {
-    area_mins = mins;
-    area_maxs = maxs;
+    area_mins = mins;   // MATHLIB: !! Changed from float* to vec3_t and copies in the mins and maxs.
+    area_maxs = maxs;   // MATHLIB: !! Changed from float* to vec3_t and copies in the mins and maxs.
     area_list = list;
     area_count = 0;
     area_maxcount = maxcount;
@@ -451,7 +451,7 @@ static mnode_t *SV_HullForEntity(edict_t *ent)
 SV_PointContents
 =============
 */
-int SV_PointContents(vec3_t p)
+int SV_PointContents(const vec3_t &p)
 {
     edict_t     *touch[MAX_EDICTS], *hit;
     int         i, num;
@@ -494,12 +494,12 @@ static void SV_ClipMoveToEntities(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t
 
     // create the bounding box of the entire move
     for (i = 0; i < 3; i++) {
-        if (end[i] > start[i]) {
-            boxmins[i] = start[i] + mins[i] - 1;
-            boxmaxs[i] = end[i] + maxs[i] + 1;
+        if (end.xyz[i] > start.xyz[i]) {
+            boxmins.xyz[i] = start.xyz[i] + mins.xyz[i] - 1;
+            boxmaxs.xyz[i] = end.xyz[i] + maxs.xyz[i] + 1;
         } else {
-            boxmins[i] = end[i] + mins[i] - 1;
-            boxmaxs[i] = start[i] + maxs[i] + 1;
+            boxmins.xyz[i] = end.xyz[i] + mins.xyz[i] - 1;
+            boxmaxs.xyz[i] = start.xyz[i] + maxs.xyz[i] + 1;
         }
     }
 
@@ -543,7 +543,7 @@ Moves the given mins/maxs volume through the world from start to end.
 Passedict and edicts owned by passedict are explicitly not checked.
 ==================
 */
-trace_t q_gameabi SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
+trace_t q_gameabi SV_Trace(const vec3_t &start, vec3_t *mins, vec3_t *maxs, const vec3_t &end,
                            edict_t *passedict, int contentmask)
 {
     trace_t     trace;
@@ -558,15 +558,15 @@ trace_t q_gameabi SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
         memset(&trace, 0, sizeof(trace));
         trace.fraction = 1;
         trace.ent = ge->edicts;
-        Vec3_Copy(end, trace.endpos);
+        Vec3_Copy_(end, trace.endpos);
         sv.tracecount = 0;
         return trace;
     }
 
     if (!mins)
-        mins = vec3_origin;
+        mins = &vec3_origin;
     if (!maxs)
-        maxs = vec3_origin;
+        maxs = &vec3_origin;
 
     // clip to world
     CM_BoxTrace(&trace, start, end, mins, maxs, sv.cm.cache->nodes, contentmask);

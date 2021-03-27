@@ -450,6 +450,54 @@ static inline void Vec3_VectorMA_(const vec3_t& add, const vec3_t& multiply, con
     };
 }
 
+//#define Vec3_Empty(v) ((v)[0]==0&&(v)[1]==0&&(v)[2]==0)
+//#define Vec3_Compare(v1,v2)    ((v1)[0]==(v2)[0]&&(v1)[1]==(v2)[1]&&(v1)[2]==(v2)[2]) ////////////
+//#define Vec3_Length(v)     (sqrt(Vec3_Dot((v),(v))))
+//#define Vec3_LengthSquared(v)      (Vec3_Dot((v),(v)))
+//
+//===============
+// LEGACY: Vec3_Empty_
+// 
+// ALTERNATIVE: Use Vec3_Empty
+//===============
+//
+static inline bool Vec3_Empty_(const vec3_t& v) {
+    return v.x == 0 && v.y == 0 && v.z == 0;
+}
+
+//
+//===============
+// LEGACY: Vec3_Compare_
+// 
+// ALTERNATIVE: Use Vec3_Compare
+//===============
+//
+static inline bool Vec3_Compare_(const vec3_t& v1, const  vec3_t &v2) {
+    return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
+}
+
+//
+//===============
+// LEGACY: Vec3_Length_
+// 
+// ALTERNATIVE: Use Vec3_Length
+//===============
+//
+static inline vec_t Vec3_Length_(const vec3_t& v) {
+    return std::sqrtf(Vec3_Dot(v, v));
+}
+
+//
+//===============
+// LEGACY: Vec3_Length_
+// 
+// ALTERNATIVE: Use Vec3_Length
+//===============
+//
+static inline vec_t Vec3_LengthSquared_(const vec3_t& v) {
+    return Vec3_Dot(v, v);
+}
+
 //
 //===============
 // LEGACY: DistanceSquared_
@@ -645,7 +693,7 @@ static inline void RotatePoint(vec3_t& point, vec3_t* axis[3])
 //         (d)[1]=(a)[1]+(b)[1]*(c)[1], \
 //         (d)[2]=(a)[2]+(b)[2]*(c)[2])
 //#define Vec3_Empty(v) ((v)[0]==0&&(v)[1]==0&&(v)[2]==0)
-//#define Vec3_Compare(v1,v2)    ((v1)[0]==(v2)[0]&&(v1)[1]==(v2)[1]&&(v1)[2]==(v2)[2])
+//#define Vec3_Compare(v1,v2)    ((v1)[0]==(v2)[0]&&(v1)[1]==(v2)[1]&&(v1)[2]==(v2)[2]) ////////////
 //#define Vec3_Length(v)     (sqrt(Vec3_Dot((v),(v))))
 //#define Vec3_LengthSquared(v)      (Vec3_Dot((v),(v)))
 //#define Vec3_Scale(in,scale,out) \                                                ////////////////
