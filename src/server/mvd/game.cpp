@@ -448,11 +448,11 @@ static void MVD_FollowStop(mvd_client_t *client)
     mvd_t *mvd = client->mvd;
     int i;
 
-    client->ps.viewangles[ROLL] = 0;
+    client->ps.viewangles.xyz[ROLL] = 0;
 
     for (i = 0; i < 3; i++) {
         client->ps.pmove.delta_angles[i] = ANGLE2SHORT(
-                                               client->ps.viewangles[i]) - client->lastcmd.angles[i];
+                                               client->ps.viewangles.xyz[i]) - client->lastcmd.angles[i];
     }
 
     Vec3_Clear(client->ps.kick_angles);
@@ -1664,8 +1664,8 @@ void MVD_LinkEdict(mvd_t *mvd, edict_t *ent)
             return;
         }
         cm = &cache->models[index - 1];
-        Vec3_Copy(cm->mins, ent->mins);
-        Vec3_Copy(cm->maxs, ent->maxs);
+        Vec3_Copy_(cm->mins, ent->mins);
+        Vec3_Copy_(cm->maxs, ent->maxs);
         ent->solid = SOLID_BSP;
     } else if (ent->s.solid) {
         MSG_UnpackSolid16(ent->s.solid, ent->mins, ent->maxs);
@@ -1745,8 +1745,8 @@ static void MVD_GameInit(void)
         Cvar_Reset(mvd_default_map);
         strcpy(buffer, "maps/q2dm1.bsp");
         checksum = 80717714;
-        Vec3_Set(mvd->spawnOrigin, 984, 192, 784);
-        Vec3_Set(mvd->spawnAngles, 25, 72, 0);
+        Vec3_Set_(mvd->spawnOrigin, 984, 192, 784);
+        Vec3_Set_(mvd->spawnAngles, 25, 72, 0);
     } else {
         // get the spectator spawn point
         MVD_ParseEntityString(mvd, bsp->entitystring);
@@ -1885,8 +1885,8 @@ static void MVD_GameClientBegin(edict_t *ent)
         MVD_FollowStart(client, target);
     } else {
         // spawn the spectator
-        Vec3_Scale(mvd->spawnOrigin, 8, client->ps.pmove.origin);
-        Vec3_Copy(mvd->spawnAngles, client->ps.viewangles);
+        Vec3_Scale_(mvd->spawnOrigin, 8, client->ps.pmove.origin);
+        Vec3_Copy_(mvd->spawnAngles, client->ps.viewangles);
         MVD_FollowStop(client);
 
         // if the map has just changed, player might not have spawned yet.
@@ -1971,9 +1971,9 @@ static mvd_player_t *MVD_HitPlayer(mvd_client_t *client)
         return NULL;
 
     // N&C: FF Precision.
-    Vec3_Add(client->ps.viewoffset, client->ps.pmove.origin, start);
-    AngleVectors(client->ps.viewangles, forward, NULL, NULL);
-    Vec3_MA(start, 8192, forward, end);
+    Vec3_Add_(client->ps.viewoffset, client->ps.pmove.origin, start);
+    AngleVectors(client->ps.viewangles, &forward, NULL, NULL);
+    Vec3_MA_(start, 8192, forward, end);
 
     if (mvd->cm.cache) {
         CM_BoxTrace(&trace, start, end, vec3_origin, vec3_origin,
@@ -2014,7 +2014,7 @@ static trace_t q_gameabi MVD_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_
     trace_t trace;
 
     memset(&trace, 0, sizeof(trace));
-    Vec3_Copy(end, trace.endpos);
+    Vec3_Copy_(end, trace.endpos);
     trace.fraction = 1;
 
     return trace;
@@ -2083,7 +2083,7 @@ static void MVD_GameClientThink(edict_t *ent, usercmd_t *cmd)
 
         client->ps.pmove = pm.state;
         if (pm.state.type != PM_FREEZE) {
-            Vec3_Copy(pm.viewAngles, client->ps.viewangles);
+            Vec3_Copy_(pm.viewAngles, client->ps.viewangles);
         }
     }
 
@@ -2274,7 +2274,7 @@ void MVD_PrepWorldFrame(void)
                 continue;
             }
             if (!(ent->s.renderfx & RF_BEAM)) {
-                Vec3_Copy(ent->s.origin, ent->s.old_origin);
+                Vec3_Copy_(ent->s.origin, ent->s.old_origin);
             }
             ent->s.event = 0;
         }

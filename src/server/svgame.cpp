@@ -563,7 +563,7 @@ static void PF_StartSound(edict_t *edict, int channel,
             // get client viewpos
             ps = &client->edict->client->ps;
             // N&C: FF Precision.
-            Vec3_Add(ps->viewoffset, ps->pmove.origin, origin);
+            Vec3_Add_(ps->viewoffset, ps->pmove.origin, origin);
             //Vec3_MA(ps->viewoffset, 0.125f, ps->pmove.origin, origin);
             leaf = CM_PointLeaf(&sv.cm, origin);
             area = CM_LeafArea(leaf);
@@ -582,10 +582,10 @@ static void PF_StartSound(edict_t *edict, int channel,
 
         // use the entity origin unless it is a bmodel
         if (edict->solid == SOLID_BSP) {
-            Vec3_Average(edict->mins, edict->maxs, origin);
-            Vec3_Add(edict->s.origin, origin, origin);
+            Vec3_Average_(edict->mins, edict->maxs, origin);
+            Vec3_Add_(edict->s.origin, origin, origin);
         } else {
-            Vec3_Copy(edict->s.origin, origin);
+            Vec3_Copy_(edict->s.origin, origin);
         }
 
         // reliable sounds will always have position explicitly set,
@@ -636,7 +636,7 @@ static void PF_StartSound(edict_t *edict, int channel,
         msg->timeofs = timeofs * 1000;
         msg->sendchan = sendchan;
         // N&C: FF Precision.
-        Vec3_Copy(msg->pos, origin);
+        Vec3_Copy_(msg->pos, origin);
         //for (i = 0; i < 3; i++) {
         //    msg->pos[i] = origin[i] * 8;
         //}
@@ -652,7 +652,7 @@ static void PF_StartSound(edict_t *edict, int channel,
                      volume * 255, attenuation * 64, timeofs * 1000);
 }
 
-static void PF_PositionedSound(vec3_t origin, edict_t *entity, int channel,
+static void PF_PositionedSound(vec3_t *origin, edict_t *entity, int channel,
                                int soundindex, float volume,
                                float attenuation, float timeofs)
 {
@@ -689,7 +689,7 @@ static void PF_PositionedSound(vec3_t origin, edict_t *entity, int channel,
         MSG_WriteByte(timeofs * 1000);
 
     MSG_WriteShort(sendchan);
-    MSG_WriteVec3(origin);
+    MSG_WriteVec3({ origin->x, origin->y, origin->z });
 
     // if the sound doesn't attenuate,send it to everyone
     // (global radio chatter, voiceovers, etc)

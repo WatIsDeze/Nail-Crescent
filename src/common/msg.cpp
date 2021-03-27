@@ -542,19 +542,19 @@ void MSG_WriteDeltaEntity(const entity_packed_t *from,
 
     if (!(flags & MSG_ES_FIRSTPERSON)) {
         if (!EqualEpsilonf(to->origin.x, from->origin.x)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
-            bits |= U_ORIGIN1;
+            bits |= U_ORIGIN_X;
         if (!EqualEpsilonf(to->origin.y, from->origin.y)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
-            bits |= U_ORIGIN2;
+            bits |= U_ORIGIN_Y;
         if (!EqualEpsilonf(to->origin.z, from->origin.z)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
-            bits |= U_ORIGIN3;
+            bits |= U_ORIGIN_Z;
 
         // N&C: Full float precision.
         if (!EqualEpsilonf(to->angles.x, from->angles.x)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
-            bits |= U_ANGLE1 | U_ANGLE16;
+            bits |= U_ANGLE_X | U_ANGLE16;
         if (!EqualEpsilonf(to->angles.y, from->angles.y)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
-            bits |= U_ANGLE2 | U_ANGLE16;
+            bits |= U_ANGLE_Y | U_ANGLE16;
         if (!EqualEpsilonf(to->angles.z, from->angles.z)) // MATHLIB: EqualEpsilonf - TEST IF FOR FAILURE!! TODO!
-            bits |= U_ANGLE3 | U_ANGLE16;
+            bits |= U_ANGLE_Z | U_ANGLE16;
         //if (flags & MSG_ES_SHORTANGLES) {
         //    if (to->angles[0] != from->angles[0])
         //        bits |= U_ANGLE1 | U_ANGLE16;
@@ -741,7 +741,7 @@ void MSG_WriteDeltaEntity(const entity_packed_t *from,
             MSG_WriteFloat(to->angles.x);
         if (bits & U_ANGLE_Y)
             MSG_WriteFloat(to->angles.y);
-        if (bits & U_ANGLE)Z)
+        if (bits & U_ANGLE_Z)
             MSG_WriteFloat(to->angles.z);
     }
 
