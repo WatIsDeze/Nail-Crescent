@@ -497,6 +497,53 @@ static inline void LerpAngles_(const vec3_t& a, const vec3_t& b, const float &c,
     out.z = LerpAngle(a.z, b.z, c);
 }
 
+//
+//===============
+// LEGACY: Vec3_Lerp_
+// 
+// ALTERNATIVE: Use Vec3_Lerp
+//===============
+//
+static inline void Vec3_Lerp(const vec3_t& a, const vec3_t& b, const float& c, vec3_t& out) {
+    out.x = a.x + c * (b.x - a.x);
+    out.y = a.y + c * (b.y - a.y);
+    out.z = a.z + c * (b.z - a.z);
+}
+
+//
+//===============
+// LEGACY: Vec3_Lerp2_
+// 
+// ALTERNATIVE: Use Vec3_Lerp2
+//===============
+//
+static inline void Vec3_Lerp2(const vec3_t& a, const vec3_t& b, const float& c, const float &d, vec3_t& out) {
+    out.x = a.x * c + b.x * d;
+    out.y = a.y * c + b.y * d;
+    out.z = a.z * c + b.z * d;
+}
+
+//
+//===============
+// LEGACY: PlaneDiff_
+// 
+// ALTERNATIVE: Use PlaneDiff
+//===============
+//
+static inline vec_t PlaneDiff(const vec3_t &v, cplane_s *p) {
+    return Vec3_Dot(v, p->normal) - p->dist;
+}
+
+//#define Vec3_Lerp(a,b,c,d) \
+//    ((d)[0]=(a)[0]+(c)*((b)[0]-(a)[0]), \
+//     (d)[1]=(a)[1]+(c)*((b)[1]-(a)[1]), \
+//     (d)[2]=(a)[2]+(c)*((b)[2]-(a)[2]))
+//#define Vec3_Lerp2(a,b,c,d,e) \
+//    ((e)[0]=(a)[0]*(c)+(b)[0]*(d), \
+//     (e)[1]=(a)[1]*(c)+(b)[1]*(d), \
+//     (e)[2]=(a)[2]*(c)+(b)[2]*(d))
+//#define PlaneDiff(v,p)   (Vec3_Dot(v,(p)->normal)-(p)->dist)
+
 //#define LerpAngles(a,b,c,d) \
 //        ((d)[0]=LerpAngle((a)[0],(b)[0],c), \
 //         (d)[1]=LerpAngle((a)[1],(b)[1],c), \
