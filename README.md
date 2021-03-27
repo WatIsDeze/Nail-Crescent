@@ -34,13 +34,14 @@ When finished we have a stable base to work from, one that we can start making t
     
 - [ ] Math Library
   - [ ] Move all functions into a proper location.
-  - [ ] Document math functions.
+  - [ ] Document math functions properly.
   - [ ] Move macro functions over to inlined C functions.
   - [ ] Change PITCH, YAW, ROLL defines to a vec3_t::PITCH, etc._
+  - [x] Move the plane type over to its own header.
   - [ ] Use references/pointers, and const correctness.
   - [ ] Rename VectorClear, and alike functions to Vec#Clear, and so on.
   - [ ] Change the typedefs, so we use an actual union/struct.
-  - [ ] Take a look around at other engines, see what we might be missing out on, so we won't run into a lack of in the future.
+  - [ ] Take a look around at other engines, see what functions we might be missing out on, so we won't run into a lack of in the future.
 - [ ] PMove
   - [ ] Footsteps, based on material.
   - [ ] Implement stair stepping (StepDown method)

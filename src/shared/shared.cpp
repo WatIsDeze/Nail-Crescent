@@ -176,8 +176,8 @@ vec_t RadiusFromBounds(const vec3_t &mins, const vec3_t &maxs)
     vec_t   a, b;
 
     for (i = 0; i < 3; i++) {
-        a = Q_fabs(mins.xyz[i]);
-        b = Q_fabs(maxs.xyz[i]);
+        a = std::fabsf(mins.xyz[i]); // MATHLIB: !! WARNING: Q_fabs replaced by std::fabs
+        b = std::fabsf(maxs.xyz[i]); // MATHLIB: !! WARNING: Q_fabs replaced by std::fabs
         corner.xyz[i] = a > b ? a : b;
     }
 

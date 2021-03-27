@@ -8,34 +8,24 @@
 // Functions that state LEGACY: should not be used, they have a viable more
 // preferenced alternative to use.
 //
-#ifndef __INC__SHARED__MATH__VECTOR3_H__
-#define __INC__SHARED__MATH__VECTOR3_H__
+#ifndef __INC_SHARED_MATH_VECTOR3_H__
+#define __INC_SHARED_MATH_VECTOR3_H__
 
 //-----------------
 // Vector 3 type definiton. (X, Y, Z)
 //
 // The vector is implemented like a union class.
 //-----------------
-//typedef union {
-//    // Xyz array index accessor.
-//    float xyz[3];
-//
-//    // X Y Z desegnator accessor.
-//    struct {
-//        float x, y, z;
-//    };
-//} vec3_t;
-template<typename T> struct vec3_template
-{
+template<typename T> struct vec3_template {
     union
     {
-            // XYZ array index accessor.
-            T xyz[3];
+        // XYZ array index accessor.
+        T xyz[3];
         
-            // X Y Z desegnator accessors.
-            struct {
-                T x, y, z;
-            };
+        // X Y Z desegnator accessors.
+        struct {
+            T x, y, z;
+        };
     };
 
     // OPERATOR: -= float
@@ -523,15 +513,82 @@ static inline void Vec3_Lerp2(const vec3_t& a, const vec3_t& b, const float& c, 
     out.z = a.z * c + b.z * d;
 }
 
-//
-//===============
-// LEGACY: PlaneDiff_
+
+//---------------------------------------------------------------------------------
+
+void SetupRotationMatrix(vec3_t matrix[3], const vec3_t dir, float degrees);
+void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees);
+void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal);
+void PerpendicularVector(vec3_t dst, const vec3_t src);
+
+void AngleVectors(vec3_t& angles, vec3_t* forward, vec3_t* right, vec3_t* up);
+vec_t VectorNormalize(vec3_t& v);        // returns vector length
+vec_t VectorNormalize2(const vec3_t& v, vec3_t& out);
+void ClearBounds(vec3_t& mins, vec3_t& maxs);
+void AddPointToBounds(const vec3_t& v, vec3_t& mins, vec3_t& maxs);
+vec_t RadiusFromBounds(const vec3_t& mins, const vec3_t& maxs);
+void UnionBounds(vec3_t* a[2], vec3_t* b[2], vec3_t* c[2]);
+
+
+void vectoangles2(const vec3_t& value1, vec3_t& angles);
+
+void MakeNormalVectors(const vec3_t& forward, vec3_t& right, vec3_t& up);
+
+int DirToByte(const vec3_t* dir);
+//void ByteToDir(int index, vec3_t dir);
 // 
-// ALTERNATIVE: Use PlaneDiff
+//
+//===============
+// AnglesToAxis
+// 
+// Set angles to axis.
 //===============
 //
-static inline vec_t PlaneDiff(const vec3_t &v, cplane_s *p) {
-    return Vec3_Dot(v, p->normal) - p->dist;
+static inline void AnglesToAxis(vec3_t& angles, vec3_t* axis[3])
+{
+    AngleVectors(angles, axis[0], axis[1], axis[2]);
+    Vec3_Inverse(*axis[1]);
+}
+
+//
+//===============
+// TransposeAxis
+// 
+// Transpoes the vector axis.
+//===============
+//
+static inline void TransposeAxis(vec3_t* axis[3])
+{
+    vec_t temp;
+
+    temp = axis[0]->xyz[1];
+    axis[0]->xyz[1] = axis[1]->xyz[0];
+    axis[1]->xyz[0] = temp;
+
+    temp = axis[0]->xyz[2];
+    axis[0]->xyz[2] = axis[2]->xyz[0];
+    axis[2]->xyz[0] = temp;
+
+    temp = axis[1]->xyz[2];
+    axis[1]->xyz[2] = axis[2]->xyz[1];
+    axis[2]->xyz[1] = temp;
+}
+
+//
+//===============
+// RotatePoint
+// 
+// Rotate point around axis.
+//===============
+//
+static inline void RotatePoint(vec3_t& point, vec3_t* axis[3])
+{
+    vec3_t temp;
+
+    Vec3_Copy_(point, temp);
+    point.xyz[0] = Vec3_Dot(temp, *axis[0]);
+    point.xyz[1] = Vec3_Dot(temp, *axis[1]);
+    point.xyz[2] = Vec3_Dot(temp, *axis[2]);
 }
 
 //#define Vec3_Lerp(a,b,c,d) \

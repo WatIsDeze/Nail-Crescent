@@ -174,10 +174,10 @@ void SV_LinkEdict(cm_t *cm, edict_t *ent)
 
         max = 0;
         for (i = 0; i < 3; i++) {
-            v = Q_fabs(ent->mins[i]);
+            v = std::fabsf(ent->mins.xyz[i]);   // MATHLIB: !! WARNING: Q_fabs replaced by std::fabs
             if (v > max)
                 max = v;
-            v = Q_fabs(ent->maxs[i]);
+            v = std::fabsf(ent->maxs.xyz[i]); // MATHLIB: !! WARNING: Q_fabs replaced by std::fabs
             if (v > max)
                 max = v;
         }

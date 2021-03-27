@@ -323,8 +323,15 @@ SET(SRC_SHAREDGAME
 ###################### Shared Folder.
 SET(HEADERS_SHARED
 	# Math shared .cpp lib here.
-	#../inc/shared/math/vector3.cpp
-	#../inc/shared/math/vector3.hpp
+	../inc/shared/math/color.h
+	../inc/shared/math/matrix4.h
+	../inc/shared/math/plane.h
+	../inc/shared/math/rectangle.h
+	../inc/shared/math/utilities.h
+	../inc/shared/math/vector2.h
+	../inc/shared/math/vector3.h
+	../inc/shared/math/vector4.h
+	../inc/shared/math/vector5.h
 
 	../inc/shared/cl_game.h
 	../inc/shared/cl_types.h

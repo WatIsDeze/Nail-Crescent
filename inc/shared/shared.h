@@ -176,49 +176,7 @@ typedef float vec_t;
 //
 //=============================================================================
 //
-//-----------------
-// Vectors
-//-----------------
-#include "shared/math/vector2.h"
-#include "shared/math/vector3.h"
-#include "shared/math/vector4.h"
-#include "shared/math/vector5.h"
-
-//-----------------
-// Matrixes
-//-----------------
-#include "shared/math/matrix4.h"
-
-//-----------------
-// Colors
-//-----------------
-#include "shared/math/color.h"
-
-//-----------------
-// Rectangles.
-//-----------------
-#include "shared/math/rectangle.h"
-
-//-----------------
-// Plane pre-definition.
-//-----------------
-struct cplane_s;
-
-//-----------------
-// Vector 3 Origin variable.
-//-----------------
-extern vec3_t vec3_origin;
-
-//-----------------
-// NAN Macro - Use for checking NAN errors.
-#define nanmask (255<<23)
-#define IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
-
-// Easy array index accessors.
-#define PITCH               0       // up / down
-#define YAW                 1       // left / right
-#define ROLL                2       // fall over
-
+#include "shared/math.h"
 
 //
 //=============================================================================
@@ -935,44 +893,6 @@ void    Info_Print(const char *infostring);
 #define AREA_SOLID      1
 #define AREA_TRIGGERS   2
 
-
-//-----------------
-// plane_t structure
-//-----------------
-typedef struct cplane_s {
-    vec3_t  normal;
-    float   dist;
-    byte    type;           // for fast side tests
-    byte    signbits;       // signx + (signy<<1) + (signz<<1)
-    byte    pad[2];
-} cplane_t;
-
-//-----------------
-// Planes.
-//-----------------
-// 0-2 are axial planes
-#define PLANE_X         0 // TODO: Change to cplane_t::PLANE::X?
-#define PLANE_Y         1
-#define PLANE_Z         2
-// 3-5 are non-axial planes snapped to the nearest
-#define PLANE_ANYX      3
-#define PLANE_ANYY      4
-#define PLANE_ANYZ      5
-// planes (x&~1) and (x&~1)+1 are always opposites
-#define PLANE_NON_AXIAL 6
-
-//-----------------
-// Structure offset for asm code
-//-----------------
-#define CPLANE_NORMAL_X         0
-#define CPLANE_NORMAL_Y         4
-#define CPLANE_NORMAL_Z         8
-#define CPLANE_DIST             12
-#define CPLANE_TYPE             16
-#define CPLANE_SIGNBITS         17
-#define CPLANE_PAD0             18
-#define CPLANE_PAD1             19
-
 //-----------------
 // Surface Collision data.
 //-----------------
@@ -998,17 +918,6 @@ typedef struct {
     // N&C: Custom added.
     vec3_t		offsets[8];	// [signbits][x] = either size[0][x] or size[1][x]
 } trace_t;
-
-
-//
-//=============================================================================
-//
-//	Math Library - TODO: This include should be moved upwards
-//
-//=============================================================================
-//
-#include "shared/math.h"
-
 
 //
 //=============================================================================
