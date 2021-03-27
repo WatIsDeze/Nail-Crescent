@@ -243,7 +243,7 @@ const vec3_t bytedirs[NUMVERTEXNORMALS] = {
     {-0.688191, -0.587785, -0.425325},
 };
 
-int DirToByte(const vec3_t dir)
+int DirToByte(const vec3_t *dir)
 {
     int     i, best;
     float   d, bestd;
@@ -255,7 +255,7 @@ int DirToByte(const vec3_t dir)
     bestd = 0;
     best = 0;
     for (i = 0; i < NUMVERTEXNORMALS; i++) {
-        d = Vec3_Dot(dir, bytedirs[i]);
+        d = Vec3_Dot(*dir, bytedirs[i]); // VEC3_T !! May be broken.
         if (d > bestd) {
             bestd = d;
             best = i;
@@ -278,17 +278,18 @@ void ByteToDir(int index, vec3_t dir)
 
 void SetPlaneType(cplane_t* plane)
 {
-    vec_t* normal = plane->normal;
+    // VEC3_T: !! May be broken, pointer issue.
+    vec3_t* normal = &plane->normal;
 
-    if (normal[0] == 1) {
+    if (normal->xyz[0] == 1) {
         plane->type = PLANE_X;
         return;
     }
-    if (normal[1] == 1) {
+    if (normal->xyz[1] == 1) {
         plane->type = PLANE_Y;
         return;
     }
-    if (normal[2] == 1) {
+    if (normal->xyz[2] == 1) {
         plane->type = PLANE_Z;
         return;
     }
@@ -320,17 +321,19 @@ BoxOnPlaneSide
 Returns 1, 2, or 1 + 2
 ==================
 */
-int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, cplane_t* p)
+int BoxOnPlaneSide(const vec3_t &emins, const vec3_t &emaxs, cplane_t* p)
 {
-    vec_t* bounds[2] = { emins, emaxs };
+    // VEC3_T: !! DANGER - BoxOnPlaneSide may have issues.
+    const vec_t* bounds[2] = { &emins.xyz[0], &emaxs.xyz[0] };
     int     i = p->signbits & 1;
     int     j = (p->signbits >> 1) & 1;
     int     k = (p->signbits >> 2) & 1;
 
+    // VEC3_T: !! DANGER - May be broken.
 #define P(i, j, k) \
-    p->normal[0] * bounds[i][0] + \
-    p->normal[1] * bounds[j][1] + \
-    p->normal[2] * bounds[k][2]
+    p->normal.xyz[0] * bounds[i][0] + \
+    p->normal.xyz[1] * bounds[j][1] + \
+    p->normal.xyz[2] * bounds[k][2]
 
     vec_t   dist1 = P(i ^ 1, j ^ 1, k ^ 1);
     vec_t   dist2 = P(i, j, k);
