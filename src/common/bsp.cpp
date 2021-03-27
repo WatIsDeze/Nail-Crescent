@@ -1254,7 +1254,7 @@ HELPER FUNCTIONS
 
 static lightpoint_t *light_point;
 
-static qboolean BSP_RecursiveLightPoint(mnode_t *node, float p1f, float p2f, vec3_t p1, vec3_t p2)
+static qboolean BSP_RecursiveLightPoint(mnode_t *node, float p1f, float p2f, const vec3_t &p1, const vec3_t &p2)
 {
     vec_t d1, d2, frac, midf;
     vec3_t mid;
@@ -1264,8 +1264,8 @@ static qboolean BSP_RecursiveLightPoint(mnode_t *node, float p1f, float p2f, vec
 
     while (node->plane) {
         // calculate distancies
-        d1 = PlaneDiffFast_(p1, node->plane);
-        d2 = PlaneDiffFast_(p2, node->plane);
+        d1 = Plane_FastDifference(p1, node->plane);
+        d2 = Plane_FastDifference(p2, node->plane);
         side = (d1 < 0);
 
         if ((d2 < 0) == side) {
@@ -1291,8 +1291,8 @@ static qboolean BSP_RecursiveLightPoint(mnode_t *node, float p1f, float p2f, vec
             if (texinfo->c.flags & SURF_NOLM_MASK)
                 continue;
 
-            s = Vec3_Dot(texinfo->axis[0].xyz, mid) + texinfo->offset[0];
-            t = Vec3_Dot(texinfo->axis[1].xyz, mid) + texinfo->offset[1];
+            s = Vec3_Dot(texinfo->axis[0], mid) + texinfo->offset[0];
+            t = Vec3_Dot(texinfo->axis[1], mid) + texinfo->offset[1];
 
             s -= surf->texturemins[0];
             t -= surf->texturemins[1];
@@ -1316,7 +1316,7 @@ static qboolean BSP_RecursiveLightPoint(mnode_t *node, float p1f, float p2f, vec
     return false;
 }
 
-void BSP_LightPoint(lightpoint_t *point, vec3_t start, vec3_t end, mnode_t *headnode)
+void BSP_LightPoint(lightpoint_t *point, const vec3_t &start, const vec3_t &end, mnode_t *headnode)
 {
     light_point = point;
     light_point->surf = NULL;
@@ -1325,8 +1325,8 @@ void BSP_LightPoint(lightpoint_t *point, vec3_t start, vec3_t end, mnode_t *head
     BSP_RecursiveLightPoint(headnode, 0, 1, start, end);
 }
 
-void BSP_TransformedLightPoint(lightpoint_t *point, vec3_t start, vec3_t end,
-                               mnode_t *headnode, vec3_t origin, vec3_t *angles)
+void BSP_TransformedLightPoint(lightpoint_t *point, const vec3_t &start, const vec3_t &end,
+                               mnode_t *headnode, const vec3_t &origin, vec3_t *angles)
 {
     vec3_t start_l, end_l;
     vec3_t axis[3];

@@ -621,10 +621,10 @@ int DirToByte(const vec3_t* dir);
 // Set angles to axis.
 //===============
 //
-static inline void AnglesToAxis(const vec3_t& angles, vec3_t* axis[3])
+static inline void AnglesToAxis(const vec3_t& angles, vec3_t* axis)
 {
-    AngleVectors(angles, axis[0], axis[1], axis[2]);
-    Vec3_Inverse(*axis[1]);
+    AngleVectors(angles, &axis[0], &axis[1], &axis[2]);
+    Vec3_Inverse(axis[1]);
 }
 
 //
@@ -634,21 +634,21 @@ static inline void AnglesToAxis(const vec3_t& angles, vec3_t* axis[3])
 // Transpoes the vector axis.
 //===============
 //
-static inline void TransposeAxis(vec3_t* axis[3])
+static inline void TransposeAxis(vec3_t* axis)
 {
     vec_t temp;
 
-    temp = axis[0]->xyz[1];
-    axis[0]->xyz[1] = axis[1]->xyz[0];
-    axis[1]->xyz[0] = temp;
+    temp = axis[0].xyz[1];
+    axis[0].xyz[1] = axis[1].xyz[0];
+    axis[1].xyz[0] = temp;
 
-    temp = axis[0]->xyz[2];
-    axis[0]->xyz[2] = axis[2]->xyz[0];
-    axis[2]->xyz[0] = temp;
+    temp = axis[0].xyz[2];
+    axis[0].xyz[2] = axis[2].xyz[0];
+    axis[2].xyz[0] = temp;
 
-    temp = axis[1]->xyz[2];
-    axis[1]->xyz[2] = axis[2]->xyz[1];
-    axis[2]->xyz[1] = temp;
+    temp = axis[1].xyz[2];
+    axis[1].xyz[2] = axis[2].xyz[1];
+    axis[2].xyz[1] = temp;
 }
 
 //
@@ -658,14 +658,14 @@ static inline void TransposeAxis(vec3_t* axis[3])
 // Rotate point around axis.
 //===============
 //
-static inline void RotatePoint(vec3_t& point, vec3_t* axis[3])
+static inline void RotatePoint(vec3_t& point, vec3_t* axis)
 {
     vec3_t temp;
 
     Vec3_Copy_(point, temp);
-    point.xyz[0] = Vec3_Dot(temp, *axis[0]);
-    point.xyz[1] = Vec3_Dot(temp, *axis[1]);
-    point.xyz[2] = Vec3_Dot(temp, *axis[2]);
+    point.xyz[0] = Vec3_Dot(temp, axis[0]);
+    point.xyz[1] = Vec3_Dot(temp, axis[1]);
+    point.xyz[2] = Vec3_Dot(temp, axis[2]);
 }
 
 //#define Vec3_Lerp(a,b,c,d) \

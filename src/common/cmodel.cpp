@@ -323,7 +323,7 @@ int CM_TransformedPointContents(const vec3_t &p, mnode_t *headnode, const vec3_t
 
     // rotate start and end into the models frame of reference
     if (headnode != box_headnode &&
-        (angles[0] || angles[1] || angles[2])) {
+        (angles.xyz[0] || angles.xyz[1] || angles.xyz[2])) {
         AngleVectors(angles, &forward, &right, &up);
 
         Vec3_Copy_(p_l, temp);
@@ -401,10 +401,10 @@ static void CM_ClipBoxToBrush(vec3_t mins, vec3_t maxs, vec3_t p1, vec3_t p2,
 
             // FIXME: use signbits into 8 way lookup for each mins/maxs
             for (j = 0; j < 3; j++) {
-                if (plane->normal[j] < 0)
-                    ofs[j] = maxs[j];
+                if (plane->normal.xyz[j] < 0)
+                    ofs.xyz[j] = maxs.xyz[j];
                 else
-                    ofs[j] = mins[j];
+                    ofs.xyz[j] = mins.xyz[j];
             }
             dist = Vec3_Dot(ofs, plane->normal);
             dist = plane->dist - dist;
@@ -529,10 +529,10 @@ static void CM_TestBoxInBrush(vec3_t mins, vec3_t maxs, vec3_t p1,
 
         // FIXME: use signbits into 8 way lookup for each mins/maxs
         for (j = 0; j < 3; j++) {
-            if (plane->normal[j] < 0)
-                ofs[j] = maxs[j];
+            if (plane->normal.xyz[j] < 0)
+                ofs.xyz[j] = maxs.xyz[j];
             else
-                ofs[j] = mins[j];
+                ofs.xyz[j] = mins.xyz[j];
         }
         dist = Vec3_Dot(ofs, plane->normal);
         dist = plane->dist - dist;
@@ -644,12 +644,12 @@ recheck:
     // and the offset for the size of the box
     //
     if (plane->type < 3) {
-        t1 = p1[plane->type] - plane->dist;
-        t2 = p2[plane->type] - plane->dist;
-        offset = trace_extents[plane->type];
+        t1 = p1.xyz[plane->type] - plane->dist;
+        t2 = p2.xyz[plane->type] - plane->dist;
+        offset = trace_extents.xyz[plane->type];
     } else {
-        t1 = PlaneDiff(p1, plane);
-        t2 = PlaneDiff(p2, plane);
+        t1 = PlaneDiff_(p1, plane);
+        t2 = PlaneDiff_(p2, plane);
         if (trace_ispoint)
             offset = 0;
         else
@@ -690,7 +690,7 @@ recheck:
     clamp(frac, 0, 1);
 
     midf = p1f + (p2f - p1f) * frac;
-    Vec3_Lerp(p1, p2, frac, mid);
+    Vec3_Lerp_(p1, p2, frac, mid);
 
     CM_RecursiveHullCheck(node->children[side], p1f, midf, p1, mid);
 
@@ -698,7 +698,7 @@ recheck:
     clamp(frac2, 0, 1);
 
     midf = p1f + (p2f - p1f) * frac2;
-    Vec3_Lerp(p1, p2, frac2, mid);
+    Vec3_Lerp_(p1, p2, frac2, mid);
 
     CM_RecursiveHullCheck(node->children[side ^ 1], midf, p2f, mid, p2);
 }
@@ -745,8 +745,8 @@ void CM_BoxTrace(trace_t *trace, const vec3_t &start, const vec3_t &end,
         Vec3_Add_(start, mins, c1);
         Vec3_Add_(start, maxs, c2);
         for (i = 0; i < 3; i++) {
-            c1[i] -= 1;
-            c2[i] += 1;
+            c1.xyz[i] -= 1;
+            c2.xyz[i] += 1;
         }
 
         numleafs = CM_BoxLeafs_headnode(c1, c2, leafs, 1024, headnode, NULL);
@@ -795,9 +795,9 @@ void CM_BoxTrace(trace_t *trace, const vec3_t &start, const vec3_t &end,
         trace_trace->offsets[5].xyz[1] = mins.xyz[1];
         trace_trace->offsets[5].xyz[2] = maxs.xyz[2];
 
-        trace_trace->offsets[6][0] = mins[0];
-        trace_trace->offsets[6][1] = maxs[1];
-        trace_trace->offsets[6][2] = maxs[2];
+        trace_trace->offsets[6].xyz[0] = mins.xyz[0];
+        trace_trace->offsets[6].xyz[1] = maxs.xyz[1];
+        trace_trace->offsets[6].xyz[2] = maxs.xyz[2];
 
         Vec3_Copy_(maxs, trace_trace->offsets[7]);
 //        trace_trace->offsets[7] = maxs0;
@@ -811,7 +811,7 @@ void CM_BoxTrace(trace_t *trace, const vec3_t &start, const vec3_t &end,
     if (trace_trace->fraction == 1)
         Vec3_Copy_(end, trace_trace->endpos);
     else
-        Vec3_Lerp(start, end, trace_trace->fraction, trace_trace->endpos);
+        Vec3_Lerp_(start, end, trace_trace->fraction, trace_trace->endpos);
 }
 
 
@@ -838,7 +838,7 @@ void CM_TransformedBoxTrace(trace_t *trace, const vec3_t &start, const vec3_t &e
 
     // rotate start and end into the models frame of reference
     if (headnode != box_headnode &&
-        (angles[0] || angles[1] || angles[2]))
+        (angles.xyz[0] || angles.xyz[1] || angles.xyz[2]))
         rotated = true;
     else
         rotated = false;

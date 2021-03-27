@@ -69,7 +69,7 @@ vec_t VectorNormalize(vec3_t &v)
 {
     float    length, ilength;
 
-    length = v.xyz[0] * v,xyz[0] + v.xyz[1] * v.xyz[1] + v.xyz[2] * v.xyz[2];
+    length = v.xyz[0] * v.xyz[0] + v.xyz[1] * v.xyz[1] + v.xyz[2] * v.xyz[2];
     length = sqrtf(length);         // FIXME
 
     if (length) {
@@ -181,7 +181,7 @@ vec_t RadiusFromBounds(const vec3_t &mins, const vec3_t &maxs)
         corner.xyz[i] = a > b ? a : b;
     }
 
-    return Vec3_Length(corner);
+    return Vec3_Length_(corner);
 }
 
 //====================================================================================

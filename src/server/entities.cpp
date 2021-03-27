@@ -86,8 +86,8 @@ static void SV_EmitPacketEntities(client_t         *client,
             }
             if (newnum == clientEntityNum) {
                 flags = (msgEsFlags_t)(flags | MSG_ES_FIRSTPERSON);
-                Vec3_Copy(oldent->origin, newent->origin);
-                Vec3_Copy(oldent->angles, newent->angles);
+                newent->origin = oldent->origin;// MATHLIB: Vec3_Copy(oldent->origin, newent->origin);
+                newent->angles = oldent->angles;// MATHLIB: Vec3_Copy(oldent->angles, newent->angles);
             }
 
             flags = (msgEsFlags_t)(flags | MSG_ES_SHORTANGLES);
@@ -109,8 +109,8 @@ static void SV_EmitPacketEntities(client_t         *client,
             }
             if (newnum == clientEntityNum) {
                 flags = (msgEsFlags_t)(flags | MSG_ES_FIRSTPERSON); // CPP: Cast flags |= MSG_ES_FIRSTPERSON;
-                Vec3_Copy(oldent->origin, newent->origin);
-                Vec3_Copy(oldent->angles, newent->angles);
+                newent->origin = oldent->origin;// MATHLIB: Vec3_Copy(oldent->origin, newent->origin);
+                newent->angles = oldent->angles;// MATHLIB: Vec3_Copy(oldent->angles, newent->angles);
             }
             flags = (msgEsFlags_t)(flags | MSG_ES_SHORTANGLES); // CPP: Cast flags |= MSG_ES_SHORTANGLES;
             MSG_WriteDeltaEntity(oldent, newent, flags);
@@ -398,7 +398,7 @@ void SV_BuildClientFrame(client_t *client)
     // find the client's PVS
     ps = &clent->client->ps;
     // N&C: FF Precision.
-    Vec3_Add(ps->viewoffset, ps->pmove.origin, org);
+    Vec3_Add_(ps->viewoffset, ps->pmove.origin, org);
     //Vec3_MA(ps->viewoffset, 0.125f, ps->pmove.origin, org);
 
     leaf = CM_PointLeaf(client->cm, org);
@@ -491,8 +491,8 @@ void SV_BuildClientFrame(client_t *client)
                         vec3_t    delta;
                         float    len;
 
-                        Vec3_Subtract(org, ent->s.origin, delta);
-                        len = Vec3_Length(delta);
+                        Vec3_Subtract_(org, ent->s.origin, delta);
+                        len = Vec3_Length_(delta);
                         if (len > 400)
                             ent_visible = false;
                     }

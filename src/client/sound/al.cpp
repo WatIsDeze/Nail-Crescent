@@ -1392,7 +1392,7 @@ AL_RawSamplesVoice(int samples, int rate, int width, int channels,
 	qalSource3f(voiceSource, AL_POSITION, AL_UnpackVector(listener_origin));
 
 	if (s_doppler->value) {
-		vec3_t velocity;
+		vec3_t velocity = Vec3_Zero();
 
 		CL_GetEntitySoundVelocity(listener_entnum, velocity);
 		Vec3_Scale_(velocity, AL_METER_OF_Q2_UNIT, velocity);

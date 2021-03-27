@@ -2293,18 +2293,18 @@ static size_t CL_Material_Override_m(char *buffer, size_t size)
 
 static size_t CL_ViewPos_m(char *buffer, size_t size)
 {
-	return Q_scnprintf(buffer, size, "(%.1f, %.1f, %.1f)", cl.refdef.vieworg[0], cl.refdef.vieworg[1], cl.refdef.vieworg[2]);
+	return Q_scnprintf(buffer, size, "(%.1f, %.1f, %.1f)", cl.refdef.vieworg.x, cl.refdef.vieworg.y, cl.refdef.vieworg.z);
 }
 
 static size_t CL_ViewDir_m(char *buffer, size_t size)
 {
-	return Q_scnprintf(buffer, size, "(%.3f, %.3f, %.3f)", cl.v_forward[0], cl.v_forward[1], cl.v_forward[2]);
+	return Q_scnprintf(buffer, size, "(%.3f, %.3f, %.3f)", cl.v_forward.x, cl.v_forward.y, cl.v_forward.z);
 }
 
 static size_t CL_HdrColor_m(char *buffer, size_t size)
 {
-	const float* color = cl.refdef.feedback.hdr_color;
-	return Q_scnprintf(buffer, size, "(%.5f, %.5f, %.5f)", color[0], color[1], color[2]);
+	const vec3_t color = cl.refdef.feedback.hdr_color;
+	return Q_scnprintf(buffer, size, "(%.5f, %.5f, %.5f)", color.x, color.y, color.z);
 }
 
 static size_t CL_ResolutionScale_m(char *buffer, size_t size)

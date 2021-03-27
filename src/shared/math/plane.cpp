@@ -30,13 +30,13 @@ void SetPlaneSignbits(cplane_t* plane)
 {
     int bits = 0;
 
-    if (plane->normal[0] < 0) {
+    if (plane->normal.xyz[0] < 0) {
         bits |= 1;
     }
-    if (plane->normal[1] < 0) {
+    if (plane->normal.xyz[1] < 0) {
         bits |= 2;
     }
-    if (plane->normal[2] < 0) {
+    if (plane->normal.xyz[2] < 0) {
         bits |= 4;
     }
 
