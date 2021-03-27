@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/cmodel.h"
 #include "common/common.h"
 #include "common/cvar.h"
-#include "common/math.h"
+//#include "common/math.h"
 #include "common/zone.h"
 #include "system/hunk.h"
 
@@ -167,14 +167,14 @@ static void CM_InitBoxHull(void)
         p = &box_planes[i * 2];
         p->type = i >> 1;
         p->signbits = 0;
-        Vec3_Clear(p->normal);
-        p->normal[i >> 1] = 1;
+        p->normal = Vec3_Zero(); // MATHLIB: Vec3_Clear(p->normal);
+        p->normal.xyz[i >> 1] = 1;
 
         p = &box_planes[i * 2 + 1];
         p->type = 3 + (i >> 1);
         p->signbits = 0;
-        Vec3_Clear(p->normal);
-        p->normal[i >> 1] = -1;
+        p->normal = Vec3_Zero(); // MATHLIB: Vec3_Clear(p->normal);
+        p->normal.xyz[i >> 1] = -1;
     }
 }
 
@@ -187,26 +187,26 @@ To keep everything totally uniform, bounding boxes are turned into small
 BSP trees instead of being compared directly.
 ===================
 */
-mnode_t *CM_HeadnodeForBox(vec3_t mins, vec3_t maxs)
+mnode_t *CM_HeadnodeForBox(const vec3_t &mins, const vec3_t &maxs)
 {
-    box_planes[0].dist = maxs[0];
-    box_planes[1].dist = -maxs[0];
-    box_planes[2].dist = mins[0];
-    box_planes[3].dist = -mins[0];
-    box_planes[4].dist = maxs[1];
-    box_planes[5].dist = -maxs[1];
-    box_planes[6].dist = mins[1];
-    box_planes[7].dist = -mins[1];
-    box_planes[8].dist = maxs[2];
-    box_planes[9].dist = -maxs[2];
-    box_planes[10].dist = mins[2];
-    box_planes[11].dist = -mins[2];
+    box_planes[0].dist = maxs.xyz[0];
+    box_planes[1].dist = -maxs.xyz[0];
+    box_planes[2].dist = mins.xyz[0];
+    box_planes[3].dist = -mins.xyz[0];
+    box_planes[4].dist = maxs.xyz[1];
+    box_planes[5].dist = -maxs.xyz[1];
+    box_planes[6].dist = mins.xyz[1];
+    box_planes[7].dist = -mins.xyz[1];
+    box_planes[8].dist = maxs.xyz[2];
+    box_planes[9].dist = -maxs.xyz[2];
+    box_planes[10].dist = mins.xyz[2];
+    box_planes[11].dist = -mins.xyz[2];
 
     return box_headnode;
 }
 
 
-mleaf_t *CM_PointLeaf(cm_t *cm, vec3_t p)
+mleaf_t *CM_PointLeaf(cm_t *cm, const vec3_t &p)
 {
     if (!cm->cache) {
         return &nullleaf;       // server may call this without map loaded
@@ -223,7 +223,7 @@ Fills in a list of all the leafs touched
 */
 static int      leaf_count, leaf_maxcount;
 static mleaf_t  **leaf_list;
-static float    *leaf_mins, *leaf_maxs;
+static vec3_t    leaf_mins, leaf_maxs; // MATHLIB: Changed from float * to vec3_t
 static mnode_t  *leaf_topnode;
 
 static void CM_BoxLeafs_r(mnode_t *node)
@@ -251,7 +251,7 @@ static void CM_BoxLeafs_r(mnode_t *node)
     }
 }
 
-static int CM_BoxLeafs_headnode(vec3_t mins, vec3_t maxs, mleaf_t **list, int listsize,
+static int CM_BoxLeafs_headnode(const vec3_t &mins, const vec3_t &maxs, mleaf_t **list, int listsize,
                                 mnode_t *headnode, mnode_t **topnode)
 {
     leaf_list = list;
@@ -270,7 +270,7 @@ static int CM_BoxLeafs_headnode(vec3_t mins, vec3_t maxs, mleaf_t **list, int li
     return leaf_count;
 }
 
-int CM_BoxLeafs(cm_t *cm, vec3_t mins, vec3_t maxs, mleaf_t **list, int listsize, mnode_t **topnode)
+int CM_BoxLeafs(cm_t *cm, const vec3_t &mins, const vec3_t &maxs, mleaf_t **list, int listsize, mnode_t **topnode)
 {
     if (!cm->cache)     // map not loaded
         return 0;
@@ -307,7 +307,7 @@ Handles offseting and rotation of the end points for moving and
 rotating entities
 ==================
 */
-int CM_TransformedPointContents(vec3_t p, mnode_t *headnode, vec3_t origin, vec3_t angles)
+int CM_TransformedPointContents(const vec3_t &p, mnode_t *headnode, const vec3_t &origin, const vec3_t &angles)
 {
     vec3_t      p_l;
     vec3_t      temp;
@@ -319,17 +319,17 @@ int CM_TransformedPointContents(vec3_t p, mnode_t *headnode, vec3_t origin, vec3
     }
 
     // subtract origin offset
-    Vec3_Subtract(p, origin, p_l);
+    Vec3_Subtract_(p, origin, p_l);
 
     // rotate start and end into the models frame of reference
     if (headnode != box_headnode &&
         (angles[0] || angles[1] || angles[2])) {
-        AngleVectors(angles, forward, right, up);
+        AngleVectors(angles, &forward, &right, &up);
 
-        Vec3_Copy(p_l, temp);
-        p_l[0] = Vec3_Dot(temp, forward);
-        p_l[1] = -Vec3_Dot(temp, right);
-        p_l[2] = Vec3_Dot(temp, up);
+        Vec3_Copy_(p_l, temp);
+        p_l.x = Vec3_Dot(temp, forward);
+        p_l.y = -Vec3_Dot(temp, right);
+        p_l.z = Vec3_Dot(temp, up);
     }
 
     leaf = BSP_PointLeaf(headnode, p_l);
@@ -823,18 +823,18 @@ Handles offseting and rotation of the end points for moving and
 rotating entities
 ==================
 */
-void CM_TransformedBoxTrace(trace_t *trace, vec3_t start, vec3_t end,
-                            vec3_t mins, vec3_t maxs,
+void CM_TransformedBoxTrace(trace_t *trace, const vec3_t &start, const vec3_t &end,
+                            const vec3_t &mins, const vec3_t &maxs,
                             mnode_t *headnode, int brushmask,
-                            vec3_t origin, vec3_t angles)
+                            const vec3_t &origin, const vec3_t &angles)
 {
     vec3_t      start_l, end_l;
     vec3_t      axis[3];
     qboolean    rotated;
 
     // subtract origin offset
-    Vec3_Subtract(start, origin, start_l);
-    Vec3_Subtract(end, origin, end_l);
+    Vec3_Subtract_(start, origin, start_l);
+    Vec3_Subtract_(end, origin, end_l);
 
     // rotate start and end into the models frame of reference
     if (headnode != box_headnode &&
@@ -860,7 +860,7 @@ void CM_TransformedBoxTrace(trace_t *trace, vec3_t start, vec3_t end,
 
     // FIXME: offset plane distance?
 
-    Vec3_Lerp(start, end, trace->fraction, trace->endpos);
+    Vec3_Lerp_(start, end, trace->fraction, trace->endpos);
 }
 
 void CM_ClipEntity(trace_t *dst, const trace_t *src, struct edict_s *ent)
@@ -869,7 +869,7 @@ void CM_ClipEntity(trace_t *dst, const trace_t *src, struct edict_s *ent)
     dst->startsolid |= src->startsolid;
     if (src->fraction < dst->fraction) {
         dst->fraction = src->fraction;
-        Vec3_Copy(src->endpos, dst->endpos);
+        Vec3_Copy_(src->endpos, dst->endpos);
         dst->plane = src->plane;
         dst->surface = src->surface;
         dst->contents |= src->contents;
@@ -1104,7 +1104,7 @@ The client will interpolate the view position,
 so we can't use a single PVS point
 ===========
 */
-byte *CM_FatPVS(cm_t *cm, byte *mask, const vec3_t org, int vis)
+byte *CM_FatPVS(cm_t *cm, byte *mask, const vec3_t &org, int vis)
 {
     byte    temp[VIS_MAX_BYTES];
     mleaf_t *leafs[64];
@@ -1121,8 +1121,8 @@ byte *CM_FatPVS(cm_t *cm, byte *mask, const vec3_t org, int vis)
     }
 
     for (i = 0; i < 3; i++) {
-        mins[i] = org[i] - 8;
-        maxs[i] = org[i] + 8;
+        mins.xyz[i] = org.xyz[i] - 8;
+        maxs.xyz[i] = org.xyz[i] + 8;
     }
 
     count = CM_BoxLeafs(cm, mins, maxs, leafs, 64, NULL);

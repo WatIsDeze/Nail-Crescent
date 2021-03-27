@@ -598,7 +598,7 @@ void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, f
 void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal);
 void PerpendicularVector(vec3_t dst, const vec3_t src);
 
-void AngleVectors(vec3_t& angles, vec3_t* forward, vec3_t* right, vec3_t* up);
+void AngleVectors(const vec3_t& angles, vec3_t* forward, vec3_t* right, vec3_t* up);
 vec_t VectorNormalize(vec3_t& v);        // returns vector length
 vec_t VectorNormalize2(const vec3_t& v, vec3_t& out);
 void ClearBounds(vec3_t& mins, vec3_t& maxs);
@@ -621,7 +621,7 @@ int DirToByte(const vec3_t* dir);
 // Set angles to axis.
 //===============
 //
-static inline void AnglesToAxis(vec3_t& angles, vec3_t* axis[3])
+static inline void AnglesToAxis(const vec3_t& angles, vec3_t* axis[3])
 {
     AngleVectors(angles, axis[0], axis[1], axis[2]);
     Vec3_Inverse(*axis[1]);

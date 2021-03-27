@@ -1202,8 +1202,16 @@ void AL_Update(void)
 
 	// set listener parameters
 	qalListener3f(AL_POSITION, AL_UnpackVector(listener_origin));
-	AL_CopyVector(listener_forward, orientation);
-	AL_CopyVector(listener_up, orientation + 3);
+	// MATHLIB: AL_CopyVector changed to setting each value by hand.
+	//AL_CopyVector(listener_forward, orientation);
+	//AL_CopyVector(listener_up, orientation + 3);
+	orientation[0] = listener_forward.x;
+	orientation[1] = listener_forward.y;
+	orientation[2] = listener_forward.z;
+	orientation[3] = listener_up.x;
+	orientation[4] = listener_up.y;
+	orientation[5] = listener_up.z;
+
 	qalListenerfv(AL_ORIENTATION, orientation);
 	qalListenerf(AL_GAIN, S_GetLinearVolume(s_volume->value));
 	//qalDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
@@ -1211,7 +1219,7 @@ void AL_Update(void)
 
 	if (s_doppler->value) {
 		CL_GetViewVelocity(listener_velocity);
-		Vec3_Scale(listener_velocity, AL_METER_OF_Q2_UNIT, listener_velocity);
+		Vec3_Scale_(listener_velocity, AL_METER_OF_Q2_UNIT, listener_velocity);
 		qalListener3f(AL_VELOCITY, AL_UnpackVector(listener_velocity));
 	}
 
@@ -1387,7 +1395,7 @@ AL_RawSamplesVoice(int samples, int rate, int width, int channels,
 		vec3_t velocity;
 
 		CL_GetEntitySoundVelocity(listener_entnum, velocity);
-		Vec3_Scale(velocity, AL_METER_OF_Q2_UNIT, velocity);
+		Vec3_Scale_(velocity, AL_METER_OF_Q2_UNIT, velocity);
 		qalSource3f(voiceSource, AL_VELOCITY, AL_UnpackVector(velocity));
 	}
 

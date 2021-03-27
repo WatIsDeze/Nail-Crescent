@@ -271,16 +271,16 @@ void Com_PlayerToEntityState(const player_state_t *ps, entity_state_t *es)
     vec_t pitch;
 
     // N&C: FF Precision.
-    Vec3_Copy(ps->pmove.origin, es->origin);
+    Vec3_Copy_(ps->pmove.origin, es->origin);
     //Vec3_Scale(ps->pmove.origin, 0.125f, es->origin);
 
-    pitch = ps->viewangles[PITCH];
+    pitch = ps->viewangles.xyz[PITCH];
     if (pitch > 180) {
         pitch -= 360;
     }
-    es->angles[PITCH] = pitch / 3;
-    es->angles[YAW] = ps->viewangles[YAW];
-    es->angles[ROLL] = 0;
+    es->angles.xyz[PITCH] = pitch / 3;
+    es->angles.xyz[YAW] = ps->viewangles.xyz[YAW];
+    es->angles.xyz[ROLL] = 0;
 }
 
 #if USE_CLIENT || USE_MVD_CLIENT
