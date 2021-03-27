@@ -14,6 +14,8 @@ When finished we have a stable base to work from, one that we can start making t
   - The alternative is, use stb_freetype since the libpng and libfreetype are a pain to begin with. Of course, this requires modifying their code.
   - Include OpenAL-soft and have it build itself properly. In case this fails, at least include a binary for Windows guys. 
 - [ ] Remove MDV, and GTV. 
+- [ ] Implement locations, or rather, finish moving over to CLGame...
+- [ ] Add Key input support to CLGame.
 - [ ] Headers need to be unique to their "owners". Or how do you say this... In either case, it'll result in way faster build times. 
   - [ ] inc/shared/
     - [ ] Move each part into its own sub header, include these in shared.h

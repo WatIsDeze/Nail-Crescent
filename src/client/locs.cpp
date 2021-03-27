@@ -95,9 +95,9 @@ void LOC_LoadLocations(void)
             } else {
                 loc = LOC_Alloc(Cmd_RawArgsFrom(3));
                 // N&C: FF Precision.
-                loc->origin[0] = atof(Cmd_Argv(0));
-                loc->origin[1] = atof(Cmd_Argv(1));
-                loc->origin[2] = atof(Cmd_Argv(2));
+                loc->origin.x = atof(Cmd_Argv(0));
+                loc->origin.y = atof(Cmd_Argv(1));
+                loc->origin.z = atof(Cmd_Argv(2));
                 //loc->origin[0] = atof(Cmd_Argv(0)) * 0.125f;
                 //loc->origin[1] = atof(Cmd_Argv(1)) * 0.125f;
                 //loc->origin[2] = atof(Cmd_Argv(2)) * 0.125f;

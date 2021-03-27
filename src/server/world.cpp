@@ -72,19 +72,19 @@ static areanode_t *SV_CreateAreaNode(int depth, vec3_t mins, vec3_t maxs)
         return anode;
     }
 
-    Vec3_Subtract(maxs, mins, size);
+    Vec3_Subtract_(maxs, mins, size);
     if (size[0] > size[1])
         anode->axis = 0;
     else
         anode->axis = 1;
 
-    anode->dist = 0.5 * (maxs[anode->axis] + mins[anode->axis]);
-    Vec3_Copy(mins, mins1);
-    Vec3_Copy(mins, mins2);
-    Vec3_Copy(maxs, maxs1);
-    Vec3_Copy(maxs, maxs2);
+    anode->dist = 0.5 * (maxs.xyz[anode->axis] + mins.xyz[anode->axis]);
+    Vec3_Copy_(mins, mins1);
+    Vec3_Copy_(mins, mins2);
+    Vec3_Copy_(maxs, maxs1);
+    Vec3_Copy_(maxs, maxs2);
 
-    maxs1[anode->axis] = mins2[anode->axis] = anode->dist;
+    maxs1.xyz[anode->axis] = mins2.xyz[anode->axis] = anode->dist;
 
     anode->children[0] = SV_CreateAreaNode(depth + 1, mins2, maxs2);
     anode->children[1] = SV_CreateAreaNode(depth + 1, mins1, maxs1);
@@ -163,7 +163,7 @@ void SV_LinkEdict(cm_t *cm, edict_t *ent)
     mnode_t     *topnode;
 
     // set the size
-    Vec3_Subtract(ent->maxs, ent->mins, ent->size);
+    Vec3_Subtract_(ent->maxs, ent->mins, ent->size);
 
     // set the abs box
     if (ent->solid == SOLID_BSP &&
@@ -187,18 +187,18 @@ void SV_LinkEdict(cm_t *cm, edict_t *ent)
         }
     } else {
         // normal
-        Vec3_Add(ent->s.origin, ent->mins, ent->absmin);
-        Vec3_Add(ent->s.origin, ent->maxs, ent->absmax);
+        Vec3_Add_(ent->s.origin, ent->mins, ent->absmin);
+        Vec3_Add_(ent->s.origin, ent->maxs, ent->absmax);
     }
 
     // because movement is clipped an epsilon away from an actual edge,
     // we must fully check even when bounding boxes don't quite touch
-    ent->absmin[0] -= 1;
-    ent->absmin[1] -= 1;
-    ent->absmin[2] -= 1;
-    ent->absmax[0] += 1;
-    ent->absmax[1] += 1;
-    ent->absmax[2] += 1;
+    ent->absmin.xyz[0] -= 1;
+    ent->absmin.xyz[1] -= 1;
+    ent->absmin.xyz[2] -= 1;
+    ent->absmax.xyz[0] += 1;
+    ent->absmax.xyz[1] += 1;
+    ent->absmax.xyz[2] += 1;
 
 // link to PVS leafs
     ent->num_clusters = 0;

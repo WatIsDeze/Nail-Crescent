@@ -50,7 +50,7 @@ static inline qboolean entity_optimized(const entity_state_t *state)
 }
 
 static inline void
-entity_update_new(centity_t *ent, const entity_state_t *state, const vec_t *origin)
+entity_update_new(centity_t *ent, const entity_state_t *state, const vec3_t &origin)
 {
     static int entity_ctr;
     ent->id = ++entity_ctr;
@@ -67,18 +67,19 @@ entity_update_new(centity_t *ent, const entity_state_t *state, const vec_t *orig
         state->event == EV_OTHER_TELEPORT ||
         (state->renderfx & (RF_FRAMELERP | RF_BEAM))) {
         // no lerping if teleported
-        Vec3_Copy(origin, ent->lerp_origin);
+        //Vec3_Copy_(origin, ent->lerp_origin);
+        ent->lerp_origin = origin;
         return;
     }
 
     // old_origin is valid for new entities,
     // so use it as starting point for interpolating between
-    Vec3_Copy(state->old_origin, ent->prev.origin);
-    Vec3_Copy(state->old_origin, ent->lerp_origin);
+    ent->prev.origin = state->old_origin; // Vec3_Copy_(state->old_origin, ent->prev.origin);
+    ent->lerp_origin = state->old_origin; // Vec3_Copy_(state->old_origin, ent->lerp_origin);
 }
 
 static inline void
-entity_update_old(centity_t *ent, const entity_state_t *state, const vec_t *origin)
+entity_update_old(centity_t *ent, const entity_state_t *state, const vec3_t &origin)
 {
     int event = state->event;
 
@@ -98,9 +99,9 @@ entity_update_old(centity_t *ent, const entity_state_t *state, const vec_t *orig
         || state->modelindex4 != ent->current.modelindex4
         || event == EV_PLAYER_TELEPORT
         || event == EV_OTHER_TELEPORT
-        || fabsf(origin[0] - ent->current.origin[0]) > 512
-        || fabsf(origin[1] - ent->current.origin[1]) > 512
-        || fabsf(origin[2] - ent->current.origin[2]) > 512
+        || std::fabsf(origin.x - ent->current.origin.x) > 512
+        || std::fabsf(origin.y - ent->current.origin.y) > 512
+        || std::fabsf(origin.z - ent->current.origin.z) > 512
         || cl_nolerp->integer == 1) {
         // some data changes will force no lerping
         ent->trailcount = 1024;     // for diminishing rocket / grenade trails
@@ -111,7 +112,7 @@ entity_update_old(centity_t *ent, const entity_state_t *state, const vec_t *orig
         ent->prev_frame = state->frame;
 #endif
         // no lerping if teleported or morphed
-        Vec3_Copy(origin, ent->lerp_origin);
+        ent->lerp_origin = origin; // Vec3_Copy(origin, ent->lerp_origin);
         return;
     }
 
@@ -154,8 +155,7 @@ static inline qboolean entity_new(const centity_t *ent)
 static void entity_update(const entity_state_t *state)
 {
     centity_t *ent = &cs.entities[state->number];
-    const vec_t *origin;
-    vec3_t origin_v;
+    vec3_t origin;        // MATHLIB: vec_t *origin, changed to vec3_t origin;
 
     // if entity is solid, decode mins/maxs and add to the list
     if (state->solid && state->number != cl.frame.clientNum + 1
@@ -174,9 +174,10 @@ static void entity_update(const entity_state_t *state)
     // work around Q2PRO server bandwidth optimization
     if (entity_optimized(state)) {
         // N&C: FF Precision.
-        Vec3_Copy(cl.frame.ps.pmove.origin, origin_v);
+        // MATHLIB: 
+        //Vec3_Copy(cl.frame.ps.pmove.origin, origin_v);
         //Vec3_Scale(cl.frame.ps.pmove.origin, 0.125f, origin_v);
-        origin = origin_v;
+        origin = cl.frame.ps.pmove.origin;
     } else {
         origin = state->origin;
     }
@@ -234,8 +235,8 @@ static void set_active_state(void)
         CL_FirstDemoFrame();
     } else {
         // set initial cl.predicted_origin and cl.predicted_angles
-        Vec3_Copy(cl.frame.ps.pmove.origin, cl.predicted_origin);
-        Vec3_Copy(cl.frame.ps.pmove.velocity, cl.predicted_velocity);
+        cl.predicted_origin = cl.frame.ps.pmove.origin; // MATHLIB: Vec3_Copy(cl.frame.ps.pmove.origin, cl.predicted_origin);
+        cl.predicted_velocity = cl.frame.ps.pmove.velocity; // MATHLIB: Vec3_Copy(cl.frame.ps.pmove.velocity, cl.predicted_velocity);
 
         if (cl.frame.ps.pmove.type < PM_DEAD) {
             // enhanced servers don't send viewangles
@@ -243,7 +244,7 @@ static void set_active_state(void)
             CL_GM_PredictAngles();
         } else {
             // just use what server provided
-            Vec3_Copy(cl.frame.ps.viewangles, cl.predicted_angles);
+            cl.predicted_angles = cl.frame.ps.viewangles; // MATHLIB: Vec3_Copy(cl.frame.ps.viewangles, cl.predicted_angles);
         }
     }
 
@@ -283,9 +284,10 @@ player_update(server_frame_t *oldframe, server_frame_t *frame, int framediv)
     // no lerping if player entity was teleported (origin check)
     // N&C: FF Precision.
     // CPP: Added fabs instead of abs
-    if (fabs((float)(ops->pmove.origin[0] - ps->pmove.origin[0])) > 256 ||
-        fabs((float)(ops->pmove.origin[1] - ps->pmove.origin[1])) > 256 ||
-        fabs((float)(ops->pmove.origin[2] - ps->pmove.origin[2])) > 256) {
+    // MATHLIB: Changed to std::fabsf, origin.x, etc instead of [0]
+    if (std::fabsf((float)(ops->pmove.origin.x - ps->pmove.origin.x)) > 256 ||
+        std::fabsf((float)(ops->pmove.origin.y - ps->pmove.origin.y)) > 256 ||
+        std::fabsf((float)(ops->pmove.origin.z - ps->pmove.origin.z)) > 256) {
         goto dup;
     }
     // no lerping if player entity was teleported (event check)
@@ -376,7 +378,7 @@ void CL_DeltaFrame(void)
     if (cls.demo.playback) {
         // this delta has nothing to do with local viewangles,
         // clear it to avoid interfering with demo freelook hack
-        Vec3_Clear(cl.frame.ps.pmove.delta_angles);
+        cl.frame.ps.pmove.delta_angles[0] = cl.frame.ps.pmove.delta_angles[1] = cl.frame.ps.pmove.delta_angles[2] = 0; // MATHLIB: Vec3_Clear(cl.frame.ps.pmove.delta_angles);
     }
 
     if (cl.oldframe.ps.pmove.type != cl.frame.ps.pmove.type) {
@@ -538,7 +540,7 @@ CL_GetEntitySoundOrigin
 Called to get the sound spatialization origin
 ===============
 */
-void CL_GetEntitySoundOrigin(int entnum, vec3_t org)
+void CL_GetEntitySoundOrigin(int entnum, vec3_t &org)
 {
     centity_t   *ent;
     mmodel_t    *cm;
@@ -550,7 +552,7 @@ void CL_GetEntitySoundOrigin(int entnum, vec3_t org)
 
     if (!entnum || entnum == listener_entnum) {
         // should this ever happen?
-        Vec3_Copy(listener_origin, org);
+        org = listener_origin; // MATHLIB: Vec3_Copy(listener_origin, org);
         return;
     }
 
@@ -563,16 +565,16 @@ void CL_GetEntitySoundOrigin(int entnum, vec3_t org)
     if (ent->current.solid == PACKED_BSP) {
         cm = cl.model_clip[ent->current.modelindex];
         if (cm) {
-            Vec3_Average(cm->mins, cm->maxs, mid);
-            Vec3_Add(org, mid, org);
+            Vec3_Average_(cm->mins, cm->maxs, mid);
+            Vec3_Add_(org, mid, org);
         }
     }
 }
 
-void CL_GetViewVelocity(vec3_t vel)
+void CL_GetViewVelocity(vec3_t &vel)
 {
     // N&C: FF Precision.
-    Vec3_Copy(cl.frame.ps.pmove.velocity, vel);
+    vel = cl.frame.ps.pmove.velocity; // MATHLIB: //Vec3_Copy(cl.frame.ps.pmove.velocity, vel);
 }
 
 void CL_GetEntitySoundVelocity(int ent, vec3_t vel)
@@ -586,5 +588,5 @@ void CL_GetEntitySoundVelocity(int ent, vec3_t vel)
 
 	old = &cs.entities[ent];
 
-	Vec3_Subtract(old->current.origin, old->prev.origin, vel);
+	Vec3_Subtract_(old->current.origin, old->prev.origin, vel);
 }

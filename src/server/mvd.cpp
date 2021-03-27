@@ -687,9 +687,9 @@ static void emit_gamestate(void)
 static void copy_entity_state(entity_packed_t *dst, const entity_packed_t *src, int flags)
 {
     if (!(flags & MSG_ES_FIRSTPERSON)) {
-        Vec3_Copy(src->origin, dst->origin);
-        Vec3_Copy(src->angles, dst->angles);
-        Vec3_Copy(src->old_origin, dst->old_origin);
+        dst->origin = src->origin; // MATHLIB: Vec3_Copy(src->origin, dst->origin);
+        dst->angles = src->angles; // MATHLIB: Vec3_Copy(src->angles, dst->angles);
+        dst->old_origin = src->old_origin; // MATHLIB: Vec3_Copy(src->old_origin, dst->old_origin);
     }
     dst->modelindex = src->modelindex;
     dst->modelindex2 = src->modelindex2;

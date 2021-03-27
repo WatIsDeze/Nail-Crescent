@@ -126,7 +126,7 @@ void V_AddLightEx(vec3_t org, float intensity, float r, float g, float b, float 
     if (r_numdlights >= MAX_DLIGHTS)
         return;
     dl = &r_dlights[r_numdlights++];
-    Vec3_Copy(org, dl->origin);
+    dl->origin = org; // MATHLIB: Vec3_Copy(org, dl->origin);
     dl->intensity = intensity;
     dl->color[0] = r;
     dl->color[1] = g;
@@ -137,7 +137,7 @@ void V_AddLightEx(vec3_t org, float intensity, float r, float g, float b, float 
 	{
 		particle_t* part = &r_particles[r_numparticles++];
 
-		Vec3_Copy(dl->origin, part->origin);
+        part->origin = dl->origin;// MATHLIB: Vec3_Copy(dl->origin, part->origin);
 		part->radius = radius;
 		part->brightness = max(r, max(g, b));
 		part->color = -1;
@@ -171,9 +171,9 @@ void V_AddLightStyle(int style, vec4_t value)
     ls = &r_lightstyles[style];
 
     //ls->white = r+g+b;
-    ls->rgb[0] = value[0];
-    ls->rgb[1] = value[1];
-    ls->rgb[2] = value[2];
+    ls->rgb.x = value[0];
+    ls->rgb.y = value[1];
+    ls->rgb.z = value[2];
     ls->white = value[3];
 }
 #endif
@@ -232,8 +232,8 @@ static void V_TestEntities(void)
         f = 64 * (i / 4) + 128;
 
         for (j = 0; j < 3; j++)
-            ent->origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * f +
-                             cl.v_right[j] * r;
+            ent->origin[j] = cl.refdef.vieworg.xyz[j] + cl.v_forward.xyz[j] * f +
+                             cl.v_right.xyz[j] * r;
 
         ent->model = cl.baseclientinfo.model;
         ent->skin = cl.baseclientinfo.skin;

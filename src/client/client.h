@@ -496,8 +496,8 @@ void CL_CheckEntityPresent(int entnum, const char *what);
 
 // the sound code makes callbacks to the client for entitiy position
 // information, so entities can be dynamically re-spatialized
-void CL_GetEntitySoundOrigin(int ent, vec3_t org);
-void CL_GetViewVelocity(vec3_t vel);
+void CL_GetEntitySoundOrigin(int ent, vec3_t &org);
+void CL_GetViewVelocity(vec3_t &vel);
 
 //
 // view.c
