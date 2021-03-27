@@ -537,15 +537,44 @@ static inline void LerpAngles_(const vec3_t& a, const vec3_t& b, const float &c,
 
 //
 //===============
+// Vec3_Lerp
+// 
+// Returns the LERPED vector between a and b, with fraction of c.
+//===============
+//
+static inline vec3_t Vec3_Lerp(const vec3_t& a, const vec3_t& b, const float& c) {
+    return vec3_t {
+        a.x + c * (b.x - a.x),
+        a.y + c * (b.y - a.y),
+        a.z + c * (b.z - a.z)
+    };
+}
+
+//
+//===============
 // LEGACY: Vec3_Lerp_
 // 
 // ALTERNATIVE: Use Vec3_Lerp
 //===============
 //
-static inline void Vec3_Lerp(const vec3_t& a, const vec3_t& b, const float& c, vec3_t& out) {
+static inline void Vec3_Lerp_(const vec3_t& a, const vec3_t& b, const float& c, vec3_t& out) {
     out.x = a.x + c * (b.x - a.x);
     out.y = a.y + c * (b.y - a.y);
     out.z = a.z + c * (b.z - a.z);
+}
+
+//
+//===============
+// Vec3_Lerp2
+// 
+//===============
+//
+static inline vec3_t Vec3_Lerp2(const vec3_t& a, const vec3_t& b, const float& c, const float& d) {
+    return vec3_t {
+        a.x * c + b.x * d,
+        a.y * c + b.y * d,
+        a.z * c + b.z * d
+    };
 }
 
 //

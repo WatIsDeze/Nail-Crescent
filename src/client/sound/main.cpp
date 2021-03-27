@@ -737,7 +737,7 @@ S_SpatializeOrigin
 Used for spatializing channels and autosounds
 =================
 */
-void S_SpatializeOrigin(const vec3_t origin, float master_vol, float dist_mult, int *left_vol, int *right_vol)
+void S_SpatializeOrigin(const vec3_t &origin, float master_vol, float dist_mult, int *left_vol, int *right_vol)
 {
     vec_t       dot;
     vec_t       dist;
@@ -802,7 +802,7 @@ static void S_Spatialize(channel_t *ch)
     }
 
     if (ch->fixed_origin) {
-        Vec3_Copy(ch->origin, origin);
+        Vec3_Copy_(ch->origin, origin);
     } else {
         CL_GetEntitySoundOrigin(ch->entnum, origin);
     }
@@ -892,7 +892,7 @@ void S_IssuePlaysound(playsound_t *ps)
     ch->entnum = ps->entnum;
     ch->entchannel = ps->entchannel;
     ch->sfx = ps->sfx;
-    Vec3_Copy(ps->origin, ch->origin);
+    ch->origin = ps->origin; // MATHLIB:  Vec3_Copy_(ps->origin, ch->origin);
     ch->fixed_origin = ps->fixed_origin;
 
 #if USE_OPENAL
@@ -925,7 +925,7 @@ if pos is NULL, the sound will be dynamically sourced from the entity
 Entchannel 0 will never override a playing sound
 ====================
 */
-void S_StartSound(const vec3_t origin, int entnum, int entchannel, qhandle_t hSfx, float vol, float attenuation, float timeofs)
+void S_StartSound(vec3_t *origin, int entnum, int entchannel, qhandle_t hSfx, float vol, float attenuation, float timeofs)
 {
     sfxcache_t  *sc;
     playsound_t *ps, *sort;
@@ -960,7 +960,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, qhandle_t hSf
         return;
 
     if (origin) {
-        Vec3_Copy(origin, ps->origin);
+        ps->origin = *origin; // Vec3_Copy_(origin, ps->origin);
         ps->fixed_origin = true;
     } else {
         ps->fixed_origin = false;
@@ -1005,7 +1005,7 @@ void S_ParseStartSound(void)
         CL_CheckEntityPresent(snd.entity, "sound");
 #endif
 
-    S_StartSound((snd.flags & SND_POS) ? snd.pos : NULL,
+    S_StartSound((snd.flags & SND_POS) ? &snd.pos : NULL,
                  snd.entity, snd.channel, handle,
                  snd.volume, snd.attenuation, snd.timeofs);
 }

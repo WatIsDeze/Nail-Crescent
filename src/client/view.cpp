@@ -128,9 +128,9 @@ void V_AddLightEx(vec3_t org, float intensity, float r, float g, float b, float 
     dl = &r_dlights[r_numdlights++];
     dl->origin = org; // MATHLIB: Vec3_Copy(org, dl->origin);
     dl->intensity = intensity;
-    dl->color[0] = r;
-    dl->color[1] = g;
-    dl->color[2] = b;
+    dl->color.x = r;
+    dl->color.y = g;
+    dl->color.z = b;
 	dl->radius = radius;
 
 	if (cl_show_lights->integer && r_numparticles < MAX_PARTICLES)
@@ -201,8 +201,8 @@ static void V_TestParticles(void)
         p = &r_particles[i];
 
         for (j = 0; j < 3; j++)
-            p->origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * d +
-                           cl.v_right[j] * r + cl.v_up[j] * u;
+            p->origin.xyz[j] = cl.refdef.vieworg.xyz[j] + cl.v_forward.xyz[j] * d +
+                           cl.v_right.xyz[j] * r + cl.v_up.xyz[j] * u;
 
         p->color = 8;
         p->alpha = cl_testparticles->value;
@@ -232,7 +232,7 @@ static void V_TestEntities(void)
         f = 64 * (i / 4) + 128;
 
         for (j = 0; j < 3; j++)
-            ent->origin[j] = cl.refdef.vieworg.xyz[j] + cl.v_forward.xyz[j] * f +
+            ent->origin.xyz[j] = cl.refdef.vieworg.xyz[j] + cl.v_forward.xyz[j] * f +
                              cl.v_right.xyz[j] * r;
 
         ent->model = cl.baseclientinfo.model;
@@ -258,11 +258,11 @@ static void V_TestLights(void)
         dl = &r_dlights[0];
         r_numdlights = 1;
 
-        Vec3_MA(cl.refdef.vieworg, 256, cl.v_forward, dl->origin);
+        Vec3_MA_(cl.refdef.vieworg, 256, cl.v_forward, dl->origin);
         if (cl_testlights->integer == -1)
-            Vec3_Set(dl->color, -1, -1, -1);
+            Vec3_Set_(dl->color, -1, -1, -1);
         else
-            Vec3_Set(dl->color, 1, 1, 1);
+            Vec3_Set_(dl->color, 1, 1, 1);
         dl->intensity = 256;
         return;
     }
@@ -277,11 +277,11 @@ static void V_TestLights(void)
         f = 64 * (i / 4) + 128;
 
         for (j = 0; j < 3; j++)
-            dl->origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * f +
-                            cl.v_right[j] * r;
-        dl->color[0] = ((i % 6) + 1) & 1;
-        dl->color[1] = (((i % 6) + 1) & 2) >> 1;
-        dl->color[2] = (((i % 6) + 1) & 4) >> 2;
+            dl->origin.xyz[j] = cl.refdef.vieworg.xyz[j] + cl.v_forward.xyz[j] * f +
+                            cl.v_right.xyz[j] * r;
+        dl->color.x = ((i % 6) + 1) & 1;
+        dl->color.y = (((i % 6) + 1) & 2) >> 1;
+        dl->color.z = (((i % 6) + 1) & 4) >> 2;
         dl->intensity = 200;
     }
 }
@@ -438,9 +438,9 @@ void V_RenderView(void)
         // never let it sit exactly on a node line, because a water plane can
         // dissapear when viewed with the eye exactly on it.
         // the server protocol only specifies to 1/8 pixel, so add 1/16 in each axis
-        cl.refdef.vieworg[0] += 1.0 / 16;
-        cl.refdef.vieworg[1] += 1.0 / 16;
-        cl.refdef.vieworg[2] += 1.0 / 16;
+        cl.refdef.vieworg.x += 1.0 / 16;
+        cl.refdef.vieworg.y += 1.0 / 16;
+        cl.refdef.vieworg.z += 1.0 / 16;
 
         cl.refdef.x = scr_vrect.x;
         cl.refdef.y = scr_vrect.y;
@@ -627,9 +627,9 @@ V_Viewpos_f
 */
 static void V_Viewpos_f(void)
 {
-    Com_Printf("(%i %i %i) : %i\n", (int)cl.refdef.vieworg[0],
-               (int)cl.refdef.vieworg[1], (int)cl.refdef.vieworg[2],
-               (int)cl.refdef.viewangles[YAW]);
+    Com_Printf("(%i %i %i) : %i\n", (int)cl.refdef.vieworg.x,
+               (int)cl.refdef.vieworg.y, (int)cl.refdef.vieworg.z,
+               (int)cl.refdef.viewangles.xyz[YAW]);
 }
 
 static const cmdreg_t v_cmds[] = {

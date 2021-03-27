@@ -559,7 +559,7 @@ void CL_GetEntitySoundOrigin(int entnum, vec3_t &org)
     // interpolate origin
     // FIXME: what should be the sound origin point for RF_BEAM entities?
     ent = &cs.entities[entnum];
-    Vec3_Lerp(ent->prev.origin, ent->current.origin, cl.lerpfrac, org);
+    Vec3_Lerp_(ent->prev.origin, ent->current.origin, cl.lerpfrac, org);
 
     // offset the origin for BSP models
     if (ent->current.solid == PACKED_BSP) {

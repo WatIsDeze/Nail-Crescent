@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/common.h"
 #include "common/files.h"
 #include "common/bsp.h"
-#include "common/math.h"
+//#include "common/math.h"
 #include "common/utils.h"
 #include "common/mdfour.h"
 #include "system/hunk.h"
@@ -127,7 +127,7 @@ LOAD(Texinfo)
         out->radiance = in->value;
         for (j = 0; j < 2; j++) {
             for (k = 0; k < 3; k++) {
-                out->axis[j][k] = LittleFloat(in->vecs[j][k]);
+                out->axis[j].xyz[k] = LittleFloat(in->vecs[j][k]);
             }
             out->offset[j] = LittleFloat(in->vecs[j][k]);
         }
@@ -176,7 +176,7 @@ LOAD(Planes)
     out = bsp->planes;
     for (i = 0; i < count; i++, in++, out++) {
         for (j = 0; j < 3; j++) {
-            out->normal[j] = LittleFloat(in->normal[j]);
+            out->normal.xyz[j] = LittleFloat(in->normal[j]);
         }
         out->dist = LittleFloat(in->dist);
         SetPlaneType(out);
@@ -302,7 +302,7 @@ LOAD(Vertices)
     out = bsp->vertices;
     for (i = 0; i < count; i++, out++, in++) {
         for (j = 0; j < 3; j++) {
-            out->point[j] = LittleFloat(in->point[j]);
+            out->point.xyz[j] = LittleFloat(in->point[j]);
         }
     }
 
@@ -536,8 +536,8 @@ LOAD(Leafs)
         out->numleaffaces = numleaffaces;
 
         for (j = 0; j < 3; j++) {
-            out->mins[j] = (int16_t)LittleShort(in->mins[j]);
-            out->maxs[j] = (int16_t)LittleShort(in->maxs[j]);
+            out->mins.xyz[j] = (int16_t)LittleShort(in->mins[j]);
+            out->maxs.xyz[j] = (int16_t)LittleShort(in->maxs[j]);
         }
 
         out->parent = NULL;
@@ -611,8 +611,8 @@ LOAD(Nodes)
         out->numfaces = numfaces;
 
         for (j = 0; j < 3; j++) {
-            out->mins[j] = (int16_t)LittleShort(in->mins[j]);
-            out->maxs[j] = (int16_t)LittleShort(in->maxs[j]);
+            out->mins.xyz[j] = (int16_t)LittleShort(in->mins[j]);
+            out->maxs.xyz[j] = (int16_t)LittleShort(in->maxs[j]);
         }
 
         out->parent = NULL;
@@ -646,9 +646,9 @@ LOAD(Submodels)
     for (i = 0; i < count; i++, in++, out++) {
         for (j = 0; j < 3; j++) {
             // spread the mins / maxs by a pixel
-            out->mins[j] = LittleFloat(in->mins[j]) - 1;
-            out->maxs[j] = LittleFloat(in->maxs[j]) + 1;
-            out->origin[j] = LittleFloat(in->origin[j]);
+            out->mins.xyz[j] = LittleFloat(in->mins[j]) - 1;
+            out->maxs.xyz[j] = LittleFloat(in->maxs[j]) + 1;
+            out->origin.xyz[j] = LittleFloat(in->origin[j]);
         }
         headnode = LittleLong(in->headnode);
         if (headnode & 0x80000000) {
@@ -1264,8 +1264,8 @@ static qboolean BSP_RecursiveLightPoint(mnode_t *node, float p1f, float p2f, vec
 
     while (node->plane) {
         // calculate distancies
-        d1 = PlaneDiffFast(p1, node->plane);
-        d2 = PlaneDiffFast(p2, node->plane);
+        d1 = PlaneDiffFast_(p1, node->plane);
+        d2 = PlaneDiffFast_(p2, node->plane);
         side = (d1 < 0);
 
         if ((d2 < 0) == side) {
@@ -1277,7 +1277,7 @@ static qboolean BSP_RecursiveLightPoint(mnode_t *node, float p1f, float p2f, vec
         // find crossing point
         frac = d1 / (d1 - d2);
         midf = p1f + (p2f - p1f) * frac;
-        Vec3_Lerp(p1, p2, frac, mid);
+        Vec3_Lerp_(p1, p2, frac, mid);
 
         // check near side
         if (BSP_RecursiveLightPoint(node->children[side], p1f, midf, p1, mid))
@@ -1291,8 +1291,8 @@ static qboolean BSP_RecursiveLightPoint(mnode_t *node, float p1f, float p2f, vec
             if (texinfo->c.flags & SURF_NOLM_MASK)
                 continue;
 
-            s = Vec3_Dot(texinfo->axis[0], mid) + texinfo->offset[0];
-            t = Vec3_Dot(texinfo->axis[1], mid) + texinfo->offset[1];
+            s = Vec3_Dot(texinfo->axis[0].xyz, mid) + texinfo->offset[0];
+            t = Vec3_Dot(texinfo->axis[1].xyz, mid) + texinfo->offset[1];
 
             s -= surf->texturemins[0];
             t -= surf->texturemins[1];
@@ -1326,7 +1326,7 @@ void BSP_LightPoint(lightpoint_t *point, vec3_t start, vec3_t end, mnode_t *head
 }
 
 void BSP_TransformedLightPoint(lightpoint_t *point, vec3_t start, vec3_t end,
-                               mnode_t *headnode, vec3_t origin, vec3_t angles)
+                               mnode_t *headnode, vec3_t origin, vec3_t *angles)
 {
     vec3_t start_l, end_l;
     vec3_t axis[3];
@@ -1336,12 +1336,12 @@ void BSP_TransformedLightPoint(lightpoint_t *point, vec3_t start, vec3_t end,
     light_point->fraction = 1;
 
     // subtract origin offset
-    Vec3_Subtract(start, origin, start_l);
-    Vec3_Subtract(end, origin, end_l);
+    Vec3_Subtract_(start, origin, start_l);
+    Vec3_Subtract_(end, origin, end_l);
 
     // rotate start and end into the models frame of reference
     if (angles) {
-        AnglesToAxis(angles, axis);
+        AnglesToAxis(*angles, &axis[0]);
         RotatePoint(start_l, axis);
         RotatePoint(end_l, axis);
     }
