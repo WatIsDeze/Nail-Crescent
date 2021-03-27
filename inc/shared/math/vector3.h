@@ -39,7 +39,7 @@ template<typename T> struct vec3_template
     };
 
     // OPERATOR: -= float
-    const vec3_template& operator -=(const T& other) {
+    const vec3_template& operator -=(const float& other) {
         x += other;
         y += other;
         z += other;
@@ -47,7 +47,7 @@ template<typename T> struct vec3_template
     }
 
     // OPERATOR: -= vec3_template
-    const vec3_template& operator -=(const vec3_t& other) {
+    const vec3_template& operator -=(const vec3_template& other) {
         x -= other.x;
         y -= other.y;
         z -= other.z;
@@ -55,7 +55,7 @@ template<typename T> struct vec3_template
     }
 
     // OPERATOR: += float
-    const vec3_template& operator +=(const T& other) {
+    const vec3_template& operator +=(const float& other) {
         x += other;
         y += other;
         z += other;
@@ -63,7 +63,7 @@ template<typename T> struct vec3_template
     }
 
     // OPERATOR: += vec3_template
-    const vec3_template& operator +=(const vec3_t& other) {
+    const vec3_template& operator +=(const vec3_template& other) {
         x += other.x;
         y += other.y;
         z += other.z;
@@ -264,6 +264,36 @@ static inline vec3_t Vec3_Scale_(const vec3_t &in, float scale, vec3_t &out) {
 
 //
 //===============
+// Vec3_ScaleVec3
+// 
+// Returns the vector v scaled by scale.
+//===============
+//
+static inline vec3_t Vec3_ScaleVec3(const vec3_t& v, const vec3_t &scale) {
+    return vec3_t{
+        v.x * scale.x,
+        v.y * scale.y,
+        v.z * scale.z
+    };
+}
+
+//
+//===============
+// LEGACY: Vec3_Scale_
+// 
+// ALTERNATIVE: Use Vec3_Scale
+//===============
+//
+static inline vec3_t Vec3_Scale_(const vec3_t& in, const vec3_t &scale, vec3_t& out) {
+    out = vec3_t{
+        in.x * scale.x,
+        in.y * scale.y,
+        in.z * scale.z
+    };
+}
+
+//
+//===============
 // Vec3_Zero
 // 
 // Returns a zero vec3_t vector.
@@ -314,17 +344,6 @@ static inline void Vec3_Inverse(vec3_t& v) {
 
 //
 //===============
-// Vec3_Average
-// 
-// Inverses the referenced vector v
-//===============
-//
-static inline void Vec3_Negate(vec3_t& v) {
-    v = Vec3_Scale(v, -1.f);
-}
-
-//
-//===============
 // LEGACY: Vec3_Copy_
 // 
 // Copies vector A into B.
@@ -368,7 +387,7 @@ static inline vec3_t Vec3_Average(const vec3_t& a, const vec3_t& b) {
 
 //
 //===============
-// LEGACY: Vec3_Add_
+// LEGACY: Vec3_Average_
 // 
 // ALTERNATIVE: Use Vec3_Average
 //===============
@@ -381,6 +400,108 @@ static inline vec3_t Vec3_Average_(const vec3_t& a, const vec3_t& b, vec3_t &c) 
     };
 }
 
+//
+//===============
+// Vec3_FmaF
+// 
+// Returns the vector v + (vector add * float multiply).
+//===============
+//
+static inline vec3_t Vec3_FmaF(const vec3_t& add, const float &multiply, const vec3_t& v) {
+    return vec3_t{
+        std::fmaf(v.x, multiply, add.x),
+        std::fmaf(v.y, multiply, add.y),
+        std::fmaf(v.z, multiply, add.z)
+    };
+}
+
+//
+//===============
+// LEGACY: Vec3_MA
+// 
+// ALTERNATIVE: Use Vec3_FmaF
+//===============
+//
+static inline vec3_t Vec3_MA_(const vec3_t& add, const float &multiply, const vec3_t& v, vec3_t &out) {
+    out = vec3_t{
+        std::fmaf(v.x, multiply, add.x),
+        std::fmaf(v.y, multiply, add.y),
+        std::fmaf(v.z, multiply, add.z)
+    };
+}
+
+//
+//===============
+// Vec3_VmaF
+// 
+// Returns the vector v + (vector add * vector multiply).
+//===============
+//
+static inline vec3_t Vec3_VmaF(const vec3_t& add, const vec3_t& multiply, const vec3_t& v) {
+    return vec3_t{
+        std::fmaf(v.x, multiply.x, add.x),
+        std::fmaf(v.y, multiply.y, add.y),
+        std::fmaf(v.z, multiply.z, add.z)
+    };
+}
+
+//
+//===============
+// LEGACY: Vec3_MA
+// 
+// ALTERNATIVE: Use Vec3_FmaF
+//===============
+//
+static inline vec3_t Vec3_VectorMA_(const vec3_t& add, const vec3_t& multiply, const vec3_t& v, vec3_t& out) {
+    out = vec3_t{
+        std::fmaf(v.x, multiply.x, add.x),
+        std::fmaf(v.y, multiply.y, add.y),
+        std::fmaf(v.z, multiply.z, add.z)
+    };
+}
+
+//
+//===============
+// LEGACY: DistanceSquared_
+// 
+// ALTERNATIVE: Use Vec3_DistanceSquared
+//===============
+//
+static inline vec_t DistanceSquared_(const vec3_t& v1, const vec3_t& v2) {
+    return  ((v1.x - v2.x) * (v1.x - v2.x) +
+            (v1.y - v2.y) * (v1.y - v2.y) +
+            (v1.z - v2.z) * (v1.z - v2.z));
+}
+
+//
+//===============
+// LEGACY: Distance_
+// 
+// ALTERNATIVE: Use Vec3_Distance
+//===============
+//
+static inline vec_t Distance_(const vec3_t& v1, const vec3_t& v2) {
+    return std::sqrtf(DistanceSquared_(v1, v2));
+}
+
+//
+//===============
+// LEGACY: LerpAngles_
+// 
+// ALTERNATIVE: Use Vec3_LerpAngles
+//===============
+//
+static inline void LerpAngles_(const vec3_t& a, const vec3_t& b, const float &c, vec3_t &out) {
+    out.x = LerpAngle(a.x, b.x, c);
+    out.y = LerpAngle(a.y, b.y, c);
+    out.z = LerpAngle(a.z, b.z, c);
+}
+
+//#define LerpAngles(a,b,c,d) \
+//        ((d)[0]=LerpAngle((a)[0],(b)[0],c), \
+//         (d)[1]=LerpAngle((a)[1],(b)[1],c), \
+//         (d)[2]=LerpAngle((a)[2],(b)[2],c))
+// 
 // Functions marked with:
 // '==' are directly copied over.
 // '//' got a legacy fallback function.
@@ -411,11 +532,11 @@ static inline vec3_t Vec3_Average_(const vec3_t& a, const vec3_t& b, vec3_t &c) 
 //        ((c)[0]=((a)[0]+(b)[0])*0.5f, \
 //         (c)[1]=((a)[1]+(b)[1])*0.5f, \
 //         (c)[2]=((a)[2]+(b)[2])*0.5f)
-//#define Vec3_MA(a,b,c,d) \
+//#define Vec3_MA(a,b,c,d) \                                                        ////
 //        ((d)[0]=(a)[0]+(b)*(c)[0], \
 //         (d)[1]=(a)[1]+(b)*(c)[1], \
 //         (d)[2]=(a)[2]+(b)*(c)[2])
-//#define VectorVectorMA(a,b,c,d) \
+//#define VectorVectorMA(a,b,c,d) \                                                 /////
 //        ((d)[0]=(a)[0]+(b)[0]*(c)[0], \
 //         (d)[1]=(a)[1]+(b)[1]*(c)[1], \
 //         (d)[2]=(a)[2]+(b)[2]*(c)[2])
@@ -423,11 +544,11 @@ static inline vec3_t Vec3_Average_(const vec3_t& a, const vec3_t& b, vec3_t &c) 
 //#define Vec3_Compare(v1,v2)    ((v1)[0]==(v2)[0]&&(v1)[1]==(v2)[1]&&(v1)[2]==(v2)[2])
 //#define Vec3_Length(v)     (sqrt(Vec3_Dot((v),(v))))
 //#define Vec3_LengthSquared(v)      (Vec3_Dot((v),(v)))
-//#define Vec3_Scale(in,scale,out) \                                            ============================================
+//#define Vec3_Scale(in,scale,out) \                                                ////////////////
 //        ((out)[0]=(in)[0]*(scale), \
 //         (out)[1]=(in)[1]*(scale), \
 //         (out)[2]=(in)[2]*(scale))
-//#define Vec3_ScaleVec3(in,scale,out) \
+//#define Vec3_ScaleVec3(in,scale,out) \                                            ///////////////
 //        ((out)[0]=(in)[0]*(scale)[0], \
 //         (out)[1]=(in)[1]*(scale)[1], \
 //         (out)[2]=(in)[2]*(scale)[2])

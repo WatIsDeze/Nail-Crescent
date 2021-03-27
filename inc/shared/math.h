@@ -176,7 +176,7 @@ static inline vec_t PlaneDiffFast(const vec3_t &v, cplane_t* p)
     return PlaneDiff(v, p);
 }
 
-static inline void AnglesToAxis(const vec3_t &angles, vec3_t *axis[3])
+static inline void AnglesToAxis(vec3_t &angles, vec3_t *axis[3])
 {
     AngleVectors(angles, axis[0], axis[1], axis[2]);
     Vec3_Inverse(*axis[1]);
