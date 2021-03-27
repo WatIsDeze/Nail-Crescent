@@ -194,10 +194,10 @@ void MSG_WriteString(const char *string)
 
 /*
 =============
-MSG_WritePos
+MSG_WriteVec3
 =============
 */
-void MSG_WritePos(const vec3_t &pos)
+void MSG_WriteVec3(const vec3_t &pos)
 {
     MSG_WriteFloat(pos.x);
     MSG_WriteFloat(pos.y);
@@ -769,21 +769,21 @@ void MSG_PackPlayer(player_packed_t *out, const player_state_t *in)
     int i;
 
     out->pmove = in->pmove;
-    out->viewangles[0] = ANGLE2SHORT(in->viewangles.x);
+    out->viewangles[0] = ANGLE2SHORT(in->viewangles.x); // MATHLIB: All of these vec3_ts
     out->viewangles[1] = ANGLE2SHORT(in->viewangles.y);
     out->viewangles[2] = ANGLE2SHORT(in->viewangles.z);
-    out->viewoffset[0] = in->viewoffset[0] * 4;
-    out->viewoffset[1] = in->viewoffset[1] * 4;
-    out->viewoffset[2] = in->viewoffset[2] * 4;
-    out->kick_angles[0] = in->kick_angles[0] * 4;
-    out->kick_angles[1] = in->kick_angles[1] * 4;
-    out->kick_angles[2] = in->kick_angles[2] * 4;
-    out->gunoffset[0] = in->gunoffset[0] * 4;
-    out->gunoffset[1] = in->gunoffset[1] * 4;
-    out->gunoffset[2] = in->gunoffset[2] * 4;
-    out->gunangles[0] = in->gunangles[0] * 4;
-    out->gunangles[1] = in->gunangles[1] * 4;
-    out->gunangles[2] = in->gunangles[2] * 4;
+    out->viewoffset[0] = in->viewoffset.x * 4;
+    out->viewoffset[1] = in->viewoffset.y * 4;
+    out->viewoffset[2] = in->viewoffset.z * 4;
+    out->kick_angles[0] = in->kick_angles.x * 4;
+    out->kick_angles[1] = in->kick_angles.y * 4;
+    out->kick_angles[2] = in->kick_angles.z * 4;
+    out->gunoffset[0] = in->gunoffset.x * 4;
+    out->gunoffset[1] = in->gunoffset.y * 4;
+    out->gunoffset[2] = in->gunoffset.z * 4;
+    out->gunangles[0] = in->gunangles.x * 4;
+    out->gunangles[1] = in->gunangles.y * 4;
+    out->gunangles[2] = in->gunangles.z * 4;
     out->gunindex = in->gunindex;
     out->gunframe = in->gunframe;
     out->blend[0] = in->blend[0] * 255;
@@ -816,14 +816,17 @@ void MSG_WriteDeltaPlayerstate_Default(const player_packed_t *from, const player
     if (to->pmove.type != from->pmove.type)
         pflags |= PS_M_TYPE;
 
-    if (to->pmove.origin[0] != from->pmove.origin[0] ||
-        to->pmove.origin[1] != from->pmove.origin[1] ||
-        to->pmove.origin[2] != from->pmove.origin[2])
+    // MATHLIB: !! TODO: CHECK IF THIS WORKS.
+    //if (to->pmove.origin[0] != from->pmove.origin[0] ||
+    //    to->pmove.origin[1] != from->pmove.origin[1] ||
+    //    to->pmove.origin[2] != from->pmove.origin[2])
+    if (!Vec3_Equal(to->pmove.origin, from->pmove.origin))
         pflags |= PS_M_ORIGIN;
 
-    if (to->pmove.velocity[0] != from->pmove.velocity[0] ||
-        to->pmove.velocity[1] != from->pmove.velocity[1] ||
-        to->pmove.velocity[2] != from->pmove.velocity[2])
+    //if (to->pmove.velocity[0] != from->pmove.velocity[0] ||
+    //    to->pmove.velocity[1] != from->pmove.velocity[1] ||
+    //    to->pmove.velocity[2] != from->pmove.velocity[2])
+    if (!Vec3_Equal(to->pmove.velocity, from->pmove.velocity))
         pflags |= PS_M_VELOCITY;
 
     if (to->pmove.time != from->pmove.time)
@@ -892,22 +895,12 @@ void MSG_WriteDeltaPlayerstate_Default(const player_packed_t *from, const player
 
     // N&C: Full float precision.
     if (pflags & PS_M_ORIGIN) {
-        MSG_WriteFloat(to->pmove.origin[0]);
-        MSG_WriteFloat(to->pmove.origin[1]);
-        MSG_WriteFloat(to->pmove.origin[2]);
-        //MSG_WriteShort(to->pmove.origin[0]);
-        //MSG_WriteShort(to->pmove.origin[1]);
-        //MSG_WriteShort(to->pmove.origin[2]);
+        MSG_WriteVec3(to->pmove.origin);
     }
 
     // N&C: Full float precision.
     if (pflags & PS_M_VELOCITY) {
-        MSG_WriteFloat(to->pmove.velocity[0]);
-        MSG_WriteFloat(to->pmove.velocity[1]);
-        MSG_WriteFloat(to->pmove.velocity[2]);
-        //MSG_WriteShort(to->pmove.velocity[0]);
-        //MSG_WriteShort(to->pmove.velocity[1]);
-        //MSG_WriteShort(to->pmove.velocity[2]);
+        MSG_WriteVec3(to->pmove.velocity);
     }
 
     if (pflags & PS_M_TIME)
@@ -1007,19 +1000,20 @@ int MSG_WriteDeltaPlayerstate_Enhanced(const player_packed_t    *from,
     if (to->pmove.type != from->pmove.type)
         pflags |= PS_M_TYPE;
 
-    if (to->pmove.origin[0] != from->pmove.origin[0] ||
-        to->pmove.origin[1] != from->pmove.origin[1])
+    // MATHLIB: TEST IF THIS WORKS.
+    if (!EqualEpsilonf(to->pmove.origin.x, from->pmove.origin.x) ||
+        !EqualEpsilonf(to->pmove.origin.y, from->pmove.origin.y))
         pflags |= PS_M_ORIGIN;
 
-    if (to->pmove.origin[2] != from->pmove.origin[2])
+    if (!EqualEpsilonf(to->pmove.origin.z, from->pmove.origin.z))
         eflags |= EPS_M_ORIGIN2;
 
     if (!(flags & MSG_PS_IGNORE_PREDICTION)) {
-        if (to->pmove.velocity[0] != from->pmove.velocity[0] ||
-            to->pmove.velocity[1] != from->pmove.velocity[1])
+        if (!EqualEpsilonf(to->pmove.velocity.x, from->pmove.velocity.x) ||
+            !EqualEpsilonf(to->pmove.velocity.y, from->pmove.velocity.y))
             pflags |= PS_M_VELOCITY;
 
-        if (to->pmove.velocity[2] != from->pmove.velocity[2])
+        if (!EqualEpsilonf(to->pmove.velocity.z, from->pmove.velocity.z))
             eflags |= EPS_M_VELOCITY2;
 
         if (to->pmove.time != from->pmove.time)
@@ -1032,7 +1026,7 @@ int MSG_WriteDeltaPlayerstate_Enhanced(const player_packed_t    *from,
             pflags |= PS_M_GRAVITY;
     } else {
         // save previous state
-        Vec3_Copy(from->pmove.velocity, to->pmove.velocity);
+        Vec3_Copy_(from->pmove.velocity, to->pmove.velocity);
         to->pmove.time = from->pmove.time;
         to->pmove.flags = from->pmove.flags;
         to->pmove.gravity = from->pmove.gravity;
@@ -1045,7 +1039,7 @@ int MSG_WriteDeltaPlayerstate_Enhanced(const player_packed_t    *from,
             pflags |= PS_M_DELTA_ANGLES;
     } else {
         // save previous state
-        Vec3_Copy(from->pmove.delta_angles, to->pmove.delta_angles);
+        Vec3_Copy_(from->pmove.delta_angles, to->pmove.delta_angles);
     }
 
     if (from->viewoffset[0] != to->viewoffset[0] ||
@@ -1285,11 +1279,12 @@ void MSG_WriteDeltaPlayerstate_Packet(const player_packed_t *from,
     if (to->pmove.type != from->pmove.type)
         pflags |= PPS_M_TYPE;
 
-    if (to->pmove.origin[0] != from->pmove.origin[0] ||
-        to->pmove.origin[1] != from->pmove.origin[1])
+    // MATHLIB: TEST IF THIS WORKS
+    if (!EqualEpsilonf(to->pmove.origin.x, from->pmove.origin.x) ||
+        !EqualEpsilonf(to->pmove.origin.y, from->pmove.origin.y))
         pflags |= PPS_M_ORIGIN;
 
-    if (to->pmove.origin[2] != from->pmove.origin[2])
+    if (!EqualEpsilonf(to->pmove.origin.z, from->pmove.origin.z))
         pflags |= PPS_M_ORIGIN2;
 
     if (from->viewoffset[0] != to->viewoffset[0] ||
@@ -1605,7 +1600,7 @@ size_t MSG_ReadStringLine(char *dest, size_t size)
     return len;
 }
 
-void MSG_ReadPos(vec3_t &pos)
+void MSG_ReadVec3(vec3_t &pos)
 {
     pos.x = MSG_ReadFloat();
     pos.y = MSG_ReadFloat();
@@ -2018,7 +2013,7 @@ void MSG_ParseDeltaEntity(const entity_state_t *from,
         to->old_origin[1] = MSG_ReadFloat();
         to->old_origin[2] = MSG_ReadFloat();
 
-        //MSG_ReadPos(to->old_origin);
+        //MSG_ReadVec3(to->old_origin);
     }
 
     if (bits & U_SOUND) {
