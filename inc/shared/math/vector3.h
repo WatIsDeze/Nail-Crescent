@@ -127,7 +127,7 @@ static inline vec3_t Vec3_Cross(const vec3_t &a, const vec3_t &b) {
 // ALTERNATIVE: Vec3_Cross
 //===============
 //
-static inline vec3_t Vec3_Cross_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
+static inline void Vec3_Cross_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
     c = vec3_t{
         a.y * b.z - a.z * b.y,
         a.z * b.x - a.x * b.z,
@@ -159,7 +159,7 @@ static inline vec3_t Vec3_Subtract(const vec3_t &a, const vec3_t &b) {
 // ALTERNATIVE: Vec3_Subtract
 //===============
 //
-static inline vec3_t Vec3_Subtract_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
+static inline void Vec3_Subtract_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
     c = vec3_t{
         a.x - b.x,
         a.y - b.y,
@@ -191,7 +191,7 @@ static inline vec3_t Vec3_Add(const vec3_t &a, const vec3_t &b) {
 // ALTERNATIVE: Use Vec3_Add
 //===============
 //
-static inline vec3_t Vec3_Add_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
+static inline void Vec3_Add_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
     c = vec3_t{
         a.x + b.x,
         a.y + b.y,
@@ -224,7 +224,7 @@ static inline vec3_t Vec3_Add2(const vec3_t &a, const vec3_t &b, const vec3_t& c
 // ALTERNATIVE: Use Vec3_Add2
 //===============
 //
-static inline vec3_t Vec3_Add2_(const vec3_t& a, const vec3_t& b, const vec3_t& c, vec3_t &d) {
+static inline void Vec3_Add2_(const vec3_t& a, const vec3_t& b, const vec3_t& c, vec3_t &d) {
     d = vec3_t{
         a.x + b.x + c.x,
         a.y + b.y + c.y,
@@ -254,7 +254,7 @@ static inline vec3_t Vec3_Scale(const vec3_t &v, float scale) {
 // ALTERNATIVE: Use Vec3_Scale
 //===============
 //
-static inline vec3_t Vec3_Scale_(const vec3_t &in, float scale, vec3_t &out) {
+static inline void Vec3_Scale_(const vec3_t &in, float scale, vec3_t &out) {
     out = vec3_t {
         in.x * scale,
         in.y * scale,
@@ -284,7 +284,7 @@ static inline vec3_t Vec3_ScaleVec3(const vec3_t& v, const vec3_t &scale) {
 // ALTERNATIVE: Use Vec3_Scale
 //===============
 //
-static inline vec3_t Vec3_Scale_(const vec3_t& in, const vec3_t &scale, vec3_t& out) {
+static inline void Vec3_Scale_(const vec3_t& in, const vec3_t &scale, vec3_t& out) {
     out = vec3_t{
         in.x * scale.x,
         in.y * scale.y,
@@ -392,7 +392,7 @@ static inline vec3_t Vec3_Average(const vec3_t& a, const vec3_t& b) {
 // ALTERNATIVE: Use Vec3_Average
 //===============
 //
-static inline vec3_t Vec3_Average_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
+static inline void Vec3_Average_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
     c = vec3_t{
         (a.x + b.x) * 0.5f,
         (a.y + b.y) * 0.5f,
@@ -422,7 +422,7 @@ static inline vec3_t Vec3_FmaF(const vec3_t& add, const float &multiply, const v
 // ALTERNATIVE: Use Vec3_FmaF
 //===============
 //
-static inline vec3_t Vec3_MA_(const vec3_t& add, const float &multiply, const vec3_t& v, vec3_t &out) {
+static inline void Vec3_MA_(const vec3_t& add, const float &multiply, const vec3_t& v, vec3_t &out) {
     out = vec3_t{
         std::fmaf(v.x, multiply, add.x),
         std::fmaf(v.y, multiply, add.y),
@@ -452,7 +452,7 @@ static inline vec3_t Vec3_VmaF(const vec3_t& add, const vec3_t& multiply, const 
 // ALTERNATIVE: Use Vec3_FmaF
 //===============
 //
-static inline vec3_t Vec3_VectorMA_(const vec3_t& add, const vec3_t& multiply, const vec3_t& v, vec3_t& out) {
+static inline void Vec3_VectorMA_(const vec3_t& add, const vec3_t& multiply, const vec3_t& v, vec3_t& out) {
     out = vec3_t{
         std::fmaf(v.x, multiply.x, add.x),
         std::fmaf(v.y, multiply.y, add.y),

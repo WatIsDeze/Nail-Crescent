@@ -148,7 +148,7 @@ void SetPlaneSignbits(cplane_t* plane);
 #define BOX_BEHIND      2
 #define BOX_INTERSECTS  3
 
-int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, cplane_t* p);
+int BoxOnPlaneSide(const vec3_t& emins, const vec3_t& emaxs, cplane_t* p);
 
 static inline int BoxOnPlaneSideFast(const vec3_t &emins, const vec3_t &emaxs, cplane_t* p)
 {
