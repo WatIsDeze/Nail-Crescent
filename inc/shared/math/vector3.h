@@ -22,7 +22,7 @@ template<typename T> struct vec3_template {
         // XYZ array index accessor.
         T xyz[3];
         
-        // X Y Z desegnator accessors.
+        // X Y Z designator accessors.
         struct {
             T x, y, z;
         };
