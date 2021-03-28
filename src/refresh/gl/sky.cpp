@@ -61,22 +61,23 @@ static int          skyfaces;
 static const float  sky_min = 1.0f / 512.0f;
 static const float  sky_max = 511.0f / 512.0f;
 
-static void DrawSkyPolygon(int nump, vec3_t vecs)
+static void DrawSkyPolygon(int nump, vec3_t *vecs)
 {
     int     i, j;
     vec3_t  v, av;
     float   s, t, dv;
     int     axis;
-    float   *vp;
+    vec3_t* vp = vecs; // MATHLIB: //float   *vp;
 
     // decide which face it maps to
     Vec3_Clear(v);
-    for (i = 0, vp = vecs; i < nump; i++, vp += 3) {
-        Vec3_Add_(vp, v, v);
+    for (i = 0, vp = vecs; i < nump; i++, vp += 1) { // MATHLIB: for (i = 0, vp = vecs; i < nump; i++, vp += 3) {
+        Vec3_Add_(*vp, v, v);   // MATHLIB: This might be bugged.
+        //Vec3_Add_(vp, v, v);
     }
-    av[0] = fabs(v[0]);
-    av[1] = fabs(v[1]);
-    av[2] = fabs(v[2]);
+    av.x = std::fabsf(v.x);
+    av.y = std::fabsf(v.y);
+    av.z = std::fabsf(v.z);
     if (av[0] > av[1] && av[0] > av[2]) {
         if (v[0] < 0)
             axis = 1;
@@ -95,24 +96,24 @@ static void DrawSkyPolygon(int nump, vec3_t vecs)
     }
 
     // project new texture coords
-    for (i = 0; i < nump; i++, vecs += 3) {
+    for (i = 0; i < nump; i++, vecs += 1) {
         j = vec_to_st[axis][2];
         if (j > 0)
-            dv = vecs[j - 1];
+            dv = vecs->xyz[j - 1];
         else
-            dv = -vecs[-j - 1];
+            dv = -vecs->xyz[-j - 1];
         if (dv < 0.001)
             continue;    // don't divide by zero
         j = vec_to_st[axis][0];
         if (j < 0)
-            s = -vecs[-j - 1] / dv;
+            s = -vecs->xyz[-j - 1] / dv;
         else
-            s = vecs[j - 1] / dv;
+            s = vecs->xyz[j - 1] / dv;
         j = vec_to_st[axis][1];
         if (j < 0)
-            t = -vecs[-j - 1] / dv;
+            t = -vecs->xyz[-j - 1] / dv;
         else
-            t = vecs[j - 1] / dv;
+            t = vecs->xyz[j - 1] / dv;
 
         if (s < skymins[0][axis])
             skymins[0][axis] = s;
