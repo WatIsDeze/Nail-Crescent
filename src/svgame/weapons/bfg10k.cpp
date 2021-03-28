@@ -72,7 +72,7 @@ void weapon_bfg_fire(edict_t* ent)
     ent->client->v_dmg_roll = crandom() * 8;
     ent->client->v_dmg_time = level.time + DAMAGE_TIME;
 
-    Vec3_Set(offset, 8, 8, ent->viewheight - 8);
+    Vec3_Set_(offset, 8, 8, ent->viewheight - 8);
     P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
     fire_bfg(ent, start, forward, damage, 400, damage_radius);
 

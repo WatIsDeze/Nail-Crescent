@@ -116,7 +116,7 @@ qboolean SV_movestep(edict_t *ent, vec3_t move, qboolean relink)
     int         contents;
 
 // try the move
-    Vec3_Copy(ent->s.origin, oldorg);
+    Vec3_Copy_(ent->s.origin, oldorg);
     Vec3_Add(ent->s.origin, move, neworg);
 
 // flying monsters don't step up
@@ -172,7 +172,7 @@ qboolean SV_movestep(edict_t *ent, vec3_t move, qboolean relink)
             }
 
             if (trace.fraction == 1) {
-                Vec3_Copy(trace.endpos, ent->s.origin);
+                Vec3_Copy_(trace.endpos, ent->s.origin);
                 if (relink) {
                     gi.linkentity(ent);
                     G_TouchTriggers(ent);
@@ -194,7 +194,7 @@ qboolean SV_movestep(edict_t *ent, vec3_t move, qboolean relink)
         stepsize = 1;
 
     neworg[2] += stepsize;
-    Vec3_Copy(neworg, end);
+    Vec3_Copy_(neworg, end);
     end[2] -= stepsize * 2;
 
     trace = gi.trace(neworg, ent->mins, ent->maxs, end, ent, CONTENTS_MASK_MONSTERSOLID);
@@ -237,7 +237,7 @@ qboolean SV_movestep(edict_t *ent, vec3_t move, qboolean relink)
     }
 
 // check point traces down for dangling corners
-    Vec3_Copy(trace.endpos, ent->s.origin);
+    Vec3_Copy_(trace.endpos, ent->s.origin);
 
     if (!M_CheckBottom(ent)) {
         if (ent->flags & FL_PARTIALGROUND) {
@@ -249,7 +249,7 @@ qboolean SV_movestep(edict_t *ent, vec3_t move, qboolean relink)
             }
             return true;
         }
-        Vec3_Copy(oldorg, ent->s.origin);
+        Vec3_Copy_(oldorg, ent->s.origin);
         return false;
     }
 
@@ -332,12 +332,12 @@ qboolean SV_StepDirection(edict_t *ent, float yaw, float dist)
     move[1] = sin(yaw) * dist;
     move[2] = 0;
 
-    Vec3_Copy(ent->s.origin, oldorigin);
+    Vec3_Copy_(ent->s.origin, oldorigin);
     if (SV_movestep(ent, move, false)) {
         delta = ent->s.angles[YAW] - ent->ideal_yaw;
         if (delta > 45 && delta < 315) {
             // not turned far enough, so don't take the step
-            Vec3_Copy(oldorigin, ent->s.origin);
+            Vec3_Copy_(oldorigin, ent->s.origin);
         }
         gi.linkentity(ent);
         G_TouchTriggers(ent);

@@ -123,7 +123,7 @@ again:
         }
         first = false;
         Vec3_Subtract(ent->s.origin, self->mins, self->s.origin);
-        Vec3_Copy(self->s.origin, self->s.old_origin);
+        Vec3_Copy_(self->s.origin, self->s.old_origin);
         self->s.event = EV_OTHER_TELEPORT;
         gi.linkentity(self);
         goto again;
@@ -140,8 +140,8 @@ again:
 
     Vec3_Subtract(ent->s.origin, self->mins, dest);
     self->moveinfo.state = STATE_TOP;
-    Vec3_Copy(self->s.origin, self->moveinfo.start_origin);
-    Vec3_Copy(dest, self->moveinfo.end_origin);
+    Vec3_Copy_(self->s.origin, self->moveinfo.start_origin);
+    Vec3_Copy_(dest, self->moveinfo.end_origin);
     Brush_Move_Calc(self, dest, train_wait);
     self->spawnflags |= TRAIN_START_ON;
 }
@@ -155,8 +155,8 @@ void train_resume(edict_t* self)
 
     Vec3_Subtract(ent->s.origin, self->mins, dest);
     self->moveinfo.state = STATE_TOP;
-    Vec3_Copy(self->s.origin, self->moveinfo.start_origin);
-    Vec3_Copy(dest, self->moveinfo.end_origin);
+    Vec3_Copy_(self->s.origin, self->moveinfo.start_origin);
+    Vec3_Copy_(dest, self->moveinfo.end_origin);
     Brush_Move_Calc(self, dest, train_wait);
     self->spawnflags |= TRAIN_START_ON;
 }

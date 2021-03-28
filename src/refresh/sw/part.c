@@ -124,7 +124,7 @@ void R_DrawParticles(void)
 
     Vec3_Scale(vright, r_refdef.xscaleshrink, partparms.right);
     Vec3_Scale(vup, r_refdef.yscaleshrink, partparms.up);
-    Vec3_Copy(vpn, partparms.pn);
+    Vec3_Copy_(vpn, partparms.pn);
 
     for (p = r_newrefdef.particles, i = 0; i < r_newrefdef.num_particles; i++, p++) {
         partparms.particle = p;

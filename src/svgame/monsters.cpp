@@ -167,7 +167,7 @@ void M_CheckGround(edict_t *ent)
 //  if (!trace.startsolid && !trace.allsolid)
 //      Vec3_Copy (trace.endpos, ent->s.origin);
     if (!trace.startsolid && !trace.allsolid) {
-        Vec3_Copy(trace.endpos, ent->s.origin);
+        Vec3_Copy_(trace.endpos, ent->s.origin);
         ent->groundentity = trace.ent;
         ent->groundentity_linkcount = trace.ent->linkcount;
         ent->velocity[2] = 0;
@@ -289,7 +289,7 @@ void M_droptofloor(edict_t *ent)
     trace_t     trace;
 
     ent->s.origin[2] += 1;
-    Vec3_Copy(ent->s.origin, end);
+    Vec3_Copy_(ent->s.origin, end);
     end[2] -= 256;
 
     trace = gi.trace(ent->s.origin, ent->mins, ent->maxs, end, ent, CONTENTS_MASK_MONSTERSOLID);
@@ -297,7 +297,7 @@ void M_droptofloor(edict_t *ent)
     if (trace.fraction == 1 || trace.allsolid)
         return;
 
-    Vec3_Copy(trace.endpos, ent->s.origin);
+    Vec3_Copy_(trace.endpos, ent->s.origin);
 
     gi.linkentity(ent);
     M_CheckGround(ent);
@@ -520,7 +520,7 @@ qboolean monster_start(edict_t *self)
 
     if (!self->monsterinfo.checkattack)
         self->monsterinfo.checkattack = M_CheckAttack;
-    Vec3_Copy(self->s.origin, self->s.old_origin);
+    Vec3_Copy_(self->s.origin, self->s.old_origin);
 
     if (st.item) {
         self->item = FindItemByClassname(st.item);

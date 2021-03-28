@@ -132,10 +132,10 @@ void GL_DrawParticles(void)
             }
 
             dst_vert = tess.vertices + numverts * 5;
-            Vec3_MA(p->origin, scale * PARTICLE_SCALE, glr.viewaxis[1], dst_vert);
-            Vec3_MA(dst_vert, -scale * PARTICLE_SCALE, glr.viewaxis[2], dst_vert);
-            Vec3_MA(dst_vert, scale, glr.viewaxis[2], dst_vert + 5);
-            Vec3_MA(dst_vert, -scale, glr.viewaxis[1], dst_vert + 10);
+            Vec3_MA_(p->origin, scale * PARTICLE_SCALE, glr.viewaxis[1], dst_vert);
+            Vec3_MA_(dst_vert, -scale * PARTICLE_SCALE, glr.viewaxis[2], dst_vert);
+            Vec3_MA_(dst_vert, scale, glr.viewaxis[2], dst_vert + 5);
+            Vec3_MA_(dst_vert, -scale, glr.viewaxis[1], dst_vert + 10);
 
             dst_vert[ 3] = 0;               dst_vert[ 4] = 0;
             dst_vert[ 8] = 0;               dst_vert[ 9] = PARTICLE_SIZE;

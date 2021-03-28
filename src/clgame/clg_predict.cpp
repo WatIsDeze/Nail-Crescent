@@ -32,10 +32,10 @@ void CLG_CheckPredictionError(int frame, unsigned int cmd) {
     if (cl->predicted_step_frame <= cmd)
         cl->predicted_step_frame = cmd + 1;
 
-    Vec3_Copy(cl->frame.ps.pmove.origin, cl->predicted_origins[cmd & CMD_MASK]);
+    Vec3_Copy_(cl->frame.ps.pmove.origin, cl->predicted_origins[cmd & CMD_MASK]);
 
     // Save for error interpolation
-    Vec3_Copy(delta, cl->prediction_error);
+    Vec3_Copy_(delta, cl->prediction_error);
 }
 
 //
@@ -199,7 +199,7 @@ void CLG_PredictMovement(unsigned int ack, unsigned int current) {
     pm.PointContents = CLG_PointContents;
     pm.state = cl->frame.ps.pmove;
 #if USE_SMOOTH_DELTA_ANGLES
-    Vec3_Copy(cl->delta_angles, pm.state.delta_angles);
+    Vec3_Copy_(cl->delta_angles, pm.state.delta_angles);
 #endif
 
     // run frames
@@ -211,7 +211,7 @@ void CLG_PredictMovement(unsigned int ack, unsigned int current) {
         CLG_UpdateClientSoundSpecialEffects(&pm);
 
         // save for debug checking
-        Vec3_Copy(pm.state.origin, cl->predicted_origins[ack & CMD_MASK]);
+        Vec3_Copy_(pm.state.origin, cl->predicted_origins[ack & CMD_MASK]);
     }
 
     // run pending cmd
@@ -224,7 +224,7 @@ void CLG_PredictMovement(unsigned int ack, unsigned int current) {
         frame = current;
 
         // save for debug checking
-        Vec3_Copy(pm.state.origin, cl->predicted_origins[(current + 1) & CMD_MASK]);
+        Vec3_Copy_(pm.state.origin, cl->predicted_origins[(current + 1) & CMD_MASK]);
     }
     else {
         frame = current - 1;
@@ -248,7 +248,7 @@ void CLG_PredictMovement(unsigned int ack, unsigned int current) {
     }
 
     // copy results out for rendering
-    Vec3_Copy(pm.state.origin, cl->predicted_origin);
-    Vec3_Copy(pm.state.velocity, cl->predicted_velocity);
-    Vec3_Copy(pm.viewAngles, cl->predicted_angles);
+    Vec3_Copy_(pm.state.origin, cl->predicted_origin);
+    Vec3_Copy_(pm.state.velocity, cl->predicted_velocity);
+    Vec3_Copy_(pm.viewAngles, cl->predicted_angles);
 }

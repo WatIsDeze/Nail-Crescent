@@ -144,7 +144,7 @@ static void add_dynamic_lights(mface_t *surf)
             scale = 1;              // fall off from rad to minlight
         }
 
-        Vec3_MA(light->transformed, -dist, surf->plane->normal, point);
+        Vec3_MA_(light->transformed, -dist, surf->plane->normal, point);
 
         local[0] = Vec3_Dot(point, tex->axis[0]) + tex->offset[0];
         local[1] = Vec3_Dot(point, tex->axis[1]) + tex->offset[1];
@@ -576,7 +576,7 @@ static void build_surface_poly(mface_t *surf, vec_t *vbo)
         src_surfedge++;
 
         // vertex coordinates
-        Vec3_Copy(src_vert->point, vbo);
+        Vec3_Copy_(src_vert->point, vbo);
 
         // vertex color
         memcpy(vbo + 3, &color, sizeof(color));

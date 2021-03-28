@@ -126,7 +126,7 @@ void V_AddLightEx(vec3_t org, float intensity, float r, float g, float b, float 
     if (r_numdlights >= MAX_DLIGHTS)
         return;
     dl = &r_dlights[r_numdlights++];
-    dl->origin = org; // MATHLIB: Vec3_Copy(org, dl->origin);
+    dl->origin = org; // MATHLIB: Vec3_Copy_(org, dl->origin);
     dl->intensity = intensity;
     dl->color.x = r;
     dl->color.y = g;
@@ -137,7 +137,7 @@ void V_AddLightEx(vec3_t org, float intensity, float r, float g, float b, float 
 	{
 		particle_t* part = &r_particles[r_numparticles++];
 
-        part->origin = dl->origin;// MATHLIB: Vec3_Copy(dl->origin, part->origin);
+        part->origin = dl->origin;// MATHLIB: Vec3_Copy_(dl->origin, part->origin);
 		part->radius = radius;
 		part->brightness = max(r, max(g, b));
 		part->color = -1;

@@ -835,10 +835,10 @@ static void D_TurbulentSurf(surf_t *s)
         // TODO: speed up
         //
         currententity = NULL;   // &r_worldentity;
-        Vec3_Copy(world_transformed_modelorg, transformed_modelorg);
-        Vec3_Copy(base_vpn, vpn);
-        Vec3_Copy(base_vup, vup);
-        Vec3_Copy(base_vright, vright);
+        Vec3_Copy_(world_transformed_modelorg, transformed_modelorg);
+        Vec3_Copy_(base_vpn, vpn);
+        Vec3_Copy_(base_vup, vup);
+        Vec3_Copy_(base_vright, vright);
         R_TransformFrustum();
     }
 }
@@ -933,10 +933,10 @@ static void D_SolidSurf(surf_t *s)
         // FIXME: we don't want to do this every time!
         // TODO: speed up
         //
-        Vec3_Copy(world_transformed_modelorg, transformed_modelorg);
-        Vec3_Copy(base_vpn, vpn);
-        Vec3_Copy(base_vup, vup);
-        Vec3_Copy(base_vright, vright);
+        Vec3_Copy_(world_transformed_modelorg, transformed_modelorg);
+        Vec3_Copy_(base_vpn, vpn);
+        Vec3_Copy_(base_vup, vup);
+        Vec3_Copy_(base_vright, vright);
         R_TransformFrustum();
         currententity = NULL;   //&r_worldentity;
     }
@@ -1005,7 +1005,7 @@ void D_DrawSurfaces(void)
 //  currententity = NULL;   //&r_worldentity;
     Vec3_Subtract(r_origin, vec3_origin, modelorg);
     R_TransformVector(modelorg, transformed_modelorg);
-    Vec3_Copy(transformed_modelorg, world_transformed_modelorg);
+    Vec3_Copy_(transformed_modelorg, world_transformed_modelorg);
 
     if (sw_drawsird->integer) {
         D_DrawZSurfaces();

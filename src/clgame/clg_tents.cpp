@@ -152,8 +152,8 @@ static void CLG_AddLasers(void)
 
 		ent.skinnum = l->color;
 		ent.flags = RF_TRANSLUCENT | RF_BEAM;
-		Vec3_Copy(l->start, ent.origin);
-		Vec3_Copy(l->end, ent.oldorigin);
+		Vec3_Copy_(l->start, ent.origin);
+		Vec3_Copy_(l->end, ent.oldorigin);
 		ent.frame = l->width;
 
 		V_AddEntity(&ent);
@@ -168,8 +168,8 @@ static void CLG_ParseLaser(int colors)
 	if (!l)
 		return;
 
-	Vec3_Copy(teParameters.pos1, l->start);
-	Vec3_Copy(teParameters.pos2, l->end);
+	Vec3_Copy_(teParameters.pos1, l->start);
+	Vec3_Copy_(teParameters.pos2, l->end);
 	l->lifetime = 100;
 	l->color = (colors >> ((rand() % 4) * 8)) & 0xff;
 	l->width = 4;
@@ -221,12 +221,12 @@ static explosion_t* CLG_PlainExplosion(qboolean big)
 	explosion_t* ex;
 
 	ex = CLG_AllocExplosion();
-	Vec3_Copy(teParameters.pos1, ex->ent.origin);
+	Vec3_Copy_(teParameters.pos1, ex->ent.origin);
 	ex->type = explosion_t::ex_poly; // CPP: Enum
 	ex->ent.flags = RF_FULLBRIGHT;
 	ex->start = cl->servertime - CL_FRAMETIME;
 	ex->light = 350;
-	Vec3_Set(ex->lightcolor, 1.0, 0.5, 0.5);
+	Vec3_Set_(ex->lightcolor, 1.0, 0.5, 0.5);
 	ex->ent.angles[1] = rand() % 360;
 
 	int model_idx = rand() % (sizeof(cl_mod_explosions) / sizeof(*cl_mod_explosions));
@@ -259,7 +259,7 @@ void CLG_SmokeAndFlash(vec3_t origin)
 	explosion_t* ex;
 
 	ex = CLG_AllocExplosion();
-	Vec3_Copy(origin, ex->ent.origin);
+	Vec3_Copy_(origin, ex->ent.origin);
 	ex->type = explosion_t::ex_misc; // CPP: Enum
 	ex->frames = 4;
 	ex->ent.flags = RF_TRANSLUCENT | RF_NOSHADOW;
@@ -267,7 +267,7 @@ void CLG_SmokeAndFlash(vec3_t origin)
 	ex->ent.model = cl_mod_smoke;
 
 	ex = CLG_AllocExplosion();
-	Vec3_Copy(origin, ex->ent.origin);
+	Vec3_Copy_(origin, ex->ent.origin);
 	ex->type = explosion_t::ex_flash; // CPP: Enum
 	ex->ent.flags = RF_FULLBRIGHT;
 	ex->frames = 2;
@@ -342,12 +342,12 @@ static void CLG_AddExplosionLight(explosion_t* ex, float phase)
 	vec3_t origin;
 	vec3_t up;
 	AngleVectors(ex->ent.angles, NULL, NULL, up);
-	Vec3_MA(ex->ent.origin, offset, up, origin);
+	Vec3_MA_(ex->ent.origin, offset, up, origin);
 
 	vec3_t color;
 	Vec3_Clear(color);
-	Vec3_MA(color, w0, s0->color, color);
-	Vec3_MA(color, w1, s1->color, color);
+	Vec3_MA_(color, w0, s0->color, color);
+	Vec3_MA_(color, w1, s1->color, color);
 
 	V_AddLightEx(origin, 500.f, color[0], color[1], color[2], radius);
 }
@@ -443,7 +443,7 @@ static void CLG_AddExplosions(void)
 		}
 
 		if (ex->type != explosion_t::ex_light) {
-			Vec3_Copy(ent->origin, ent->oldorigin);
+			Vec3_Copy_(ent->origin, ent->oldorigin);
 
 			if (f < 0)
 				f = 0;
@@ -502,9 +502,9 @@ static void CLG_ParseBeam(qhandle_t model)
 			b->dest_entity = teParameters.entity2;
 			b->model = model;
 			b->endtime = cl->time + 200;
-			Vec3_Copy(teParameters.pos1, b->start);
-			Vec3_Copy(teParameters.pos2, b->end);
-			Vec3_Copy(teParameters.offset, b->offset);
+			Vec3_Copy_(teParameters.pos1, b->start);
+			Vec3_Copy_(teParameters.pos2, b->end);
+			Vec3_Copy_(teParameters.offset, b->offset);
 			return;
 		}
 	}
@@ -521,9 +521,9 @@ static void CLG_ParsePlayerBeam(qhandle_t model)
 			b->entity = teParameters.entity1;
 			b->model = model;
 			b->endtime = cl->time + 200;
-			Vec3_Copy(teParameters.pos1, b->start);
-			Vec3_Copy(teParameters.pos2, b->end);
-			Vec3_Copy(teParameters.offset, b->offset);
+			Vec3_Copy_(teParameters.pos1, b->start);
+			Vec3_Copy_(teParameters.pos2, b->end);
+			Vec3_Copy_(teParameters.offset, b->offset);
 			return;
 		}
 	}
@@ -534,9 +534,9 @@ static void CLG_ParsePlayerBeam(qhandle_t model)
 			b->entity = teParameters.entity1;
 			b->model = model;
 			b->endtime = cl->time + 100;     // PMM - this needs to be 100 to prevent multiple heatbeams
-			Vec3_Copy(teParameters.pos1, b->start);
-			Vec3_Copy(teParameters.pos2, b->end);
-			Vec3_Copy(teParameters.offset, b->offset);
+			Vec3_Copy_(teParameters.pos1, b->start);
+			Vec3_Copy_(teParameters.pos2, b->end);
+			Vec3_Copy_(teParameters.offset, b->offset);
 			return;
 		}
 	}
@@ -593,7 +593,7 @@ static void CLG_AddBeams(void)
 		// flip it around & draw it from the end to the start.  This prevents the model from going
 		// through the tesla mine (instead it goes through the target)
 		if ((b->model == cl_mod_lightning) && (d <= model_length)) {
-			Vec3_Copy(b->end, ent.origin);
+			Vec3_Copy_(b->end, ent.origin);
 			ent.flags = RF_FULLBRIGHT;
 			ent.angles[0] = angles[0];
 			ent.angles[1] = angles[1];
@@ -603,7 +603,7 @@ static void CLG_AddBeams(void)
 		}
 
 		while (d > 0) {
-			Vec3_Copy(org, ent.origin);
+			Vec3_Copy_(org, ent.origin);
 			if (b->model == cl_mod_lightning) {
 				ent.flags = RF_FULLBRIGHT;
 				ent.angles[0] = -angles[0];
@@ -667,11 +667,11 @@ static void CLG_AddPlayerBeams(void)
 				b->start[j] = cl->refdef.vieworg[j] + ops->gunoffset[j] +
 				CL_KEYLERPFRAC * (ps->gunoffset[j] - ops->gunoffset[j]);
 
-			Vec3_MA(b->start, (hand_multiplier * b->offset[0]), cl->v_right, org);
-			Vec3_MA(org, b->offset[1], cl->v_forward, org);
-			Vec3_MA(org, b->offset[2], cl->v_up, org);
+			Vec3_MA_(b->start, (hand_multiplier * b->offset[0]), cl->v_right, org);
+			Vec3_MA_(org, b->offset[1], cl->v_forward, org);
+			Vec3_MA_(org, b->offset[2], cl->v_up, org);
 			if (info_hand->integer == 2)
-				Vec3_MA(org, -1, cl->v_up, org);
+				Vec3_MA_(org, -1, cl->v_up, org);
 
 			// calculate pitch and yaw
 			Vec3_Subtract(b->end, org, dist);
@@ -679,11 +679,11 @@ static void CLG_AddPlayerBeams(void)
 			// FIXME: don't add offset twice?
 			d = Vec3_Length(dist);
 			Vec3_Scale(cl->v_forward, d, dist);
-			Vec3_MA(dist, (hand_multiplier * b->offset[0]), cl->v_right, dist);
-			Vec3_MA(dist, b->offset[1], cl->v_forward, dist);
-			Vec3_MA(dist, b->offset[2], cl->v_up, dist);
+			Vec3_MA_(dist, (hand_multiplier * b->offset[0]), cl->v_right, dist);
+			Vec3_MA_(dist, b->offset[1], cl->v_forward, dist);
+			Vec3_MA_(dist, b->offset[2], cl->v_up, dist);
 			if (info_hand->integer == 2)
-				Vec3_MA(org, -1, cl->v_up, org);
+				Vec3_MA_(org, -1, cl->v_up, org);
 
 			// FIXME: use cl.refdef.viewangles?
 			vectoangles2(dist, angles);
@@ -694,7 +694,7 @@ static void CLG_AddPlayerBeams(void)
 			framenum = 1;
 		}
 		else {
-			Vec3_Copy(b->start, org);
+			Vec3_Copy_(b->start, org);
 
 			// calculate pitch and yaw
 			Vec3_Subtract(b->end, org, dist);
@@ -709,9 +709,9 @@ static void CLG_AddPlayerBeams(void)
 				tmp[2] = 0;
 				AngleVectors(tmp, f, r, u);
 
-				Vec3_MA(org, -b->offset[0] + 1, r, org);
-				Vec3_MA(org, -b->offset[1], f, org);
-				Vec3_MA(org, -b->offset[2] - 10, u, org);
+				Vec3_MA_(org, -b->offset[0] + 1, r, org);
+				Vec3_MA_(org, -b->offset[1], f, org);
+				Vec3_MA_(org, -b->offset[2] - 10, u, org);
 			}
 			else {
 				// if it's a monster, do the particle effect
@@ -736,7 +736,7 @@ static void CLG_AddPlayerBeams(void)
 		ent.angles[2] = cl->time % 360;
 
 		while (d > 0) {
-			Vec3_Copy(org, ent.origin);
+			Vec3_Copy_(org, ent.origin);
 
 			V_AddEntity(&ent);
 
@@ -807,8 +807,8 @@ static void CLG_ParseSteam(void)
 
 	s->id = teParameters.entity1;
 	s->count = teParameters.count;
-	Vec3_Copy(teParameters.pos1, s->org);
-	Vec3_Copy(teParameters.dir, s->dir);
+	Vec3_Copy_(teParameters.pos1, s->org);
+	Vec3_Copy_(teParameters.dir, s->dir);
 	s->color = teParameters.color & 0xff;
 	s->magnitude = teParameters.entity2;
 	s->endtime = cl->time + teParameters.time;
@@ -826,7 +826,7 @@ static void CLG_ParseWidow(void)
 		return;
 
 	s->id = teParameters.entity1;
-	Vec3_Copy(teParameters.pos1, s->org);
+	Vec3_Copy_(teParameters.pos1, s->org);
 	s->endtime = cl->time + 2100;
 	s->think = CLG_Widowbeamout;
 	s->thinkinterval = 1;
@@ -842,7 +842,7 @@ static void CLG_ParseNuke(void)
 		return;
 
 	s->id = 21000;
-	Vec3_Copy(teParameters.pos1, s->org);
+	Vec3_Copy_(teParameters.pos1, s->org);
 	s->endtime = cl->time + 1000;
 	s->think = CLG_Nukeblast;
 	s->thinkinterval = 1;
@@ -865,8 +865,8 @@ static void CLG_RailCore(void)
 	if (!l)
 		return;
 
-	Vec3_Copy(teParameters.pos1, l->start);
-	Vec3_Copy(teParameters.pos2, l->end);
+	Vec3_Copy_(teParameters.pos1, l->start);
+	Vec3_Copy_(teParameters.pos2, l->end);
 	l->color = -1;
 	l->lifetime = 1000 * cl_railtrail_time->value;
 	l->width = cl_railcore_width->integer;
@@ -885,7 +885,7 @@ static void CLG_RailSpiral(void)
 	float       d, c, s;
 	vec3_t      dir;
 
-	Vec3_Copy(teParameters.pos1, move);
+	Vec3_Copy_(teParameters.pos1, move);
 	Vec3_Subtract(teParameters.pos2, teParameters.pos1, vec);
 	len = VectorNormalize(vec);
 
@@ -904,7 +904,7 @@ static void CLG_RailSpiral(void)
 		s = sin(d);
 
 		Vec3_Scale(right, c, dir);
-		Vec3_MA(dir, s, up, dir);
+		Vec3_MA_(dir, s, up, dir);
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (cl_railtrail_time->value + frand() * 0.2);
@@ -931,7 +931,7 @@ static void CLG_RailLights(color_t color)
 	vec3_t      vec;
 	float       len;
 
-	Vec3_Copy(teParameters.pos1, move);
+	Vec3_Copy_(teParameters.pos1, move);
 	Vec3_Subtract(teParameters.pos2, teParameters.pos1, vec);
 	len = VectorNormalize(vec);
 
@@ -942,11 +942,11 @@ static void CLG_RailLights(color_t color)
 	{
 		float offset = (segment + 0.25f) * segment_size;
 		vec3_t pos;
-		Vec3_MA(move, offset, vec, pos);
+		Vec3_MA_(move, offset, vec, pos);
 
 		cdlight_t* dl = CLG_AllocDLight(0);
 		Vec3_Scale(fcolor, 0.25f, dl->color);
-		Vec3_Copy(pos, dl->origin);
+		Vec3_Copy_(pos, dl->origin);
 		dl->radius = 400;
 		dl->decay = 400;
 		dl->die = cl->time + 1000;
@@ -1087,7 +1087,7 @@ void CLG_ParseTempEntity(void)
 	case TE_FLECHETTE:          // flechette
 	case TE_FLARE:              // flare
 		ex = CLG_AllocExplosion();
-		Vec3_Copy(teParameters.pos1, ex->ent.origin);
+		Vec3_Copy_(teParameters.pos1, ex->ent.origin);
 		dirtoangles(ex->ent.angles);
 		ex->type = explosion_t::ex_blaster;
 		ex->ent.flags = RF_FULLBRIGHT | RF_TRANSLUCENT;
@@ -1210,7 +1210,7 @@ void CLG_ParseTempEntity(void)
 
 	case TE_BFG_EXPLOSION:
 		ex = CLG_AllocExplosion();
-		Vec3_Copy(teParameters.pos1, ex->ent.origin);
+		Vec3_Copy_(teParameters.pos1, ex->ent.origin);
 		ex->type = explosion_t::ex_poly;
 		ex->ent.flags = RF_FULLBRIGHT;
 		ex->start = cl->servertime - CL_FRAMETIME;
@@ -1257,7 +1257,7 @@ void CLG_ParseTempEntity(void)
 		CLG_ParticleEffect2(teParameters.pos1, teParameters.dir, teParameters.color, teParameters.count);
 
 		ex = CLG_AllocExplosion();
-		Vec3_Copy(teParameters.pos1, ex->ent.origin);
+		Vec3_Copy_(teParameters.pos1, ex->ent.origin);
 		ex->type = explosion_t::ex_flash;
 		// note to self
 		// we need a better no draw flag
@@ -1304,7 +1304,7 @@ void CLG_ParseTempEntity(void)
 		break;
 
 	case TE_HEATBEAM:
-		Vec3_Set(teParameters.offset, 2, 7, -3);
+		Vec3_Set_(teParameters.offset, 2, 7, -3);
 		CLG_ParsePlayerBeam(cl_mod_heatbeam);
 		break;
 
@@ -1337,7 +1337,7 @@ void CLG_ParseTempEntity(void)
 		break;
 
 	case TE_CHAINFIST_SMOKE:
-		Vec3_Set(teParameters.dir, 0, 0, 1);
+		Vec3_Set_(teParameters.dir, 0, 0, 1);
 		CLG_ParticleSmokeEffect(teParameters.pos1, teParameters.dir, 0, 20, 20);
 		break;
 

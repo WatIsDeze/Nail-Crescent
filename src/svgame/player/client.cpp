@@ -75,7 +75,7 @@ void SP_CreateCoopSpots(edict_t *self)
         spot->s.origin[1] = -164;
         spot->s.origin[2] = 80;
         spot->targetname = "jail3";
-        spot->s.angles[1] = 90;
+        spot->s.angles.xyz[1] = 90;
 
         spot = G_Spawn();
         spot->classname = "info_player_coop";
@@ -83,7 +83,7 @@ void SP_CreateCoopSpots(edict_t *self)
         spot->s.origin[1] = -164;
         spot->s.origin[2] = 80;
         spot->targetname = "jail3";
-        spot->s.angles[1] = 90;
+        spot->s.angles.xyz[1] = 90;
 
         spot = G_Spawn();
         spot->classname = "info_player_coop";
@@ -91,7 +91,7 @@ void SP_CreateCoopSpots(edict_t *self)
         spot->s.origin[1] = -164;
         spot->s.origin[2] = 80;
         spot->targetname = "jail3";
-        spot->s.angles[1] = 90;
+        spot->s.angles.xyz[1] = 90;
 
         return;
     }
@@ -485,8 +485,8 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
 
     self->s.modelindex2 = 0;    // remove linked weapon model
 
-    self->s.angles[0] = 0;
-    self->s.angles[2] = 0;
+    self->s.angles.xyz[0] = 0;
+    self->s.angles.xyz[2] = 0;
 
     self->s.sound = 0;
     self->client->weapon_sound = 0;
@@ -877,9 +877,9 @@ void    SelectSpawnPoint(edict_t *ent, vec3_t origin, vec3_t angles)
         }
     }
 
-    Vec3_Copy(spot->s.origin, origin);
+    Vec3_Copy_(spot->s.origin, origin);
     origin[2] += 9;
-    Vec3_Copy(spot->s.angles, angles);
+    Vec3_Copy_(spot->s.angles, angles);
 }
 
 //======================================================================
@@ -936,13 +936,13 @@ void CopyToBodyQue(edict_t *ent)
     body->s.event = EV_OTHER_TELEPORT;
 
     body->svflags = ent->svflags;
-    Vec3_Copy(ent->mins, body->mins);
-    Vec3_Copy(ent->maxs, body->maxs);
-    Vec3_Copy(ent->absmin, body->absmin);
-    Vec3_Copy(ent->absmax, body->absmax);
-    Vec3_Copy(ent->size, body->size);
-    Vec3_Copy(ent->velocity, body->velocity);
-    Vec3_Copy(ent->avelocity, body->avelocity);
+    Vec3_Copy_(ent->mins, body->mins);
+    Vec3_Copy_(ent->maxs, body->maxs);
+    Vec3_Copy_(ent->absmin, body->absmin);
+    Vec3_Copy_(ent->absmax, body->absmax);
+    Vec3_Copy_(ent->size, body->size);
+    Vec3_Copy_(ent->velocity, body->velocity);
+    Vec3_Copy_(ent->avelocity, body->avelocity);
     body->solid = ent->solid;
     body->clipmask = ent->clipmask;
     body->owner = ent->owner;
@@ -1159,15 +1159,15 @@ void PutClientInServer(edict_t *ent)
     ent->flags &= ~FL_NO_KNOCKBACK;
     ent->svflags &= ~SVF_DEADMONSTER;
 
-    Vec3_Copy(mins, ent->mins);
-    Vec3_Copy(maxs, ent->maxs);
+    Vec3_Copy_(mins, ent->mins);
+    Vec3_Copy_(maxs, ent->maxs);
     Vec3_Clear(ent->velocity);
 
     // clear playerstate values
     memset(&ent->client->ps, 0, sizeof(client->ps));
 
     // N&C: FF Precision.
-    Vec3_Copy(spawn_origin, client->ps.pmove.origin);
+    Vec3_Copy_(spawn_origin, client->ps.pmove.origin);
     //client->ps.pmove.origin[0] = spawn_origin[0] * 8;
     //client->ps.pmove.origin[1] = spawn_origin[1] * 8;
     //client->ps.pmove.origin[2] = spawn_origin[2] * 8;
@@ -1193,9 +1193,9 @@ void PutClientInServer(edict_t *ent)
     ent->s.skinnum = ent - g_edicts - 1;
 
     ent->s.frame = 0;
-    Vec3_Copy(spawn_origin, ent->s.origin);
+    Vec3_Copy_(spawn_origin, ent->s.origin);
     ent->s.origin[2] += 1;  // make sure off ground
-    Vec3_Copy(ent->s.origin, ent->s.old_origin);
+    Vec3_Copy_(ent->s.origin, ent->s.old_origin);
 
     // set the delta angle
     for (i = 0 ; i < 3 ; i++) {
@@ -1205,8 +1205,8 @@ void PutClientInServer(edict_t *ent)
     ent->s.angles[PITCH] = 0;
     ent->s.angles[YAW] = spawn_angles[YAW];
     ent->s.angles[ROLL] = 0;
-    Vec3_Copy(ent->s.angles, client->ps.viewangles);
-    Vec3_Copy(ent->s.angles, client->v_angle);
+    Vec3_Copy_(ent->s.angles, client->ps.viewangles);
+    Vec3_Copy_(ent->s.angles, client->v_angle);
 
     // spawn a spectator
     if (client->pers.spectator) {
@@ -1588,8 +1588,8 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
         pm.state = client->ps.pmove;
 
         // N&C: FF Precision.
-        Vec3_Copy(ent->s.origin, pm.state.origin);
-        Vec3_Copy(ent->velocity, pm.state.velocity);
+        Vec3_Copy_(ent->s.origin, pm.state.origin);
+        Vec3_Copy_(ent->velocity, pm.state.velocity);
         //for (i = 0 ; i < 3 ; i++) {
         //    pm.state.origin[i] = ent->s.origin[i] * 8;
         //    pm.state.velocity[i] = ent->velocity[i] * 8;
@@ -1614,15 +1614,15 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
         client->old_pmove = pm.state;
 
         // N&C: FF Precision.
-        Vec3_Copy(pm.state.origin, ent->s.origin);
-        Vec3_Copy(pm.state.velocity, ent->velocity);
+        Vec3_Copy_(pm.state.origin, ent->s.origin);
+        Vec3_Copy_(pm.state.velocity, ent->velocity);
         //for (i = 0 ; i < 3 ; i++) {
         //    ent->s.origin[i] = pm.state.origin[i] * 0.125;
         //    ent->velocity[i] = pm.state.velocity[i] * 0.125;
         //}
 
-        Vec3_Copy(pm.mins, ent->mins);
-        Vec3_Copy(pm.maxs, ent->maxs);
+        Vec3_Copy_(pm.mins, ent->mins);
+        Vec3_Copy_(pm.maxs, ent->maxs);
 
         client->resp.cmd_angles[0] = SHORT2ANGLE(ucmd->angles[0]);
         client->resp.cmd_angles[1] = SHORT2ANGLE(ucmd->angles[1]);
@@ -1645,8 +1645,8 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
             client->ps.viewangles[PITCH] = -15;
             client->ps.viewangles[YAW] = client->killer_yaw;
         } else {
-            Vec3_Copy(pm.viewAngles, client->v_angle);
-            Vec3_Copy(pm.viewAngles, client->ps.viewangles);
+            Vec3_Copy_(pm.viewAngles, client->v_angle);
+            Vec3_Copy_(pm.viewAngles, client->ps.viewangles);
         }
 
         gi.linkentity(ent);

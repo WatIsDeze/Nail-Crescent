@@ -86,8 +86,8 @@ static void SV_EmitPacketEntities(client_t         *client,
             }
             if (newnum == clientEntityNum) {
                 flags = (msgEsFlags_t)(flags | MSG_ES_FIRSTPERSON);
-                newent->origin = oldent->origin;// MATHLIB: Vec3_Copy(oldent->origin, newent->origin);
-                newent->angles = oldent->angles;// MATHLIB: Vec3_Copy(oldent->angles, newent->angles);
+                newent->origin = oldent->origin;// MATHLIB: Vec3_Copy_(oldent->origin, newent->origin);
+                newent->angles = oldent->angles;// MATHLIB: Vec3_Copy_(oldent->angles, newent->angles);
             }
 
             flags = (msgEsFlags_t)(flags | MSG_ES_SHORTANGLES);
@@ -109,8 +109,8 @@ static void SV_EmitPacketEntities(client_t         *client,
             }
             if (newnum == clientEntityNum) {
                 flags = (msgEsFlags_t)(flags | MSG_ES_FIRSTPERSON); // CPP: Cast flags |= MSG_ES_FIRSTPERSON;
-                newent->origin = oldent->origin;// MATHLIB: Vec3_Copy(oldent->origin, newent->origin);
-                newent->angles = oldent->angles;// MATHLIB: Vec3_Copy(oldent->angles, newent->angles);
+                newent->origin = oldent->origin;// MATHLIB: Vec3_Copy_(oldent->origin, newent->origin);
+                newent->angles = oldent->angles;// MATHLIB: Vec3_Copy_(oldent->angles, newent->angles);
             }
             flags = (msgEsFlags_t)(flags | MSG_ES_SHORTANGLES); // CPP: Cast flags |= MSG_ES_SHORTANGLES;
             MSG_WriteDeltaEntity(oldent, newent, flags);
@@ -333,7 +333,7 @@ fix_old_origin(client_t *client, entity_packed_t *state, edict_t *ent, int e)
 
     if (state->event == EV_PLAYER_TELEPORT && !Q2PRO_OPTIMIZE(client)) {
         // other clients will lerp from old_origin on EV_PLAYER_TELEPORT...
-        Vec3_Copy(state->origin, state->old_origin);
+        Vec3_Copy_(state->origin, state->old_origin);
         return;
     }
 
@@ -399,7 +399,7 @@ void SV_BuildClientFrame(client_t *client)
     ps = &clent->client->ps;
     // N&C: FF Precision.
     Vec3_Add_(ps->viewoffset, ps->pmove.origin, org);
-    //Vec3_MA(ps->viewoffset, 0.125f, ps->pmove.origin, org);
+    //Vec3_MA_(ps->viewoffset, 0.125f, ps->pmove.origin, org);
 
     leaf = CM_PointLeaf(client->cm, org);
     clientarea = CM_LeafArea(leaf);

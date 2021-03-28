@@ -603,7 +603,7 @@ vkpt_extract_emissive_texture_info(image_t *image)
 	}
 	else
 	{
-		Vec3_Set(image->light_color, 0.f, 0.f, 0.f);
+		Vec3_Set_(image->light_color, 0.f, 0.f, 0.f);
 	}
 
 	image->min_light_texcoord[0] = (float)min_x / (float)w;

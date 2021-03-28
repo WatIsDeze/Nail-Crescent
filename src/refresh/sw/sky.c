@@ -82,8 +82,8 @@ void R_InitSkyBox(void)
         r_skyplanes[i].normal[box_planes[i * 2]] = 1;
         r_skyplanes[i].dist = box_planes[i * 2 + 1];
 
-        Vec3_Copy(box_axis[i][0], r_skytexinfo[i].axis[0]);
-        Vec3_Copy(box_axis[i][1], r_skytexinfo[i].axis[1]);
+        Vec3_Copy_(box_axis[i][0], r_skytexinfo[i].axis[0]);
+        Vec3_Copy_(box_axis[i][1], r_skytexinfo[i].axis[1]);
 
         r_skyfaces[i].plane = &r_skyplanes[i];
         r_skyfaces[i].drawflags = box_flags[i] | DSURF_SKY;
@@ -163,7 +163,7 @@ void R_SetSky(const char *name, float rotate, vec3_t axis)
     char    path[MAX_QPATH];
 
 //    sky_rotate = rotate;
-//    Vec3_Copy(axis, sky_axis);
+//    Vec3_Copy_(axis, sky_axis);
 
     for (i = 0; i < 6; i++) {
         Q_concat(path, sizeof(path), "env/", name,

@@ -448,7 +448,7 @@ static int R_DrawEntities(int translucent)
             modelorg[0] = -r_origin[0];
             modelorg[1] = -r_origin[1];
             modelorg[2] = -r_origin[2];
-            Vec3_Copy(vec3_origin, r_entorigin);
+            Vec3_Copy_(vec3_origin, r_entorigin);
             R_DrawBeam(currententity);
         } else {
             if (currententity->model & 0x80000000) {
@@ -459,7 +459,7 @@ static int R_DrawEntities(int translucent)
                 R_DrawNullModel();
                 continue;
             }
-            Vec3_Copy(currententity->origin, r_entorigin);
+            Vec3_Copy_(currententity->origin, r_entorigin);
             Vec3_Subtract(r_origin, r_entorigin, modelorg);
 
             switch (currentmodel->type) {
@@ -596,8 +596,8 @@ static void RotatedBBox(vec3_t mins, vec3_t maxs, vec3_t angles,
     vec3_t  forward, right, up;
 
     if (!angles[0] && !angles[1] && !angles[2]) {
-        Vec3_Copy(mins, tmins);
-        Vec3_Copy(maxs, tmaxs);
+        Vec3_Copy_(mins, tmins);
+        Vec3_Copy_(maxs, tmaxs);
         return;
     }
 
@@ -626,8 +626,8 @@ static void RotatedBBox(vec3_t mins, vec3_t maxs, vec3_t angles,
 
 
         Vec3_Scale(forward, tmp[0], v);
-        Vec3_MA(v, -tmp[1], right, v);
-        Vec3_MA(v, tmp[2], up, v);
+        Vec3_MA_(v, -tmp[1], right, v);
+        Vec3_MA_(v, tmp[2], up, v);
 
         for (j = 0; j < 3; j++) {
             if (v[j] < tmins[j])
@@ -655,7 +655,7 @@ static void R_DrawBEntitiesOnList(void)
     if (!r_drawentities->integer)
         return;
 
-    Vec3_Copy(modelorg, oldorigin);
+    Vec3_Copy_(modelorg, oldorigin);
     insubmodel = true;
     r_dlightframecount = r_framecount;
 
@@ -690,7 +690,7 @@ static void R_DrawBEntitiesOnList(void)
         if (!topnode)
             continue;   // no part in a visible leaf
 
-        Vec3_Copy(currententity->origin, r_entorigin);
+        Vec3_Copy_(currententity->origin, r_entorigin);
         Vec3_Subtract(r_origin, r_entorigin, modelorg);
 
         // FIXME: stop transforming twice
@@ -712,10 +712,10 @@ static void R_DrawBEntitiesOnList(void)
 
         // put back world rotation and frustum clipping
         // FIXME: R_RotateBmodel should just work off base_vxx
-        Vec3_Copy(base_vpn, vpn);
-        Vec3_Copy(base_vup, vup);
-        Vec3_Copy(base_vright, vright);
-        Vec3_Copy(oldorigin, modelorg);
+        Vec3_Copy_(base_vpn, vpn);
+        Vec3_Copy_(base_vup, vup);
+        Vec3_Copy_(base_vright, vright);
+        Vec3_Copy_(oldorigin, modelorg);
         R_TransformFrustum();
     }
 

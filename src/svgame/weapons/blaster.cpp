@@ -34,7 +34,7 @@ void Blaster_Fire(edict_t* ent, vec3_t g_offset, int damage, qboolean hyper, int
     if (is_quad)
         damage *= 4;
     AngleVectors(ent->client->v_angle, forward, right, NULL);
-    Vec3_Set(offset, 24, 8, ent->viewheight - 8);
+    Vec3_Set_(offset, 24, 8, ent->viewheight - 8);
     Vec3_Add(offset, g_offset, offset);
     P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
 

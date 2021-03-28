@@ -496,7 +496,7 @@ void vkpt_shadow_map_setup(const sun_light_t* light, const float* bbox_min, cons
 {
 	vec3_t up_dir = { 0.0f, 0.0f, 1.0f };
 	if (light->direction[2] >= 0.99f)
-		Vec3_Set(up_dir, 1.f, 0.f, 0.f);
+		Vec3_Set_(up_dir, 1.f, 0.f, 0.f);
 
 	vec3_t look_dir;
 	Vec3_Scale(light->direction, -1.f, look_dir);
@@ -512,8 +512,8 @@ void vkpt_shadow_map_setup(const sun_light_t* light, const float* bbox_min, cons
 		float u, v;
 		sample_disk(&u, &v);
 		
-		Vec3_MA(look_dir, u * light->angular_size_rad * 0.5f, left_dir, look_dir);
-		Vec3_MA(look_dir, v * light->angular_size_rad * 0.5f, up_dir, look_dir);
+		Vec3_MA_(look_dir, u * light->angular_size_rad * 0.5f, left_dir, look_dir);
+		Vec3_MA_(look_dir, v * light->angular_size_rad * 0.5f, up_dir, look_dir);
 
 		VectorNormalize(look_dir);
 

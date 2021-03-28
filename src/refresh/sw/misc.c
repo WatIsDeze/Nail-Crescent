@@ -81,7 +81,7 @@ void R_TransformFrustum(void)
         v2[1] = v[1] * vright[1] + v[2] * vup[1] + v[0] * vpn[1];
         v2[2] = v[1] * vright[2] + v[2] * vup[2] + v[0] * vpn[2];
 
-        Vec3_Copy(v2, view_clipplanes[i].normal);
+        Vec3_Copy_(v2, view_clipplanes[i].normal);
 
         view_clipplanes[i].dist = Vec3_Dot(modelorg, v2);
     }
@@ -254,8 +254,8 @@ void R_SetupFrame(void)
 
 
 // build the transformation matrix for the given view angles
-    Vec3_Copy(r_newrefdef.vieworg, modelorg);
-    Vec3_Copy(r_newrefdef.vieworg, r_origin);
+    Vec3_Copy_(r_newrefdef.vieworg, modelorg);
+    Vec3_Copy_(r_newrefdef.vieworg, r_origin);
 
     AngleVectors(r_newrefdef.viewangles, vpn, vright, vup);
 
@@ -296,9 +296,9 @@ void R_SetupFrame(void)
     R_SetUpFrustumIndexes();
 
 // save base values
-    Vec3_Copy(vpn, base_vpn);
-    Vec3_Copy(vright, base_vright);
-    Vec3_Copy(vup, base_vup);
+    Vec3_Copy_(vpn, base_vpn);
+    Vec3_Copy_(vright, base_vright);
+    Vec3_Copy_(vup, base_vup);
 
 // clear frame counts
     c_faceclip = 0;

@@ -18,7 +18,7 @@ void misc_viper_bomb_touch(edict_t* self, edict_t* other, cplane_t* plane, csurf
 {
     G_UseTargets(self, self->activator);
 
-    self->s.origin[2] = self->absmin[2] + 1;
+    self->s.origin.z = self->absmin.z + 1;
     T_RadiusDamage(self, self, self->dmg, NULL, self->dmg + 40, MOD_BOMB);
     BecomeExplosion2(self);
 }
@@ -34,12 +34,12 @@ void misc_viper_bomb_prethink(edict_t* self)
     if (diff < -1.0)
         diff = -1.0;
 
-    Vec3_Scale(self->moveinfo.dir, 1.0 + diff, v);
+    Vec3_Scale_(self->moveinfo.dir, 1.0 + diff, v);
     v[2] = diff;
 
-    diff = self->s.angles[2];
+    diff = self->s.angles.z;
     vectoangles(v, self->s.angles);
-    self->s.angles[2] = diff + 10;
+    self->s.angles.z = diff + 10;
 }
 
 void misc_viper_bomb_use(edict_t* self, edict_t* other, edict_t* activator)
@@ -59,15 +59,15 @@ void misc_viper_bomb_use(edict_t* self, edict_t* other, edict_t* activator)
     Vec3_Scale(viper->moveinfo.dir, viper->moveinfo.speed, self->velocity);
 
     self->timestamp = level.time;
-    Vec3_Copy(viper->moveinfo.dir, self->moveinfo.dir);
+    Vec3_Copy_(viper->moveinfo.dir, self->moveinfo.dir);
 }
 
 void SP_misc_viper_bomb(edict_t* self)
 {
     self->movetype = MOVETYPE_NONE;
     self->solid = SOLID_NOT;
-    Vec3_Set(self->mins, -8, -8, -8);
-    Vec3_Set(self->maxs, 8, 8, 8);
+    Vec3_Set_(self->mins, -8, -8, -8);
+    Vec3_Set_(self->maxs, 8, 8, 8);
 
     self->s.modelindex = gi.modelindex("models/objects/bomb/tris.md2");
 

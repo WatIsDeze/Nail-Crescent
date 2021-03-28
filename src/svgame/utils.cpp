@@ -296,9 +296,9 @@ vec3_t MOVEDIR_DOWN = {0, 0, -1};
 void G_SetMovedir(vec3_t angles, vec3_t movedir)
 {
     if (Vec3_Compare(angles, VEC_UP)) {
-        Vec3_Copy(MOVEDIR_UP, movedir);
+        Vec3_Copy_(MOVEDIR_UP, movedir);
     } else if (Vec3_Compare(angles, VEC_DOWN)) {
-        Vec3_Copy(MOVEDIR_DOWN, movedir);
+        Vec3_Copy_(MOVEDIR_DOWN, movedir);
     } else {
         AngleVectors(angles, movedir, NULL, NULL);
     }

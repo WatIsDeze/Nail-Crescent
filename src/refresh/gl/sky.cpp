@@ -180,23 +180,23 @@ static void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
     // clip it
     sides[i] = sides[0];
     dists[i] = dists[0];
-    Vec3_Copy(vecs, (vecs + (i * 3)));
+    Vec3_Copy_(vecs, (vecs + (i * 3)));
     newc[0] = newc[1] = 0;
 
     for (i = 0, v = vecs; i < nump; i++, v += 3) {
         switch (sides[i]) {
         case SIDE_FRONT:
-            Vec3_Copy(v, newv[0][newc[0]]);
+            Vec3_Copy_(v, newv[0][newc[0]]);
             newc[0]++;
             break;
         case SIDE_BACK:
-            Vec3_Copy(v, newv[1][newc[1]]);
+            Vec3_Copy_(v, newv[1][newc[1]]);
             newc[1]++;
             break;
         case SIDE_ON:
-            Vec3_Copy(v, newv[0][newc[0]]);
+            Vec3_Copy_(v, newv[0][newc[0]]);
             newc[0]++;
-            Vec3_Copy(v, newv[1][newc[1]]);
+            Vec3_Copy_(v, newv[1][newc[1]]);
             newc[1]++;
             break;
         }

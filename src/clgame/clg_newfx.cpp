@@ -17,7 +17,7 @@ void CLG_Flashlight(int ent, vec3_t pos)
     cdlight_t* dl;
 
     dl = CLG_AllocDLight(ent);
-    Vec3_Copy(pos, dl->origin);
+    Vec3_Copy_(pos, dl->origin);
     dl->radius = 400;
     //dl->minlight = 250;
     dl->die = cl->time + 100;
@@ -36,7 +36,7 @@ void CLG_ColorFlash(vec3_t pos, int ent, int intensity, float r, float g, float 
     cdlight_t* dl;
 
     dl = CLG_AllocDLight(ent);
-    Vec3_Copy(pos, dl->origin);
+    Vec3_Copy_(pos, dl->origin);
     dl->radius = intensity;
     //dl->minlight = 250;
     dl->die = cl->time + 100;
@@ -61,7 +61,7 @@ void CLG_DebugTrail(vec3_t start, vec3_t end)
     float       dec;
     vec3_t      right, up;
 
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
     Vec3_Subtract(end, start, vec);
     len = VectorNormalize(vec);
 
@@ -69,7 +69,7 @@ void CLG_DebugTrail(vec3_t start, vec3_t end)
 
     dec = 3;
     Vec3_Scale(vec, dec, vec);
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
 
     while (len > 0) {
         len -= dec;
@@ -84,7 +84,7 @@ void CLG_DebugTrail(vec3_t start, vec3_t end)
         p->alpha = 1.0;
         p->alphavel = -0.1;
         p->color = 0x74 + (rand() & 7);
-        Vec3_Copy(move, p->org);
+        Vec3_Copy_(move, p->org);
         Vec3_Add(move, vec, move);
     }
 }
@@ -102,7 +102,7 @@ void CLG_SmokeTrail(vec3_t start, vec3_t end, int colorStart, int colorRun, int 
     int         j;
     cparticle_t* p;
 
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
     Vec3_Subtract(end, start, vec);
     len = VectorNormalize(vec);
 
@@ -140,7 +140,7 @@ void CLG_ForceWall(vec3_t start, vec3_t end, int color)
     int         j;
     cparticle_t* p;
 
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
     Vec3_Subtract(end, start, vec);
     len = VectorNormalize(vec);
 
@@ -226,7 +226,7 @@ void CLG_BubbleTrail2(vec3_t start, vec3_t end, int dist)
     cparticle_t* p;
     float       dec;
 
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
     Vec3_Subtract(end, start, vec);
     len = VectorNormalize(vec);
 
@@ -272,15 +272,15 @@ void CLG_Heatbeam(vec3_t start, vec3_t forward)
     float       variance;
     vec3_t      end;
 
-    Vec3_MA(start, 4096, forward, end);
+    Vec3_MA_(start, 4096, forward, end);
 
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
     Vec3_Subtract(end, start, vec);
     len = VectorNormalize(vec);
 
     ltime = (float)cl->time / 1000.0;
     start_pt = fmod(ltime * 96.0, step);
-    Vec3_MA(move, start_pt, vec, move);
+    Vec3_MA_(move, start_pt, vec, move);
 
     Vec3_Scale(vec, step, vec);
 
@@ -303,11 +303,11 @@ void CLG_Heatbeam(vec3_t start, vec3_t forward)
             // trim it so it looks like it's starting at the origin
             if (i < 10) {
                 Vec3_Scale(cl->v_right, c * (i / 10.0), dir);
-                Vec3_MA(dir, s * (i / 10.0), cl->v_up, dir);
+                Vec3_MA_(dir, s * (i / 10.0), cl->v_up, dir);
             }
             else {
                 Vec3_Scale(cl->v_right, c, dir);
-                Vec3_MA(dir, s, cl->v_up, dir);
+                Vec3_MA_(dir, s, cl->v_up, dir);
             }
 
             p->alpha = 0.5;
@@ -353,9 +353,9 @@ void CLG_ParticleSteamEffect(vec3_t org, vec3_t dir, int color, int count, int m
         }
         Vec3_Scale(dir, magnitude, p->vel);
         d = crand() * magnitude / 3;
-        Vec3_MA(p->vel, d, r, p->vel);
+        Vec3_MA_(p->vel, d, r, p->vel);
         d = crand() * magnitude / 3;
-        Vec3_MA(p->vel, d, u, p->vel);
+        Vec3_MA_(p->vel, d, u, p->vel);
 
         p->accel[0] = p->accel[1] = 0;
         p->accel[2] = -PARTICLE_GRAVITY / 2;
@@ -373,7 +373,7 @@ void CLG_ParticleSteamEffect2(cl_sustain_t* self)
     vec3_t      r, u;
     vec3_t      dir;
 
-    Vec3_Copy(self->dir, dir);
+    Vec3_Copy_(self->dir, dir);
     MakeNormalVectors(dir, r, u);
 
     for (i = 0; i < self->count; i++) {
@@ -389,9 +389,9 @@ void CLG_ParticleSteamEffect2(cl_sustain_t* self)
         }
         Vec3_Scale(dir, self->magnitude, p->vel);
         d = crand() * self->magnitude / 3;
-        Vec3_MA(p->vel, d, r, p->vel);
+        Vec3_MA_(p->vel, d, r, p->vel);
         d = crand() * self->magnitude / 3;
-        Vec3_MA(p->vel, d, u, p->vel);
+        Vec3_MA_(p->vel, d, u, p->vel);
 
         p->accel[0] = p->accel[1] = 0;
         p->accel[2] = -PARTICLE_GRAVITY / 2;
@@ -419,11 +419,11 @@ void CLG_TrackerTrail(vec3_t start, vec3_t end, int particleColor)
     int         dec;
     float       dist;
 
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
     Vec3_Subtract(end, start, vec);
     len = VectorNormalize(vec);
 
-    Vec3_Copy(vec, forward);
+    Vec3_Copy_(vec, forward);
     vectoangles2(forward, angle_dir);
     AngleVectors(angle_dir, forward, right, up);
 
@@ -445,7 +445,7 @@ void CLG_TrackerTrail(vec3_t start, vec3_t end, int particleColor)
         p->alphavel = -2.0;
         p->color = particleColor;
         dist = Vec3_Dot(move, forward);
-        Vec3_MA(move, 8 * cos(dist), up, p->org);
+        Vec3_MA_(move, 8 * cos(dist), up, p->org);
         for (j = 0; j < 3; j++) {
             p->vel[j] = 0;
             p->accel[j] = 0;
@@ -479,7 +479,7 @@ void CLG_Tracker_Shell(vec3_t origin)
         dir[2] = crand();
         VectorNormalize(dir);
 
-        Vec3_MA(origin, 40, dir, p->org);
+        Vec3_MA_(origin, 40, dir, p->org);
     }
 }
 
@@ -506,7 +506,7 @@ void CLG_MonsterPlasma_Shell(vec3_t origin)
         dir[2] = crand();
         VectorNormalize(dir);
 
-        Vec3_MA(origin, 10, dir, p->org);
+        Vec3_MA_(origin, 10, dir, p->org);
     }
 }
 
@@ -537,7 +537,7 @@ void CLG_Widowbeamout(cl_sustain_t* self)
         dir[2] = crand();
         VectorNormalize(dir);
 
-        Vec3_MA(self->org, (45.0 * ratio), dir, p->org);
+        Vec3_MA_(self->org, (45.0 * ratio), dir, p->org);
     }
 }
 
@@ -568,7 +568,7 @@ void CLG_Nukeblast(cl_sustain_t* self)
         dir[2] = crand();
         VectorNormalize(dir);
 
-        Vec3_MA(self->org, (200.0 * ratio), dir, p->org);
+        Vec3_MA_(self->org, (200.0 * ratio), dir, p->org);
     }
 }
 
@@ -591,8 +591,8 @@ void CLG_WidowSplash(void)
         dir[1] = crand();
         dir[2] = crand();
         VectorNormalize(dir);
-        Vec3_MA(teParameters.pos1, 45.0, dir, p->org);
-        Vec3_MA(vec3_origin, 40.0, dir, p->vel);
+        Vec3_MA_(teParameters.pos1, 45.0, dir, p->org);
+        Vec3_MA_(vec3_origin, 40.0, dir, p->vel);
 
         p->accel[0] = p->accel[1] = 0;
         p->alpha = 1.0;
@@ -625,7 +625,7 @@ void CLG_Tracker_Explode(vec3_t  origin)
         VectorNormalize(dir);
         Vec3_Scale(dir, -1, backdir);
 
-        Vec3_MA(origin, 64, dir, p->org);
+        Vec3_MA_(origin, 64, dir, p->org);
         Vec3_Scale(backdir, 64, p->vel);
     }
 }
@@ -645,7 +645,7 @@ void CLG_TagTrail(vec3_t start, vec3_t end, int color)
     cparticle_t* p;
     int         dec;
 
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
     Vec3_Subtract(end, start, vec);
     len = VectorNormalize(vec);
 
@@ -733,9 +733,9 @@ void CLG_ParticleSmokeEffect(vec3_t org, vec3_t dir, int color, int count, int m
         }
         Vec3_Scale(dir, magnitude, p->vel);
         d = crand() * magnitude / 3;
-        Vec3_MA(p->vel, d, r, p->vel);
+        Vec3_MA_(p->vel, d, r, p->vel);
         d = crand() * magnitude / 3;
-        Vec3_MA(p->vel, d, u, p->vel);
+        Vec3_MA_(p->vel, d, u, p->vel);
 
         p->accel[0] = p->accel[1] = p->accel[2] = 0;
         p->alpha = 1.0;
@@ -797,7 +797,7 @@ void CLG_BlasterTrail2(vec3_t start, vec3_t end)
     cparticle_t* p;
     int         dec;
 
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
     Vec3_Subtract(end, start, vec);
     len = VectorNormalize(vec);
 
@@ -843,7 +843,7 @@ void CLG_IonripperTrail(vec3_t start, vec3_t ent)
     int     dec;
     int     left = 0;
 
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
     Vec3_Subtract(ent, start, vec);
     len = VectorNormalize(vec);
 
@@ -899,11 +899,11 @@ void CLG_TrapParticles(entity_t* ent)
     int         dec;
 
     ent->origin[2] -= 14;
-    Vec3_Copy(ent->origin, start);
-    Vec3_Copy(ent->origin, end);
+    Vec3_Copy_(ent->origin, start);
+    Vec3_Copy_(ent->origin, end);
     end[2] += 64;
 
-    Vec3_Copy(start, move);
+    Vec3_Copy_(start, move);
     Vec3_Subtract(end, start, vec);
     len = VectorNormalize(vec);
 
@@ -942,7 +942,7 @@ void CLG_TrapParticles(entity_t* ent)
         vec3_t      org;
 
         ent->origin[2] += 14;
-        Vec3_Copy(ent->origin, org);
+        Vec3_Copy_(ent->origin, org);
 
         for (i = -2; i <= 2; i += 4)
             for (j = -2; j <= 2; j += 4)

@@ -394,7 +394,7 @@ qerror_t MOD_LoadMD3_GL(model_t *model, const void *rawdata, size_t length)
     dst_frame = model->frames;
     for (i = 0; i < header.num_frames; i++) {
         LittleVector(src_frame->translate, dst_frame->translate);
-        Vec3_Set(dst_frame->scale, MD3_XYZ_SCALE, MD3_XYZ_SCALE, MD3_XYZ_SCALE);
+        Vec3_Set_(dst_frame->scale, MD3_XYZ_SCALE, MD3_XYZ_SCALE, MD3_XYZ_SCALE);
 
         LittleVector(src_frame->mins, dst_frame->bounds[0]);
         LittleVector(src_frame->maxs, dst_frame->bounds[1]);

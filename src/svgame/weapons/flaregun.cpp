@@ -41,7 +41,7 @@ void weapon_flaregun_fire(edict_t* ent)
 
     // Setup the parameters used in the call to fire_flaregun() 
      // 
-    Vec3_Set(offset, 8, 8, ent->viewheight - 8);
+    Vec3_Set_(offset, 8, 8, ent->viewheight - 8);
     AngleVectors(ent->client->v_angle, forward, right, NULL);
     P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
 

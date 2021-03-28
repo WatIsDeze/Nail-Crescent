@@ -135,15 +135,15 @@ void MVD_ParseEntityString(mvd_t *mvd, const char *data)
         }
 
         if (!strcmp(classname + 12, "intermission")) {
-            mvd->spawnOrigin = origin; // MATHLIB: Vec3_Copy(origin, mvd->spawnOrigin);
-            mvd->spawnAngles = angles; // MATHLIB: Vec3_Copy(angles, mvd->spawnAngles);
+            mvd->spawnOrigin = origin; // MATHLIB: Vec3_Copy_(origin, mvd->spawnOrigin);
+            mvd->spawnAngles = angles; // MATHLIB: Vec3_Copy_(angles, mvd->spawnAngles);
             break;
         }
 
         if (!strcmp(classname + 12, "start") ||
             !strcmp(classname + 12, "deathmatch")) {
-            mvd->spawnOrigin = origin; // MATHLIB:  Vec3_Copy(origin, mvd->spawnOrigin);
-            mvd->spawnAngles = angles; // MATHLIB: Vec3_Copy(angles, mvd->spawnAngles);
+            mvd->spawnOrigin = origin; // MATHLIB:  Vec3_Copy_(origin, mvd->spawnOrigin);
+            mvd->spawnAngles = angles; // MATHLIB: Vec3_Copy_(angles, mvd->spawnAngles);
         }
 
     }
@@ -227,7 +227,7 @@ static void MVD_ParseMulticast(mvd_t *mvd, mvd_ops_t op, int extrabits)
 #if 0
             // N&C: FF Precision.
             Vec3_Add(ps->viewoffset, ps->pmove.origin, org);
-            //Vec3_MA(ps->viewoffset, 0.125f, ps->pmove.origin, org);
+            //Vec3_MA_(ps->viewoffset, 0.125f, ps->pmove.origin, org);
 #else
             // FIXME: for some strange reason, game code assumes the server
             // uses entity origin for PVS/PHS culling, not the view origin
@@ -545,7 +545,7 @@ static void MVD_ParseSound(mvd_t *mvd, int extrabits)
             ps = &client->ps;
             // N&C: FF Precision.
             Vec3_Add_(ps->viewoffset, ps->pmove.origin, origin);
-            //Vec3_MA(ps->viewoffset, 0.125f, ps->pmove.origin, origin);
+            //Vec3_MA_(ps->viewoffset, 0.125f, ps->pmove.origin, origin);
             leaf = CM_PointLeaf(&mvd->cm, origin);
             area = CM_LeafArea(leaf);
             if (!CM_AreasConnected(&mvd->cm, area, entity->areanum)) {

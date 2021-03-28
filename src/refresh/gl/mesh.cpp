@@ -282,8 +282,8 @@ static glCullResult_t cull_static_model(model_t *model)
         }
     }
 
-    Vec3_Copy(newframe->scale, newscale);
-    Vec3_Copy(newframe->translate, translate);
+    Vec3_Copy_(newframe->scale, newscale);
+    Vec3_Copy_(newframe->translate, translate);
 
     return cull;
 }
@@ -361,9 +361,9 @@ static void setup_color(void)
             color[2] = 1;
         }
     } else if (flags & RF_FULLBRIGHT) {
-        Vec3_Set(color, 1, 1, 1);
+        Vec3_Set_(color, 1, 1, 1);
     } else if ((flags & RF_IR_VISIBLE) && (glr.fd.rdflags & RDF_IRGOGGLES)) {
-        Vec3_Set(color, 1, 0, 0);
+        Vec3_Set_(color, 1, 0, 0);
     } else {
         GL_LightPoint(origin, color);
 
@@ -374,7 +374,7 @@ static void setup_color(void)
                 }
             }
             if (i == 3) {
-                Vec3_Set(color, 0.1f, 0.1f, 0.1f);
+                Vec3_Set_(color, 0.1f, 0.1f, 0.1f);
             }
         }
 
@@ -456,9 +456,9 @@ static void setup_shadow(void)
 
     // position fake light source straight over the model
     if (glr.lightpoint.surf->drawflags & DSURF_PLANEBACK)
-        Vec3_Set(dir, 0, 0, -1);
+        Vec3_Set_(dir, 0, 0, -1);
     else
-        Vec3_Set(dir, 0, 0, 1);
+        Vec3_Set_(dir, 0, 0, 1);
 
     // project shadow on ground plane
     plane = &glr.lightpoint.plane;
@@ -650,7 +650,7 @@ void GL_DrawAliasModel(model_t *model)
         Vec3_Lerp2(ent->oldorigin, ent->origin,
                     backlerp, frontlerp, origin);
     else
-        Vec3_Copy(ent->origin, origin);
+        Vec3_Copy_(ent->origin, origin);
 
     // cull the model, setup scale and translate vectors
     if (newframenum == oldframenum)

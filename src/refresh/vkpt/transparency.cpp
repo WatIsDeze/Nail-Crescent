@@ -277,7 +277,7 @@ static void write_particle_geometry(const float* view_matrix, const particle_t* 
 		particle_colors = particle_colors + 4;
 
 		vec3_t origin;
-		Vec3_Copy(particle->origin, origin);
+		Vec3_Copy_(particle->origin, origin);
 
 		vec3_t z_axis;
 		Vec3_Subtract(view_origin, origin, z_axis);
@@ -350,17 +350,17 @@ static void write_beam_geometry(const float* view_matrix, const entity_t* entiti
 
 		vec3_t begin;
 		vec3_t end;
-		Vec3_Copy(beam->oldorigin, begin);
-		Vec3_Copy(beam->origin, end);
+		Vec3_Copy_(beam->oldorigin, begin);
+		Vec3_Copy_(beam->origin, end);
 
 		vec3_t to_end;
 		Vec3_Subtract(end, begin, to_end);
 
 		vec3_t norm_dir;
-		Vec3_Copy(to_end, norm_dir);
+		Vec3_Copy_(to_end, norm_dir);
 		VectorNormalize(norm_dir);
-		Vec3_MA(begin, -5.f, norm_dir, begin);
-		Vec3_MA(end, 5.f, norm_dir, end);
+		Vec3_MA_(begin, -5.f, norm_dir, begin);
+		Vec3_MA_(end, 5.f, norm_dir, end);
 
 		vec3_t to_view;
 		Vec3_Subtract(view_origin, begin, to_view);
@@ -404,7 +404,7 @@ qboolean vkpt_build_cylinder_light(light_poly_t* light_list, int* num_lights, in
 {
 	vec3_t dir, norm_dir;
 	Vec3_Subtract(end, begin, dir);
-	Vec3_Copy(dir, norm_dir);
+	Vec3_Copy_(dir, norm_dir);
 	VectorNormalize(norm_dir);
 
 	vec3_t up = { 0.f, 0.f, 1.f };
@@ -446,11 +446,11 @@ qboolean vkpt_build_cylinder_light(light_poly_t* light_list, int* num_lights, in
 	for (int vert = 0; vert < 6; vert++)
 	{
 		vec3_t transformed;
-		Vec3_Copy(begin, transformed);
-		Vec3_MA(transformed, vertices[vert][0] * radius, up, transformed);
-		Vec3_MA(transformed, vertices[vert][1] * radius, left, transformed);
-		Vec3_MA(transformed, vertices[vert][2], dir, transformed);
-		Vec3_Copy(transformed, vertices[vert]);
+		Vec3_Copy_(begin, transformed);
+		Vec3_MA_(transformed, vertices[vert][0] * radius, up, transformed);
+		Vec3_MA_(transformed, vertices[vert][1] * radius, left, transformed);
+		Vec3_MA_(transformed, vertices[vert][2], dir, transformed);
+		Vec3_Copy_(transformed, vertices[vert]);
 	}
 
 	for (int tri = 0; tri < 6; tri++)
@@ -464,16 +464,16 @@ qboolean vkpt_build_cylinder_light(light_poly_t* light_list, int* num_lights, in
 
 		light_poly_t* light = light_list + *num_lights;
 
-		Vec3_Copy(vertices[i0], light->positions + 0);
-		Vec3_Copy(vertices[i1], light->positions + 3);
-		Vec3_Copy(vertices[i2], light->positions + 6);
+		Vec3_Copy_(vertices[i0], light->positions + 0);
+		Vec3_Copy_(vertices[i1], light->positions + 3);
+		Vec3_Copy_(vertices[i2], light->positions + 6);
 		get_triangle_off_center(light->positions, light->off_center, NULL);
 
 		light->cluster = BSP_PointLeaf(bsp->nodes, light->off_center)->cluster;
 		light->material = NULL;
 		light->style = 0;
 
-		Vec3_Copy(color, light->color);
+		Vec3_Copy_(color, light->color);
 
 		if (light->cluster >= 0)
 		{
@@ -519,17 +519,17 @@ void vkpt_build_beam_lights(light_poly_t* light_list, int* num_lights, int max_l
 
 		vec3_t begin;
 		vec3_t end;
-		Vec3_Copy(beam->oldorigin, begin);
-		Vec3_Copy(beam->origin, end);
+		Vec3_Copy_(beam->oldorigin, begin);
+		Vec3_Copy_(beam->origin, end);
 
 		vec3_t to_end;
 		Vec3_Subtract(end, begin, to_end);
 
 		vec3_t norm_dir;
-		Vec3_Copy(to_end, norm_dir);
+		Vec3_Copy_(to_end, norm_dir);
 		VectorNormalize(norm_dir);
-		Vec3_MA(begin, -5.f, norm_dir, begin);
-		Vec3_MA(end, 5.f, norm_dir, end);
+		Vec3_MA_(begin, -5.f, norm_dir, begin);
+		Vec3_MA_(end, 5.f, norm_dir, end);
 
 		vec3_t color;
 		cast_u32_to_f32_color(beam->skinnum, &beam->rgba, color, hdr_factor);

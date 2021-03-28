@@ -445,9 +445,9 @@ qerror_t MOD_LoadMD2_RTX(model_t *model, const void *rawdata, size_t length)
 				Vec3_Cross(e2, e1, n);
 				VectorNormalize(n);
 
-				Vec3_Copy(n, dst_mesh->normals[i0]);
-				Vec3_Copy(n, dst_mesh->normals[i1]);
-				Vec3_Copy(n, dst_mesh->normals[i2]);
+				Vec3_Copy_(n, dst_mesh->normals[i0]);
+				Vec3_Copy_(n, dst_mesh->normals[i1]);
+				Vec3_Copy_(n, dst_mesh->normals[i2]);
 			}
 		}
 
@@ -694,7 +694,7 @@ qerror_t MOD_LoadMD3_RTX(model_t *model, const void *rawdata, size_t length)
 	dst_frame = model->frames;
 	for (i = 0; i < header.num_frames; i++) {
 		LittleVector(src_frame->translate, dst_frame->translate);
-		Vec3_Set(dst_frame->scale, MD3_XYZ_SCALE, MD3_XYZ_SCALE, MD3_XYZ_SCALE);
+		Vec3_Set_(dst_frame->scale, MD3_XYZ_SCALE, MD3_XYZ_SCALE, MD3_XYZ_SCALE);
 
 		LittleVector(src_frame->mins, dst_frame->bounds[0]);
 		LittleVector(src_frame->maxs, dst_frame->bounds[1]);

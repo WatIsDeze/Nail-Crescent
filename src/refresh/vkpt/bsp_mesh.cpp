@@ -125,7 +125,7 @@ create_poly(
 		float *p = positions + i * 3;
 		float *t = tex_coords + i * 2;
 
-		Vec3_Copy(src_vert->point, p);
+		Vec3_Copy_(src_vert->point, p);
 
 		pos_center[0] += src_vert->point[0];
 		pos_center[1] += src_vert->point[1];
@@ -287,7 +287,7 @@ get_triangle_off_center(const float* positions, float* center, float* anti_cente
 
 	// Compute the triangle center
 
-	Vec3_Copy(v0, center);
+	Vec3_Copy_(v0, center);
 	Vec3_Add(center, v1, center);
 	Vec3_Add(center, v2, center);
 	Vec3_Scale(center, 1.f / 3.f, center);
@@ -307,7 +307,7 @@ get_triangle_off_center(const float* positions, float* center, float* anti_cente
 
 	if (anti_center)
 	{
-		Vec3_MA(center, -2.f, normal, anti_center);
+		Vec3_MA_(center, -2.f, normal, anti_center);
 	}
 
 	return (length > 0.f);
@@ -776,7 +776,7 @@ collect_ligth_polys(bsp_mesh_t *wm, bsp_t *bsp, int model_idx, int* num_lights, 
 
 				float *p = positions + i * 3;
 
-				Vec3_Copy(src_vert->point, p);
+				Vec3_Copy_(src_vert->point, p);
 			}
 
 			int num_vertices = surf->numsurfedges;
@@ -792,10 +792,10 @@ collect_ligth_polys(bsp_mesh_t *wm, bsp_t *bsp, int model_idx, int* num_lights, 
 				int i2 = (i + 1) % e;
 
 				light_poly_t light;
-				Vec3_Copy(positions, light.positions + 0);
-				Vec3_Copy(positions + i1 * 3, light.positions + 3);
-				Vec3_Copy(positions + i2 * 3, light.positions + 6);
-				Vec3_Copy(image->light_color, light.color);
+				Vec3_Copy_(positions, light.positions + 0);
+				Vec3_Copy_(positions + i1 * 3, light.positions + 3);
+				Vec3_Copy_(positions + i2 * 3, light.positions + 6);
+				Vec3_Copy_(image->light_color, light.color);
 
 				light.material = texinfo->material;
 				light.style = light_style;
@@ -954,10 +954,10 @@ collect_ligth_polys(bsp_mesh_t *wm, bsp_t *bsp, int model_idx, int* num_lights, 
 					light_poly_t* light = append_light_poly(num_lights, allocated_lights, lights);
 					light->material = texinfo->material;
 					light->style = light_style;
-					Vec3_Copy(instance_positions[0], light->positions + 0);
-					Vec3_Copy(instance_positions[i1], light->positions + 3);
-					Vec3_Copy(instance_positions[i2], light->positions + 6);
-					Vec3_Copy(image->light_color, light->color);
+					Vec3_Copy_(instance_positions[0], light->positions + 0);
+					Vec3_Copy_(instance_positions[i1], light->positions + 3);
+					Vec3_Copy_(instance_positions[i2], light->positions + 6);
+					Vec3_Copy_(image->light_color, light->color);
 					
 					get_triangle_off_center(light->positions, light->off_center, NULL);
 
@@ -1013,7 +1013,7 @@ collect_sky_and_lava_ligth_polys(bsp_mesh_t *wm, bsp_t* bsp)
 
 			float *p = positions + i * 3;
 
-			Vec3_Copy(src_vert->point, p);
+			Vec3_Copy_(src_vert->point, p);
 		}
 
 		int num_vertices = surf->numsurfedges;
@@ -1027,18 +1027,18 @@ collect_sky_and_lava_ligth_polys(bsp_mesh_t *wm, bsp_t* bsp)
 			int i2 = (i + 1) % num_vertices;
 
 			light_poly_t light;
-			Vec3_Copy(positions, light.positions + 0);
-			Vec3_Copy(positions + i1 * 3, light.positions + 3);
-			Vec3_Copy(positions + i2 * 3, light.positions + 6);
+			Vec3_Copy_(positions, light.positions + 0);
+			Vec3_Copy_(positions + i1 * 3, light.positions + 3);
+			Vec3_Copy_(positions + i2 * 3, light.positions + 6);
 
 			if (is_sky)
 			{
-				Vec3_Set(light.color, -1.f, -1.f, -1.f); // special value for the sky
+				Vec3_Set_(light.color, -1.f, -1.f, -1.f); // special value for the sky
 				light.material = 0;
 			}
 			else
 			{
-				Vec3_Copy(surf->texinfo->material->image_emissive->light_color, light.color);
+				Vec3_Copy_(surf->texinfo->material->image_emissive->light_color, light.color);
 				light.material = surf->texinfo->material;
 			}
 
@@ -1110,8 +1110,8 @@ encode_normal(vec3_t normal)
 void
 compute_aabb(const float* positions, int numvert, float* aabb_min, float* aabb_max)
 {
-	Vec3_Set(aabb_min, FLT_MAX, FLT_MAX, FLT_MAX);
-	Vec3_Set(aabb_max, -FLT_MAX, -FLT_MAX, -FLT_MAX);
+	Vec3_Set_(aabb_min, FLT_MAX, FLT_MAX, FLT_MAX);
+	Vec3_Set_(aabb_max, -FLT_MAX, -FLT_MAX, -FLT_MAX);
 
 	for (int i = 0; i < numvert; i++)
 	{
@@ -1183,7 +1183,7 @@ compute_world_tangents(bsp_mesh_t* wm)
 		Vec3_Subtract(sdir, t, t);
 		VectorNormalize2(t, tangent); // Graham-Schmidt : t = normalize(t - n * (n.t))
 
-		Vec3_Set(&wm->tangents[idx_tri * 3], tangent[0], tangent[1], tangent[2]);
+		Vec3_Set_(&wm->tangents[idx_tri * 3], tangent[0], tangent[1], tangent[2]);
 
 		vec3_t cross;
 		Vec3_Cross(normal, t, cross);
@@ -1340,8 +1340,8 @@ load_cameras(bsp_mesh_t* wm, const char* map_name)
 		{
 			if (wm->num_cameras < MAX_CAMERAS)
 			{
-				Vec3_Copy(pos, wm->cameras[wm->num_cameras].pos);
-				Vec3_Copy(dir, wm->cameras[wm->num_cameras].dir);
+				Vec3_Copy_(pos, wm->cameras[wm->num_cameras].pos);
+				Vec3_Copy_(dir, wm->cameras[wm->num_cameras].dir);
 				wm->num_cameras++;
 			}
 		}
@@ -1390,8 +1390,8 @@ compute_cluster_aabbs(bsp_mesh_t* wm)
 	wm->cluster_aabbs = (aabb_t*)Z_Malloc(wm->num_clusters * sizeof(aabb_t)); // C++20 VKPT: Added a cast.
 	for (int c = 0; c < wm->num_clusters; c++)
 	{
-		Vec3_Set(wm->cluster_aabbs[c].mins, FLT_MAX, FLT_MAX, FLT_MAX);
-		Vec3_Set(wm->cluster_aabbs[c].maxs, -FLT_MAX, -FLT_MAX, -FLT_MAX);
+		Vec3_Set_(wm->cluster_aabbs[c].mins, FLT_MAX, FLT_MAX, FLT_MAX);
+		Vec3_Set_(wm->cluster_aabbs[c].maxs, -FLT_MAX, -FLT_MAX, -FLT_MAX);
 	}
 
 	for (int tri = 0; tri < wm->world_idx_count / 3; tri++)
@@ -1572,16 +1572,16 @@ bsp_mesh_load_custom_sky(int *idx_ctr, bsp_mesh_t *wm, bsp_t *bsp, const char* m
 		int i2 = attrib.faces[face_offset + 2].v_idx;
 
 		vec3_t v0, v1, v2;
-		Vec3_Copy(attrib.vertices + i0 * 3, v0);
-		Vec3_Copy(attrib.vertices + i1 * 3, v1);
-		Vec3_Copy(attrib.vertices + i2 * 3, v2);
+		Vec3_Copy_(attrib.vertices + i0 * 3, v0);
+		Vec3_Copy_(attrib.vertices + i1 * 3, v1);
+		Vec3_Copy_(attrib.vertices + i2 * 3, v2);
 
 		int wm_index = *idx_ctr;
 		int wm_prim = wm_index / 3;
 
-		Vec3_Copy(v0, wm->positions + wm_index * 3 + 0);
-		Vec3_Copy(v1, wm->positions + wm_index * 3 + 3);
-		Vec3_Copy(v2, wm->positions + wm_index * 3 + 6);
+		Vec3_Copy_(v0, wm->positions + wm_index * 3 + 0);
+		Vec3_Copy_(v1, wm->positions + wm_index * 3 + 3);
+		Vec3_Copy_(v2, wm->positions + wm_index * 3 + 6);
 
 		wm->tex_coords[wm_index * 2 + 0] = 0.f;
 		wm->tex_coords[wm_index * 2 + 1] = 0.f;
@@ -1599,11 +1599,11 @@ bsp_mesh_load_custom_sky(int *idx_ctr, bsp_mesh_t *wm, bsp_t *bsp, const char* m
 
 		light_poly_t* light = append_light_poly(&wm->num_light_polys, &wm->allocated_light_polys, &wm->light_polys);
 
-		Vec3_Copy(v0, light->positions + 0);
-		Vec3_Copy(v1, light->positions + 3);
-		Vec3_Copy(v2, light->positions + 6);
-		Vec3_Set(light->color, -1.f, -1.f, -1.f); // special value for the sky
-		Vec3_Copy(center, light->off_center);
+		Vec3_Copy_(v0, light->positions + 0);
+		Vec3_Copy_(v1, light->positions + 3);
+		Vec3_Copy_(v2, light->positions + 6);
+		Vec3_Set_(light->color, -1.f, -1.f, -1.f); // special value for the sky
+		Vec3_Copy_(center, light->off_center);
 		light->material = 0;
 		light->style = 0;
 		light->cluster = cluster;

@@ -564,7 +564,7 @@ static void PF_StartSound(edict_t *edict, int channel,
             ps = &client->edict->client->ps;
             // N&C: FF Precision.
             Vec3_Add_(ps->viewoffset, ps->pmove.origin, origin);
-            //Vec3_MA(ps->viewoffset, 0.125f, ps->pmove.origin, origin);
+            //Vec3_MA_(ps->viewoffset, 0.125f, ps->pmove.origin, origin);
             leaf = CM_PointLeaf(&sv.cm, origin);
             area = CM_LeafArea(leaf);
             if (!CM_AreasConnected(&sv.cm, area, edict->areanum)) {

@@ -959,7 +959,7 @@ static void PM_CheckWater(void) {
     // Calculate view height aka GROUND_DIST origin position.
     vec3_t pos;// = pm->state.origin;
     // Copy the vec3_t state origin into the vec3_t pos.
-    Vec3_Copy(pm->state.origin, pos);
+    Vec3_Copy_(pm->state.origin, pos);
     pos[2] = pm->state.origin[2] + pm->mins[2] + PM_GROUND_DIST;
 
     // Test contents.

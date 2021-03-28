@@ -174,10 +174,10 @@ static inline void make_box_points(const vec3_t    origin,
     int i;
 
     for (i = 0; i < 8; i++) {
-        Vec3_Copy(origin, points[i]);
-        Vec3_MA(points[i], bounds[(i >> 0) & 1][0], glr.entaxis[0], points[i]);
-        Vec3_MA(points[i], bounds[(i >> 1) & 1][1], glr.entaxis[1], points[i]);
-        Vec3_MA(points[i], bounds[(i >> 2) & 1][2], glr.entaxis[2], points[i]);
+        Vec3_Copy_(origin, points[i]);
+        Vec3_MA_(points[i], bounds[(i >> 0) & 1][0], glr.entaxis[0], points[i]);
+        Vec3_MA_(points[i], bounds[(i >> 1) & 1][1], glr.entaxis[1], points[i]);
+        Vec3_MA_(points[i], bounds[(i >> 2) & 1][2], glr.entaxis[2], points[i]);
     }
 
 }
@@ -398,13 +398,13 @@ static void GL_DrawNullModel(void)
     entity_t *e = glr.ent;
     vec3_t points[6];
 
-    Vec3_Copy(e->origin, points[0]);
-    Vec3_Copy(e->origin, points[2]);
-    Vec3_Copy(e->origin, points[4]);
+    Vec3_Copy_(e->origin, points[0]);
+    Vec3_Copy_(e->origin, points[2]);
+    Vec3_Copy_(e->origin, points[4]);
 
-    Vec3_MA(e->origin, 16, glr.entaxis[0], points[1]);
-    Vec3_MA(e->origin, 16, glr.entaxis[1], points[3]);
-    Vec3_MA(e->origin, 16, glr.entaxis[2], points[5]);
+    Vec3_MA_(e->origin, 16, glr.entaxis[0], points[1]);
+    Vec3_MA_(e->origin, 16, glr.entaxis[1], points[3]);
+    Vec3_MA_(e->origin, 16, glr.entaxis[2], points[5]);
 
     GL_LoadMatrix(glr.viewmatrix);
     GL_BindTexture(0, TEXNUM_WHITE);
@@ -440,9 +440,9 @@ static void GL_DrawEntities(int mask)
         // convert angles to axis
         if (Vec3_Empty(ent->angles)) {
             glr.entrotated = false;
-            Vec3_Set(glr.entaxis[0], 1, 0, 0);
-            Vec3_Set(glr.entaxis[1], 0, 1, 0);
-            Vec3_Set(glr.entaxis[2], 0, 0, 1);
+            Vec3_Set_(glr.entaxis[0], 1, 0, 0);
+            Vec3_Set_(glr.entaxis[1], 0, 1, 0);
+            Vec3_Set_(glr.entaxis[2], 0, 0, 1);
         } else {
             glr.entrotated = true;
             AnglesToAxis(ent->angles, glr.entaxis);

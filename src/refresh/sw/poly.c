@@ -623,13 +623,13 @@ static void R_BuildPolygonFromSurface(mface_t *fa)
     surfedge = fa->firstsurfedge;
     for (i = 0; i < lnumverts; i++, surfedge++) {
         vec = surfedge->edge->v[surfedge->vert]->point;
-        Vec3_Copy(vec, pverts[i]);
+        Vec3_Copy_(vec, pverts[i]);
     }
 
-    Vec3_Copy(fa->texinfo->axis[0], r_polydesc.vright);
-    Vec3_Copy(fa->texinfo->axis[1], r_polydesc.vup);
-    Vec3_Copy(fa->plane->normal, r_polydesc.vpn);
-    Vec3_Copy(r_origin, r_polydesc.viewer_position);
+    Vec3_Copy_(fa->texinfo->axis[0], r_polydesc.vright);
+    Vec3_Copy_(fa->texinfo->axis[1], r_polydesc.vup);
+    Vec3_Copy_(fa->plane->normal, r_polydesc.vpn);
+    Vec3_Copy_(r_origin, r_polydesc.viewer_position);
 
     if (fa->drawflags & DSURF_PLANEBACK) {
         Vec3_Inverse(r_polydesc.vpn);
@@ -793,12 +793,12 @@ void R_IMFlatShadedQuad(vec3_t a, vec3_t b, vec3_t c, vec3_t d, color_t color, f
     vec3_t s0, s1;
 
     r_polydesc.nump = 4;
-    Vec3_Copy(r_origin, r_polydesc.viewer_position);
+    Vec3_Copy_(r_origin, r_polydesc.viewer_position);
 
-    Vec3_Copy(a, r_clip_verts[0][0]);
-    Vec3_Copy(b, r_clip_verts[0][1]);
-    Vec3_Copy(c, r_clip_verts[0][2]);
-    Vec3_Copy(d, r_clip_verts[0][3]);
+    Vec3_Copy_(a, r_clip_verts[0][0]);
+    Vec3_Copy_(b, r_clip_verts[0][1]);
+    Vec3_Copy_(c, r_clip_verts[0][2]);
+    Vec3_Copy_(d, r_clip_verts[0][3]);
 
     r_clip_verts[0][0][3] = 0;
     r_clip_verts[0][1][3] = 0;
@@ -848,9 +848,9 @@ void R_DrawSprite(void)
     r_polydesc.dist         = 0;
 
     // generate the sprite's axes, completely parallel to the viewplane.
-    Vec3_Copy(vup, r_polydesc.vup);
-    Vec3_Copy(vright, r_polydesc.vright);
-    Vec3_Copy(vpn, r_polydesc.vpn);
+    Vec3_Copy_(vup, r_polydesc.vup);
+    Vec3_Copy_(vright, r_polydesc.vright);
+    Vec3_Copy_(vpn, r_polydesc.vpn);
 
 // build the sprite poster in worldspace
     Vec3_Scale(r_polydesc.vright,
@@ -894,7 +894,7 @@ void R_DrawSprite(void)
     r_polydesc.nump = 4;
     r_polydesc.s_offset = (r_polydesc.pixel_width  >> 1);
     r_polydesc.t_offset = (r_polydesc.pixel_height >> 1);
-    Vec3_Copy(modelorg, r_polydesc.viewer_position);
+    Vec3_Copy_(modelorg, r_polydesc.viewer_position);
 
     if (frame->image->flags & IF_TRANSPARENT)
         textured = 2;

@@ -35,7 +35,7 @@ void func_explosive_explode(edict_t* self, edict_t* inflictor, edict_t* attacker
     // bmodel origins are (0 0 0), we need to adjust that here
     Vec3_Scale(self->size, 0.5, size);
     Vec3_Add(self->absmin, size, origin);
-    Vec3_Copy(origin, self->s.origin);
+    Vec3_Copy_(origin, self->s.origin);
 
     self->takedamage = DAMAGE_NO;
 

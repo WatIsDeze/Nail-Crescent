@@ -808,8 +808,8 @@ edict_t *Drop_Item(edict_t *ent, gitem_t *item)
     dropped->spawnflags = DROPPED_ITEM;
     dropped->s.effects = item->world_model_flags;
     dropped->s.renderfx = RF_GLOW;
-    Vec3_Set(dropped->mins, -15, -15, -15);
-    Vec3_Set(dropped->maxs, 15, 15, 15);
+    Vec3_Set_(dropped->mins, -15, -15, -15);
+    Vec3_Set_(dropped->maxs, 15, 15, 15);
     gi.setmodel(dropped, dropped->item->world_model);
     dropped->solid = SOLID_TRIGGER;
     dropped->movetype = MOVETYPE_TOSS;
@@ -820,14 +820,14 @@ edict_t *Drop_Item(edict_t *ent, gitem_t *item)
         trace_t trace;
 
         AngleVectors(ent->client->v_angle, forward, right, NULL);
-        Vec3_Set(offset, 24, 0, -16);
+        Vec3_Set_(offset, 24, 0, -16);
         G_ProjectSource(ent->s.origin, offset, forward, right, dropped->s.origin);
         trace = gi.trace(ent->s.origin, dropped->mins, dropped->maxs,
                          dropped->s.origin, ent, CONTENTS_SOLID);
-        Vec3_Copy(trace.endpos, dropped->s.origin);
+        Vec3_Copy_(trace.endpos, dropped->s.origin);
     } else {
         AngleVectors(ent->s.angles, forward, right, NULL);
-        Vec3_Copy(ent->s.origin, dropped->s.origin);
+        Vec3_Copy_(ent->s.origin, dropped->s.origin);
     }
 
     Vec3_Scale(forward, 100, dropped->velocity);
@@ -871,9 +871,9 @@ void droptofloor(edict_t *ent)
     float       *v;
 
     v = tv(-15, -15, -15);
-    Vec3_Copy(v, ent->mins);
+    Vec3_Copy_(v, ent->mins);
     v = tv(15, 15, 15);
-    Vec3_Copy(v, ent->maxs);
+    Vec3_Copy_(v, ent->maxs);
 
     if (ent->model)
         gi.setmodel(ent, ent->model);
@@ -893,7 +893,7 @@ void droptofloor(edict_t *ent)
         return;
     }
 
-    Vec3_Copy(tr.endpos, ent->s.origin);
+    Vec3_Copy_(tr.endpos, ent->s.origin);
 
     if (ent->team) {
         ent->flags &= ~FL_TEAMSLAVE;

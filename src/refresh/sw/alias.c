@@ -424,10 +424,10 @@ static void R_AliasSetUpTransform(void)
 //  R_ConcatTransforms(t2matrix, tmatrix, rotationmatrix);
 
 // TODO: should be global, set when vright, etc., set
-    Vec3_Copy(vright, viewmatrix[0]);
-    Vec3_Copy(vup, viewmatrix[1]);
+    Vec3_Copy_(vright, viewmatrix[0]);
+    Vec3_Copy_(vup, viewmatrix[1]);
     Vec3_Negate(viewmatrix[1], viewmatrix[1]);
-    Vec3_Copy(vpn, viewmatrix[2]);
+    Vec3_Copy_(vpn, viewmatrix[2]);
 
     viewmatrix[0][3] = 0;
     viewmatrix[1][3] = 0;
@@ -497,7 +497,7 @@ static void R_AliasSetupLighting(void)
 
     // all components of light should be identical in software
     if (currententity->flags & RF_FULLBRIGHT) {
-        Vec3_Set(light, 1, 1, 1);
+        Vec3_Set_(light, 1, 1, 1);
     } else {
         R_LightPoint(currententity->origin, light);
     }

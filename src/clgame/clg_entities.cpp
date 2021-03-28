@@ -161,8 +161,8 @@ void CLG_AddPacketEntities(void)
         if (renderfx & RF_FRAMELERP) {
             // step origin discretely, because the frames
             // do the animation properly
-            Vec3_Copy(cent->current.origin, ent.origin);
-            Vec3_Copy(cent->current.old_origin, ent.oldorigin);  // FIXME
+            Vec3_Copy_(cent->current.origin, ent.origin);
+            Vec3_Copy_(cent->current.old_origin, ent.oldorigin);  // FIXME
         }
         else if (renderfx & RF_BEAM) {
             // interpolate start and end points for beams
@@ -174,14 +174,14 @@ void CLG_AddPacketEntities(void)
         else {
             if (s1->number == cl->frame.clientNum + 1) {
                 // use predicted origin
-                Vec3_Copy(cl->playerEntityOrigin, ent.origin);
-                Vec3_Copy(cl->playerEntityOrigin, ent.oldorigin);
+                Vec3_Copy_(cl->playerEntityOrigin, ent.origin);
+                Vec3_Copy_(cl->playerEntityOrigin, ent.oldorigin);
             }
             else {
                 // interpolate origin
                 Vec3_Lerp(cent->prev.origin, cent->current.origin,
                     cl->lerpfrac, ent.origin);
-                Vec3_Copy(ent.origin, ent.oldorigin);
+                Vec3_Copy_(ent.origin, ent.oldorigin);
             }
 
 #if USE_FPS
@@ -281,11 +281,11 @@ void CLG_AddPacketEntities(void)
             ent.angles[2] = 180;
 
             AngleVectors(ent.angles, forward, NULL, NULL);
-            Vec3_MA(ent.origin, 64, forward, start);
+            Vec3_MA_(ent.origin, 64, forward, start);
             V_AddLight(start, 100, 1, 0, 0);
         }
         else if (s1->number == cl->frame.clientNum + 1) {
-            Vec3_Copy(cl->playerEntityAngles, ent.angles);      // use predicted angles
+            Vec3_Copy_(cl->playerEntityAngles, ent.angles);      // use predicted angles
         }
         else { // interpolate angles
             LerpAngles(cent->prev.angles, cent->current.angles,
@@ -324,8 +324,8 @@ void CLG_AddPacketEntities(void)
             AngleVectors(angles, forward, NULL, NULL);
 
             float offset = -15.f;
-            Vec3_MA(ent.origin, offset, forward, ent.origin);
-            Vec3_MA(ent.oldorigin, offset, forward, ent.oldorigin);
+            Vec3_MA_(ent.origin, offset, forward, ent.origin);
+            Vec3_MA_(ent.oldorigin, offset, forward, ent.oldorigin);
         }
 
         // if set to invisible, skip
@@ -376,7 +376,7 @@ void CLG_AddPacketEntities(void)
                 float brightness = anim * 0.2f + 0.8f;
 
                 vec3_t origin;
-                Vec3_Copy(ent.origin, origin);
+                Vec3_Copy_(ent.origin, origin);
                 origin[2] += offset;
 
                 V_AddLightEx(origin, 500.f, 1.6f * brightness, 1.0f * brightness, 0.2f * brightness, 5.f);
@@ -550,7 +550,7 @@ void CLG_AddPacketEntities(void)
                 float brightness = anim * 1.2f + 1.6f;
 
                 vec3_t origin;
-                Vec3_Copy(ent.origin, origin);
+                Vec3_Copy_(ent.origin, origin);
                 origin[2] += offset;
 
                 V_AddLightEx(origin, 25.f, 1.0f * brightness, 0.52f * brightness, 0.1f * brightness, 1.0f);
@@ -562,7 +562,7 @@ void CLG_AddPacketEntities(void)
                 float brightness = anim * 1.2f + 1.6f;
 
                 vec3_t origin;
-                Vec3_Copy(ent.origin, origin);
+                Vec3_Copy_(ent.origin, origin);
                 origin[2] += offset;
 
                 V_AddLightEx(origin, 25.f, 1.0f * brightness, 0.425f * brightness, 0.1f * brightness, 3.6f);
@@ -577,7 +577,7 @@ void CLG_AddPacketEntities(void)
 
         //Com_DPrint("[NORMAL] entity ID =%i - origin = [%f, %f, %f]\n", ent.id, ent.origin[0], ent.origin[1], ent.origin[1]);
     skip:
-        Vec3_Copy(ent.origin, cent->lerp_origin);
+        Vec3_Copy_(ent.origin, cent->lerp_origin);
 
         //Com_DPrint("[SKIP] entity ID =%i - origin = [%f, %f, %f]\n", ent.id, ent.origin[0], ent.origin[1], ent.origin[1]);
     }
@@ -659,7 +659,7 @@ void CLG_AddViewWeapon(void)
     // adjust for high fov
     if (ps->fov > 90) {
         vec_t ofs = (90 - ps->fov) * 0.2f;
-        Vec3_MA(gun.origin, ofs, cl->v_forward, gun.origin);
+        Vec3_MA_(gun.origin, ofs, cl->v_forward, gun.origin);
     }
 
     // adjust the gun origin so that the gun doesn't intersect with walls
@@ -673,21 +673,21 @@ void CLG_AddViewWeapon(void)
         static vec3_t mins = { -4, -4, -4 }, maxs = { 4, 4, 4 };
 
         AngleVectors(cl->refdef.viewangles, view_dir, right_dir, up_dir);
-        Vec3_MA(gun.origin, gun_right, right_dir, gun_real_pos);
-        Vec3_MA(gun_real_pos, gun_up, up_dir, gun_real_pos);
-        Vec3_MA(gun_real_pos, gun_length, view_dir, gun_tip);
+        Vec3_MA_(gun.origin, gun_right, right_dir, gun_real_pos);
+        Vec3_MA_(gun_real_pos, gun_up, up_dir, gun_real_pos);
+        Vec3_MA_(gun_real_pos, gun_length, view_dir, gun_tip);
 
         clgi.CM_BoxTrace(&trace, gun_real_pos, gun_tip, mins, maxs, cl->bsp->nodes, CONTENTS_MASK_SOLID);
 
         if (trace.fraction != 1.0f)
         {
-            Vec3_MA(trace.endpos, -gun_length, view_dir, gun.origin);
-            Vec3_MA(gun.origin, -gun_right, right_dir, gun.origin);
-            Vec3_MA(gun.origin, -gun_up, up_dir, gun.origin);
+            Vec3_MA_(trace.endpos, -gun_length, view_dir, gun.origin);
+            Vec3_MA_(gun.origin, -gun_right, right_dir, gun.origin);
+            Vec3_MA_(gun.origin, -gun_up, up_dir, gun.origin);
         }
     }
 
-    Vec3_Copy(gun.origin, gun.oldorigin);      // don't lerp at all
+    Vec3_Copy_(gun.origin, gun.oldorigin);      // don't lerp at all
 
     if (gun_frame) {
         gun.frame = gun_frame;  // development tool
@@ -869,7 +869,7 @@ void CLG_CalcViewValues(void)
         unsigned delta = clgi.GetRealTime() - cl->predicted_step_time;
         float backlerp = lerp - 1.0;
 
-        Vec3_MA(cl->predicted_origin, backlerp, cl->prediction_error, cl->refdef.vieworg);
+        Vec3_MA_(cl->predicted_origin, backlerp, cl->prediction_error, cl->refdef.vieworg);
 
         // smooth out stair climbing
         // N&C: FF Precision.
@@ -901,7 +901,7 @@ void CLG_CalcViewValues(void)
     }
     else if (ps->pmove.type < PM_DEAD) {
         // use predicted values
-        Vec3_Copy(cl->predicted_angles, cl->refdef.viewangles);
+        Vec3_Copy_(cl->predicted_angles, cl->refdef.viewangles);
     }
     else {
         // just use interpolated values
@@ -932,8 +932,8 @@ void CLG_CalcViewValues(void)
 
     AngleVectors(cl->refdef.viewangles, cl->v_forward, cl->v_right, cl->v_up);
 
-    Vec3_Copy(cl->refdef.vieworg, cl->playerEntityOrigin);
-    Vec3_Copy(cl->refdef.viewangles, cl->playerEntityAngles);
+    Vec3_Copy_(cl->refdef.vieworg, cl->playerEntityOrigin);
+    Vec3_Copy_(cl->refdef.viewangles, cl->playerEntityAngles);
 
     if (cl->playerEntityAngles[PITCH] > 180) {
         cl->playerEntityAngles[PITCH] -= 360;

@@ -252,7 +252,7 @@ void ByteToDir(int index, vec3_t dir)
         Com_Error(ERR_FATAL, "ByteToDir: illegal index");
     }
 
-    Vec3_Copy(bytedirs[index], dir);
+    Vec3_Copy_(bytedirs[index], dir);
 }
 #endif
 

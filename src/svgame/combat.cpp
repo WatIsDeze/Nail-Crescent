@@ -48,28 +48,28 @@ qboolean CanDamage(edict_t *targ, edict_t *inflictor)
     if (trace.fraction == 1.0)
         return true;
 
-    Vec3_Copy(targ->s.origin, dest);
+    Vec3_Copy_(targ->s.origin, dest);
     dest[0] += 15.0;
     dest[1] += 15.0;
     trace = gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
     if (trace.fraction == 1.0)
         return true;
 
-    Vec3_Copy(targ->s.origin, dest);
+    Vec3_Copy_(targ->s.origin, dest);
     dest[0] += 15.0;
     dest[1] -= 15.0;
     trace = gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
     if (trace.fraction == 1.0)
         return true;
 
-    Vec3_Copy(targ->s.origin, dest);
+    Vec3_Copy_(targ->s.origin, dest);
     dest[0] -= 15.0;
     dest[1] += 15.0;
     trace = gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
     if (trace.fraction == 1.0)
         return true;
 
-    Vec3_Copy(targ->s.origin, dest);
+    Vec3_Copy_(targ->s.origin, dest);
     dest[0] -= 15.0;
     dest[1] -= 15.0;
     trace = gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
@@ -506,7 +506,7 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
         client->damage_armor += asave;
         client->damage_blood += take;
         client->damage_knockback += knockback;
-        Vec3_Copy(point, client->damage_from);
+        Vec3_Copy_(point, client->damage_from);
     }
 }
 
@@ -530,7 +530,7 @@ void T_RadiusDamage(edict_t *inflictor, edict_t *attacker, float damage, edict_t
             continue;
 
         Vec3_Add(ent->mins, ent->maxs, v);
-        Vec3_MA(ent->s.origin, 0.5, v, v);
+        Vec3_MA_(ent->s.origin, 0.5, v, v);
         Vec3_Subtract(inflictor->s.origin, v, v);
         points = damage - 0.5 * Vec3_Length(v);
         if (ent == attacker)

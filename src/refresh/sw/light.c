@@ -89,7 +89,7 @@ void R_MarkLights(mnode_t *headnode)
             transformed[1] = Vec3_Dot(temp, entity_rotation[1]);
             transformed[2] = Vec3_Dot(temp, entity_rotation[2]);
         } else {
-            Vec3_Copy(light->origin, transformed);
+            Vec3_Copy_(light->origin, transformed);
         }
         R_MarkLights_r(headnode, light, transformed, 1 << i);
     }
@@ -178,14 +178,14 @@ void R_LightPoint(vec3_t point, vec3_t color)
     float       add;
 
     if (!r_worldmodel || !r_worldmodel->lightmap || r_fullbright->integer) {
-        Vec3_Set(color, 1, 1, 1);
+        Vec3_Set_(color, 1, 1, 1);
         return;
     }
 
     Vec3_Clear(color);
 
     if (!_R_LightPoint(point, color))
-        Vec3_Set(color, 1, 1, 1);
+        Vec3_Set_(color, 1, 1, 1);
 
     //
     // add dynamic lights
@@ -195,7 +195,7 @@ void R_LightPoint(vec3_t point, vec3_t color)
         add = dl->intensity - DLIGHT_CUTOFF - Distance(point, dl->origin);
         if (add > 0) {
             add *= (1.0f / 255);
-            Vec3_MA(color, add, dl->color, color);
+            Vec3_MA_(color, add, dl->color, color);
         }
     }
 
@@ -241,7 +241,7 @@ static void R_AddDynamicLights(void)
             transformed[1] = Vec3_Dot(temp, entity_rotation[1]);
             transformed[2] = Vec3_Dot(temp, entity_rotation[2]);
         } else {
-            Vec3_Copy(light->origin, transformed);
+            Vec3_Copy_(light->origin, transformed);
         }
 
         dist = PlaneDiffFast(transformed, surf->plane);
@@ -251,7 +251,7 @@ static void R_AddDynamicLights(void)
         minlight = rad - DLIGHT_CUTOFF * 0.8f;
         scale = rad / minlight;
 
-        Vec3_MA(transformed, -dist, surf->plane->normal, impact);
+        Vec3_MA_(transformed, -dist, surf->plane->normal, impact);
 
         local[0] = Vec3_Dot(impact, tex->axis[0]) + tex->offset[0];
         local[1] = Vec3_Dot(impact, tex->axis[1]) + tex->offset[1];

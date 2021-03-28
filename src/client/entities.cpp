@@ -112,7 +112,7 @@ entity_update_old(centity_t *ent, const entity_state_t *state, const vec3_t &ori
         ent->prev_frame = state->frame;
 #endif
         // no lerping if teleported or morphed
-        ent->lerp_origin = origin; // Vec3_Copy(origin, ent->lerp_origin);
+        ent->lerp_origin = origin; // Vec3_Copy_(origin, ent->lerp_origin);
         return;
     }
 
@@ -175,7 +175,7 @@ static void entity_update(const entity_state_t *state)
     if (entity_optimized(state)) {
         // N&C: FF Precision.
         // MATHLIB: 
-        //Vec3_Copy(cl.frame.ps.pmove.origin, origin_v);
+        //Vec3_Copy_(cl.frame.ps.pmove.origin, origin_v);
         //Vec3_Scale(cl.frame.ps.pmove.origin, 0.125f, origin_v);
         origin = cl.frame.ps.pmove.origin;
     } else {
@@ -235,8 +235,8 @@ static void set_active_state(void)
         CL_FirstDemoFrame();
     } else {
         // set initial cl.predicted_origin and cl.predicted_angles
-        cl.predicted_origin = cl.frame.ps.pmove.origin; // MATHLIB: Vec3_Copy(cl.frame.ps.pmove.origin, cl.predicted_origin);
-        cl.predicted_velocity = cl.frame.ps.pmove.velocity; // MATHLIB: Vec3_Copy(cl.frame.ps.pmove.velocity, cl.predicted_velocity);
+        cl.predicted_origin = cl.frame.ps.pmove.origin; // MATHLIB: Vec3_Copy_(cl.frame.ps.pmove.origin, cl.predicted_origin);
+        cl.predicted_velocity = cl.frame.ps.pmove.velocity; // MATHLIB: Vec3_Copy_(cl.frame.ps.pmove.velocity, cl.predicted_velocity);
 
         if (cl.frame.ps.pmove.type < PM_DEAD) {
             // enhanced servers don't send viewangles
@@ -244,7 +244,7 @@ static void set_active_state(void)
             CL_GM_PredictAngles();
         } else {
             // just use what server provided
-            cl.predicted_angles = cl.frame.ps.viewangles; // MATHLIB: Vec3_Copy(cl.frame.ps.viewangles, cl.predicted_angles);
+            cl.predicted_angles = cl.frame.ps.viewangles; // MATHLIB: Vec3_Copy_(cl.frame.ps.viewangles, cl.predicted_angles);
         }
     }
 
@@ -552,7 +552,7 @@ void CL_GetEntitySoundOrigin(int entnum, vec3_t &org)
 
     if (!entnum || entnum == listener_entnum) {
         // should this ever happen?
-        org = listener_origin; // MATHLIB: Vec3_Copy(listener_origin, org);
+        org = listener_origin; // MATHLIB: Vec3_Copy_(listener_origin, org);
         return;
     }
 
@@ -574,7 +574,7 @@ void CL_GetEntitySoundOrigin(int entnum, vec3_t &org)
 void CL_GetViewVelocity(vec3_t &vel)
 {
     // N&C: FF Precision.
-    vel = cl.frame.ps.pmove.velocity; // MATHLIB: //Vec3_Copy(cl.frame.ps.pmove.velocity, vel);
+    vel = cl.frame.ps.pmove.velocity; // MATHLIB: //Vec3_Copy_(cl.frame.ps.pmove.velocity, vel);
 }
 
 void CL_GetEntitySoundVelocity(int ent, vec3_t vel)

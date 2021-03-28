@@ -150,12 +150,12 @@ void P_DamageFeedback(edict_t *player)
     // by different armors
     Vec3_Clear(v);
     if (client->damage_parmor)
-        Vec3_MA(v, (float)client->damage_parmor / realcount, power_color, v);
+        Vec3_MA_(v, (float)client->damage_parmor / realcount, power_color, v);
     if (client->damage_armor)
-        Vec3_MA(v, (float)client->damage_armor / realcount,  acolor, v);
+        Vec3_MA_(v, (float)client->damage_armor / realcount,  acolor, v);
     if (client->damage_blood)
-        Vec3_MA(v, (float)client->damage_blood / realcount,  bcolor, v);
-    Vec3_Copy(v, client->damage_blend);
+        Vec3_MA_(v, (float)client->damage_blood / realcount,  bcolor, v);
+    Vec3_Copy_(v, client->damage_blend);
 
 
     //
@@ -234,7 +234,7 @@ void SV_CalcViewOffset(edict_t *ent)
     } else {
         // add angles based on weapon kick
 
-        Vec3_Copy(ent->client->kick_angles, angles);
+        Vec3_Copy_(ent->client->kick_angles, angles);
 
         // add angles based on damage kick
 
@@ -321,7 +321,7 @@ void SV_CalcViewOffset(edict_t *ent)
     else if (v[2] > 30)
         v[2] = 30;
 
-    Vec3_Copy(v, ent->client->ps.viewoffset);
+    Vec3_Copy_(v, ent->client->ps.viewoffset);
 }
 
 /*
@@ -529,7 +529,7 @@ void P_FallingDamage(edict_t *ent)
         damage = (delta - 30) / 2;
         if (damage < 1)
             damage = 1;
-        Vec3_Set(dir, 0, 0, 1);
+        Vec3_Set_(dir, 0, 0, 1);
 
         if (!deathmatch->value || !((int)dmflags->value & DF_NO_FALLING))
             T_Damage(ent, world, world, dir, ent->s.origin, vec3_origin, damage, 0, 0, MOD_FALLING);
@@ -904,8 +904,8 @@ void ClientEndServerFrame(edict_t *ent)
     //
     for (i = 0 ; i < 3 ; i++) {
         // N&C: FF Precision.
-        Vec3_Copy(ent->s.origin, current_client->ps.pmove.origin);
-        Vec3_Copy(ent->velocity, current_client->ps.pmove.velocity);
+        Vec3_Copy_(ent->s.origin, current_client->ps.pmove.origin);
+        Vec3_Copy_(ent->velocity, current_client->ps.pmove.velocity);
     }
 
     //
@@ -1006,8 +1006,8 @@ void ClientEndServerFrame(edict_t *ent)
 
     G_SetClientFrame(ent);
 
-    Vec3_Copy(ent->velocity, ent->client->oldvelocity);
-    Vec3_Copy(ent->client->ps.viewangles, ent->client->oldviewangles);
+    Vec3_Copy_(ent->velocity, ent->client->oldvelocity);
+    Vec3_Copy_(ent->client->ps.viewangles, ent->client->oldviewangles);
 
     // clear weapon kicks
     Vec3_Clear(ent->client->kick_origin);

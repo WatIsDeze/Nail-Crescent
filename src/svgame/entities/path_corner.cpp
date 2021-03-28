@@ -37,10 +37,10 @@ void path_corner_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_
         next = NULL;
 
     if ((next) && (next->spawnflags & 1)) {
-        Vec3_Copy(next->s.origin, v);
+        Vec3_Copy_(next->s.origin, v);
         v[2] += next->mins[2];
         v[2] -= other->mins[2];
-        Vec3_Copy(v, other->s.origin);
+        Vec3_Copy_(v, other->s.origin);
         next = G_PickTarget(next->target);
         other->s.event = EV_OTHER_TELEPORT;
     }
@@ -78,8 +78,8 @@ void SP_path_corner(edict_t* self)
 
     self->solid = SOLID_TRIGGER;
     self->touch = path_corner_touch;
-    Vec3_Set(self->mins, -8, -8, -8);
-    Vec3_Set(self->maxs, 8, 8, 8);
+    Vec3_Set_(self->mins, -8, -8, -8);
+    Vec3_Set_(self->maxs, 8, 8, 8);
     self->svflags |= SVF_NOCLIENT;
     gi.linkentity(self);
 }

@@ -56,7 +56,7 @@ static void R_EntityRotate(vec3_t vec)
 {
     vec3_t  tvec;
 
-    Vec3_Copy(vec, tvec);
+    Vec3_Copy_(vec, tvec);
     vec[0] = Vec3_Dot(entity_rotation[0], tvec);
     vec[1] = Vec3_Dot(entity_rotation[1], tvec);
     vec[2] = Vec3_Dot(entity_rotation[2], tvec);
@@ -485,7 +485,7 @@ void R_RenderWorld(void)
     r_worldentity.frame = (int)(r_newrefdef.time * 2);
     currententity = &r_worldentity;
 
-    Vec3_Copy(r_origin, modelorg);
+    Vec3_Copy_(r_origin, modelorg);
 
     R_RecursiveWorldNode(r_worldmodel->nodes, 15);
 }

@@ -127,8 +127,8 @@ void vkpt_freecam_update(float frame_time)
 
 	if (!freecam_active)
 	{
-		Vec3_Copy(vkpt_refdef.fd->vieworg, freecam_vieworg);
-		Vec3_Copy(vkpt_refdef.fd->viewangles, freecam_viewangles);
+		Vec3_Copy_(vkpt_refdef.fd->vieworg, freecam_vieworg);
+		Vec3_Copy_(vkpt_refdef.fd->viewangles, freecam_viewangles);
 		freecam_zoom = 1.f;
 		freecam_player_model = cl_player_model->integer;
 		freecam_active = true;
@@ -136,8 +136,8 @@ void vkpt_freecam_update(float frame_time)
 
 	vec3_t prev_vieworg;
 	vec3_t prev_viewangles;
-	Vec3_Copy(freecam_vieworg, prev_vieworg);
-	Vec3_Copy(freecam_viewangles, prev_viewangles);
+	Vec3_Copy_(freecam_vieworg, prev_vieworg);
+	Vec3_Copy_(freecam_viewangles, prev_viewangles);
 	float prev_zoom = freecam_zoom;
 
 	vec3_t velocity = { 0.f };
@@ -156,14 +156,14 @@ void vkpt_freecam_update(float frame_time)
 	vec3_t forward, right, up;
 	AngleVectors(freecam_viewangles, forward, right, up);
 	float speed = 100.f;
-	Vec3_MA(freecam_vieworg, velocity[0] * frame_time * speed, forward, freecam_vieworg);
-	Vec3_MA(freecam_vieworg, velocity[1] * frame_time * speed, right, freecam_vieworg);
-	Vec3_MA(freecam_vieworg, velocity[2] * frame_time * speed, up, freecam_vieworg);
+	Vec3_MA_(freecam_vieworg, velocity[0] * frame_time * speed, forward, freecam_vieworg);
+	Vec3_MA_(freecam_vieworg, velocity[1] * frame_time * speed, right, freecam_vieworg);
+	Vec3_MA_(freecam_vieworg, velocity[2] * frame_time * speed, up, freecam_vieworg);
 
 	vkpt_freecam_mousemove();
 
-	Vec3_Copy(freecam_vieworg, vkpt_refdef.fd->vieworg);
-	Vec3_Copy(freecam_viewangles, vkpt_refdef.fd->viewangles);
+	Vec3_Copy_(freecam_vieworg, vkpt_refdef.fd->vieworg);
+	Vec3_Copy_(freecam_viewangles, vkpt_refdef.fd->viewangles);
 	vkpt_refdef.fd->fov_x = RAD2DEG(atanf(tanf(DEG2RAD(vkpt_refdef.fd->fov_x) * 0.5f) / freecam_zoom)) * 2.f;
 	vkpt_refdef.fd->fov_y = RAD2DEG(atanf(tanf(DEG2RAD(vkpt_refdef.fd->fov_y) * 0.5f) / freecam_zoom)) * 2.f;
 

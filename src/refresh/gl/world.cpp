@@ -188,7 +188,7 @@ static void GL_MarkLights(void)
     glr.dlightframe++;
 
     for (i = 0, light = glr.fd.dlights; i < glr.fd.num_dlights; i++, light++) {
-        Vec3_Copy(light->origin, light->transformed);
+        Vec3_Copy_(light->origin, light->transformed);
         GL_MarkLights_r(gl_static.world.cache->nodes, light, 1 << i);
     }
 }
@@ -220,7 +220,7 @@ static void GL_AddLights(vec3_t origin, vec3_t color)
         f = light->intensity - DLIGHT_CUTOFF - Distance(light->origin, origin);
         if (f > 0) {
             f *= (1.0f / 255);
-            Vec3_MA(color, f, light->color, color);
+            Vec3_MA_(color, f, light->color, color);
         }
     }
 }
@@ -233,13 +233,13 @@ static void GL_AddLights(vec3_t origin, vec3_t color)
 void GL_LightPoint(vec3_t origin, vec3_t color)
 {
     if (gl_fullbright->integer) {
-        Vec3_Set(color, 1, 1, 1);
+        Vec3_Set_(color, 1, 1, 1);
         return;
     }
 
     // get lighting from world
     if (!_GL_LightPoint(origin, color)) {
-        Vec3_Set(color, 1, 1, 1);
+        Vec3_Set_(color, 1, 1, 1);
     }
 
     // add dynamic lights
@@ -277,7 +277,7 @@ static void GL_MarkLeaves(void)
 
     leaf = BSP_PointLeaf(bsp->nodes, glr.fd.vieworg);
     cluster1 = cluster2 = leaf->cluster;
-    Vec3_Copy(glr.fd.vieworg, tmp);
+    Vec3_Copy_(glr.fd.vieworg, tmp);
     if (!leaf->contents) {
         tmp[2] -= 16;
     } else {
@@ -374,8 +374,8 @@ void GL_DrawBspModel(mmodel_t *model)
             return;
         }
         if (cull == CULL_CLIP) {
-            Vec3_Copy(model->mins, bounds[0]);
-            Vec3_Copy(model->maxs, bounds[1]);
+            Vec3_Copy_(model->mins, bounds[0]);
+            Vec3_Copy_(model->maxs, bounds[1]);
             cull = GL_CullLocalBox(ent->origin, bounds);
             if (cull == CULL_OUT) {
                 c.rotatedBoxesCulled++;
