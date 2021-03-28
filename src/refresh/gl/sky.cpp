@@ -79,7 +79,7 @@ static void DrawSkyPolygon(int nump, vec3_t *vecs)
     av.y = std::fabsf(v.y);
     av.z = std::fabsf(v.z);
     if (av.xyz[0] > av.xyz[1] && av.xyz[0] > av.xyz[2]) {
-        if (v[0] < 0)
+        if (v.xyz[0] < 0)
             axis = 1;
         else
             axis = 0;
@@ -244,9 +244,9 @@ static void ClipSkyPolygon(int nump, vec3_t *vecs, int stage)
 
 static inline void SkyInverseRotate(vec3_t out, const vec3_t in)
 {
-    out[0] = skymatrix[0][0] * in[0] + skymatrix[1][0] * in[1] + skymatrix[2][0] * in[2];
-    out[1] = skymatrix[0][1] * in[0] + skymatrix[1][1] * in[1] + skymatrix[2][1] * in[2];
-    out[2] = skymatrix[0][2] * in[0] + skymatrix[1][2] * in[1] + skymatrix[2][2] * in[2];
+    out[0] = skymatrix[0].xyz[0] * in.xyz[0] + skymatrix[1].xyz[0] * in.xyz[1] + skymatrix[2].xyz[0] * in.xyz[2];
+    out[1] = skymatrix[0].xyz[1] * in.xyz[0] + skymatrix[1].xyz[1] * in.xyz[1] + skymatrix[2].xyz[1] * in.xyz[2];
+    out[2] = skymatrix[0].xyz[2] * in.xyz[0] + skymatrix[1].xyz[2] * in.xyz[1] + skymatrix[2].xyz[2] * in.xyz[2];
 }
 
 /*

@@ -492,8 +492,8 @@ void GL_ClearSolidFaces(void);
  */
 void GL_DrawBspModel(mmodel_t *model);
 void GL_DrawWorld(void);
-void GL_SampleLightPoint(vec3_t color);
-void GL_LightPoint(vec3_t origin, vec3_t color);
+void GL_SampleLightPoint(vec3_t &color);
+void GL_LightPoint(vec3_t origin, vec4_t &color);
 void R_LightPoint_GL(vec3_t origin, vec3_t color);
 
 /*

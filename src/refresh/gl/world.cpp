@@ -230,7 +230,7 @@ static void GL_AddLights(vec3_t origin, vec3_t &color)
 #define GL_AddLights(origin, color) (void)0
 #endif
 
-void GL_LightPoint(vec3_t origin, vec4_t color)
+void GL_LightPoint(vec3_t origin, vec4_t &color)
 {
     if (gl_fullbright->integer) {
         //Vec3_Set_(color, 1, 1, 1);
@@ -241,19 +241,36 @@ void GL_LightPoint(vec3_t origin, vec4_t color)
     }
 
     // get lighting from world
-    if (!_GL_LightPoint(origin, color)) {
+    vec3_t temp;
+    temp.x = color[0];
+    temp.y = color[1];
+    temp.z = color[2];
+    if (!_GL_LightPoint(origin, temp)) {
         //Vec3_Set_(color, 1, 1, 1);
         color[0] = 1.f;
         color[1] = 1.f;
         color[2] = 1.f;
     }
+    else {
+        color[0] = temp.x;
+        color[1] = temp.y;
+        color[2] = temp.z;
+    }
 
     // add dynamic lights
-    GL_AddLights(origin, color);
+    vec3_t temp = { color[0], color[1], color[2] };
+    GL_AddLights(origin, temp);
+    color[0] = temp.x;
+    color[1]= temp.y;
+    color[2] = temp.z;
 
     if (gl_doublelight_entities->integer) {
         // apply modulate twice to mimic original ref_gl behavior
-        Vec3_Scale_(vec3_t{ color[0], color[1], color[2] }, gl_static.entity_modulate, &color);
+
+        Vec3_Scale_(vec3_t{ color[0], color[1], color[2] }, gl_static.entity_modulate, temp);
+        color[0] = temp.x;
+        color[1] = temp.y;
+        color[2] = temp.z;
     }
 }
 

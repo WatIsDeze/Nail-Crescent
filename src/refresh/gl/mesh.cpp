@@ -100,11 +100,11 @@ static void tess_static_shell(const maliasmesh_t *mesh)
     while (count--) {
         get_static_normal(normal.xyz, src_vert);
 
-        dst_vert[0] = normal[0] * shellscale +
+        dst_vert[0] = normal.xyz[0] * shellscale +
                       src_vert->pos[0] * newscale.xyz[0] + translate.xyz[0];
-        dst_vert[1] = normal[1] * shellscale +
+        dst_vert[1] = normal.xyz[1] * shellscale +
                       src_vert->pos[1] * newscale.xyz[1] + translate.xyz[1];
-        dst_vert[2] = normal[2] * shellscale +
+        dst_vert[2] = normal.xyz[2] * shellscale +
                       src_vert->pos[2] * newscale.xyz[2] + translate.xyz[2];
         dst_vert += 4;
 
@@ -187,13 +187,13 @@ static void tess_lerped_shell(const maliasmesh_t *mesh)
     while (count--) {
         get_lerped_normal(normal.xyz, src_oldvert, src_newvert);
 
-        dst_vert[0] = normal[0] * shellscale +
+        dst_vert[0] = normal.xyz[0] * shellscale +
                       src_oldvert->pos[0] * oldscale.xyz[0] +
                       src_newvert->pos[0] * newscale.xyz[0] + translate.xyz[0];
-        dst_vert[1] = normal[1] * shellscale +
+        dst_vert[1] = normal.xyz[1] * shellscale +
                       src_oldvert->pos[1] * oldscale.xyz[1] +
                       src_newvert->pos[1] * newscale.xyz[1] + translate.xyz[1];
-        dst_vert[2] = normal[2] * shellscale +
+        dst_vert[2] = normal.xyz[2] * shellscale +
                       src_oldvert->pos[2] * oldscale.xyz[2] +
                       src_newvert->pos[2] * newscale.xyz[2] + translate.xyz[2];
         dst_vert += 4;

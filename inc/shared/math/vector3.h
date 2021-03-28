@@ -156,6 +156,12 @@ static inline void Vec3_Subtract_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
         a.z - b.z
     };
 }
+// For const vec3_t& a, const vec3_t& b, vec_t *c
+static inline void Vec3_Subtract_(const vec3_t& a, const vec3_t& b, vec_t *c) {
+    c[0] = a.x - b.x;
+    c[1] = a.y - b.y;
+    c[2] = a.z - b.z;
+}
 
 //
 //===============
@@ -187,6 +193,12 @@ static inline void Vec3_Add_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
         a.y + b.y,
         a.z + b.z
     };
+}
+// For const vec3_t& a, const vec3_t& b, vec_t *c
+static inline void Vec3_Add_(const vec3_t& a, const vec3_t& b, vec_t *c) {
+    c[0] = a.x + b.x;
+    c[1] = a.y + b.y;
+    c[2] = a.z + b.z;
 }
 
 
@@ -438,6 +450,20 @@ static inline void Vec3_MA_(const vec3_t& add, const float &multiply, const vec3
     };
 }
 
+// LEGACY: For vec_t *out
+static inline void Vec3_MA_(const vec3_t& add, const float& multiply, const vec3_t& v, vec_t *out) {
+    out[0] = std::fmaf(v.x, multiply, add.x);
+    out[1] = std::fmaf(v.y, multiply, add.y);
+    out[1] = std::fmaf(v.z, multiply, add.z);
+}
+
+// LEGACY: For vec_t *add and vec_t *out
+static inline void Vec3_MA_(const vec_t* add, const float& multiply, const vec3_t& v, vec_t* out) {
+    out[0] = std::fmaf(v.x, multiply, add[0]);
+    out[1] = std::fmaf(v.y, multiply, add[1]);
+    out[1] = std::fmaf(v.z, multiply, add[2]);
+}
+
 //
 //===============
 // Vec3_VmaF
@@ -642,7 +668,7 @@ vec_t VectorNormalize2(const vec3_t& v, vec3_t& out);
 void ClearBounds(vec3_t& mins, vec3_t& maxs);
 void AddPointToBounds(const vec3_t& v, vec3_t& mins, vec3_t& maxs);
 vec_t RadiusFromBounds(const vec3_t& mins, const vec3_t& maxs);
-void UnionBounds(vec3_t* a[2], vec3_t* b[2], vec3_t* c[2]);
+void UnionBounds(vec3_t *a, vec3_t *b, vec3_t *c);
 
 
 void vectoangles2(const vec3_t& value1, vec3_t& angles);

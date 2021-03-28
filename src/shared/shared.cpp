@@ -151,15 +151,15 @@ void AddPointToBounds(const vec3_t &v, vec3_t &mins, vec3_t &maxs)
 // Merges 2 bounding boxes together, into the outptr.
 //===============
 //
-void UnionBounds(vec3_t *a[2], vec3_t *b[2], vec3_t *c[2])
+void UnionBounds(vec3_t *a, vec3_t *b, vec3_t *c)
 {
-    c[0]->xyz[0] = b[0]->xyz[0] < a[0]->xyz[0] ? b[0]->xyz[0] : a[0]->xyz[0];
-    c[0]->xyz[1] = b[0]->xyz[1] < a[0]->xyz[1] ? b[0]->xyz[1] : a[0]->xyz[1];
-    c[0]->xyz[2] = b[0]->xyz[2] < a[0]->xyz[2] ? b[0]->xyz[2] : a[0]->xyz[2];
+    c[0].xyz[0] = b[0].xyz[0] < a[0].xyz[0] ? b[0].xyz[0] : a[0].xyz[0];
+    c[0].xyz[1] = b[0].xyz[1] < a[0].xyz[1] ? b[0].xyz[1] : a[0].xyz[1];
+    c[0].xyz[2] = b[0].xyz[2] < a[0].xyz[2] ? b[0].xyz[2] : a[0].xyz[2];
 
-    c[1]->xyz[0] = b[1]->xyz[0] > a[1]->xyz[0] ? b[1]->xyz[0] : a[1]->xyz[0];
-    c[1]->xyz[1] = b[1]->xyz[1] > a[1]->xyz[1] ? b[1]->xyz[1] : a[1]->xyz[1];
-    c[1]->xyz[2] = b[1]->xyz[2] > a[1]->xyz[2] ? b[1]->xyz[2] : a[1]->xyz[2];
+    c[1].xyz[0] = b[1].xyz[0] > a[1].xyz[0] ? b[1].xyz[0] : a[1].xyz[0];
+    c[1].xyz[1] = b[1].xyz[1] > a[1].xyz[1] ? b[1].xyz[1] : a[1].xyz[1];
+    c[1].xyz[2] = b[1].xyz[2] > a[1].xyz[2] ? b[1].xyz[2] : a[1].xyz[2];
 }
 
 //

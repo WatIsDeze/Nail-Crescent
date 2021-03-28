@@ -576,14 +576,17 @@ static void build_surface_poly(mface_t *surf, vec_t *vbo)
         src_surfedge++;
 
         // vertex coordinates
-        Vec3_Copy_(src_vert->point, vbo);
+        // MATHLIB: !!!! Vec3_Copy_(src_vert->point, vbo);
+        vbo[0] = src_vert->point.x;
+        vbo[1] = src_vert->point.y;
+        vbo[2] = src_vert->point.z;
 
         // vertex color
         memcpy(vbo + 3, &color, sizeof(color));
 
         // texture0 coordinates
-        tc[0] = Vec3_Dot(vbo, texinfo->axis[0]) + texinfo->offset[0];
-        tc[1] = Vec3_Dot(vbo, texinfo->axis[1]) + texinfo->offset[1];
+        tc[0] = Vec3_Dot(vec3_t{ vbo[0], vbo[1], vbo[2] }, texinfo->axis[0]) + texinfo->offset[0]; // MATHLIB: !!! vbo
+        tc[1] = Vec3_Dot(vec3_t{ vbo[0], vbo[1], vbo[2] }, texinfo->axis[1]) + texinfo->offset[1]; // MATHLIB: !!! vbo
 
         if (mins[0] > tc[0]) mins[0] = tc[0];
         if (maxs[0] < tc[0]) maxs[0] = tc[0];

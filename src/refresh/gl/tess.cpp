@@ -164,7 +164,8 @@ void GL_DrawParticles(void)
 void GL_DrawBeams(void)
 {
     vec3_t d1, d2, d3;
-    vec_t *start, *end;
+    //vec_t *start, *end;
+    vec3_t start, end;
     color_t color;
     vec_t *dst_vert;
     uint32_t *dst_color;
@@ -198,12 +199,12 @@ void GL_DrawBeams(void)
         end = ent->oldorigin;
         Vec3_Subtract_(end, start, d1);
         Vec3_Subtract_(glr.fd.vieworg, start, d2);
-        Vec3_Cross(d1, d2, d3);
-        length = Vec3_Length(d3);
+        Vec3_Cross_(d1, d2, d3);
+        length = Vec3_Length_(d3);
         length = ent->frame * 1.2f / length;
         Vec3_Scale_(d3, length, d3);
 
-        length = Vec3_Length(d1);
+        length = Vec3_Length_(d1);
 
         if (ent->skinnum == -1) {
             color.u32 = ent->rgba.u32;
