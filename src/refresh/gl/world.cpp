@@ -217,7 +217,7 @@ static void GL_AddLights(vec3_t origin, vec3_t color)
     int i;
 
     for (i = 0, light = glr.fd.dlights; i < glr.fd.num_dlights; i++, light++) {
-        f = light->intensity - DLIGHT_CUTOFF - Distance(light->origin, origin);
+        f = light->intensity - DLIGHT_CUTOFF - Distance_(light->origin, origin);
         if (f > 0) {
             f *= (1.0f / 255);
             Vec3_MA_(color, f, light->color, color);
@@ -230,16 +230,22 @@ static void GL_AddLights(vec3_t origin, vec3_t color)
 #define GL_AddLights(origin, color) (void)0
 #endif
 
-void GL_LightPoint(vec3_t origin, vec3_t color)
+void GL_LightPoint(vec3_t origin, vec4_t color)
 {
     if (gl_fullbright->integer) {
-        Vec3_Set_(color, 1, 1, 1);
+        //Vec3_Set_(color, 1, 1, 1);
+        color[0] = 1.f;
+        color[1] = 1.f;
+        color[2] = 1.f;
         return;
     }
 
     // get lighting from world
     if (!_GL_LightPoint(origin, color)) {
-        Vec3_Set_(color, 1, 1, 1);
+        //Vec3_Set_(color, 1, 1, 1);
+        color[0] = 1.f;
+        color[1] = 1.f;
+        color[2] = 1.f;
     }
 
     // add dynamic lights

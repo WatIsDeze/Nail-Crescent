@@ -98,14 +98,14 @@ static void tess_static_shell(const maliasmesh_t *mesh)
     vec3_t normal;
 
     while (count--) {
-        get_static_normal(normal, src_vert);
+        get_static_normal(normal.xyz, src_vert);
 
         dst_vert[0] = normal[0] * shellscale +
-                      src_vert->pos[0] * newscale[0] + translate[0];
+                      src_vert->pos[0] * newscale.xyz[0] + translate.xyz[0];
         dst_vert[1] = normal[1] * shellscale +
-                      src_vert->pos[1] * newscale[1] + translate[1];
+                      src_vert->pos[1] * newscale.xyz[1] + translate.xyz[1];
         dst_vert[2] = normal[2] * shellscale +
-                      src_vert->pos[2] * newscale[2] + translate[2];
+                      src_vert->pos[2] * newscale.xyz[2] + translate.xyz[2];
         dst_vert += 4;
 
         src_vert++;
@@ -121,11 +121,11 @@ static void tess_static_shade(const maliasmesh_t *mesh)
     vec_t d;
 
     while (count--) {
-        d = shadedot(get_static_normal(normal, src_vert));
+        d = shadedot(get_static_normal(normal.xyz, src_vert));
 
-        dst_vert[0] = src_vert->pos[0] * newscale[0] + translate[0];
-        dst_vert[1] = src_vert->pos[1] * newscale[1] + translate[1];
-        dst_vert[2] = src_vert->pos[2] * newscale[2] + translate[2];
+        dst_vert[0] = src_vert->pos[0] * newscale.xyz[0] + translate.xyz[0];
+        dst_vert[1] = src_vert->pos[1] * newscale.xyz[1] + translate.xyz[1];
+        dst_vert[2] = src_vert->pos[2] * newscale.xyz[2] + translate.xyz[2];
         dst_vert[4] = shadelight[0] * d;
         dst_vert[5] = shadelight[1] * d;
         dst_vert[6] = shadelight[2] * d;
@@ -143,9 +143,9 @@ static void tess_static_plain(const maliasmesh_t *mesh)
     int count = mesh->numverts;
 
     while (count--) {
-        dst_vert[0] = src_vert->pos[0] * newscale[0] + translate[0];
-        dst_vert[1] = src_vert->pos[1] * newscale[1] + translate[1];
-        dst_vert[2] = src_vert->pos[2] * newscale[2] + translate[2];
+        dst_vert[0] = src_vert->pos[0] * newscale.xyz[0] + translate.xyz[0];
+        dst_vert[1] = src_vert->pos[1] * newscale.xyz[1] + translate.xyz[1];
+        dst_vert[2] = src_vert->pos[2] * newscale.xyz[2] + translate.xyz[2];
         dst_vert += 4;
 
         src_vert++;
@@ -159,14 +159,19 @@ static inline vec_t *get_lerped_normal(vec_t *normal,
     vec3_t oldnorm, newnorm, tmp;
     vec_t len;
 
-    get_static_normal(oldnorm, oldvert);
-    get_static_normal(newnorm, newvert);
+    get_static_normal(oldnorm.xyz, oldvert);
+    get_static_normal(newnorm.xyz, newvert);
 
     Vec3_Lerp2(oldnorm, newnorm, backlerp, frontlerp, tmp);
 
     // normalize result
-    len = 1 / Vec3_Length(tmp);
-    Vec3_Scale_(tmp, len, normal);
+    len = 1 / Vec3_Length_(tmp);
+    // MATHLIB: !! Added to compensate for a lack of it accepting vec_t *
+    vec3_t out;
+    Vec3_Scale_(tmp, len, out);
+    normal[0] = out.x;
+    normal[1] = out.y;
+    normal[2] = out.z;
 
     return normal;
 }
@@ -180,17 +185,17 @@ static void tess_lerped_shell(const maliasmesh_t *mesh)
     vec3_t normal;
 
     while (count--) {
-        get_lerped_normal(normal, src_oldvert, src_newvert);
+        get_lerped_normal(normal.xyz, src_oldvert, src_newvert);
 
         dst_vert[0] = normal[0] * shellscale +
-                      src_oldvert->pos[0] * oldscale[0] +
-                      src_newvert->pos[0] * newscale[0] + translate[0];
+                      src_oldvert->pos[0] * oldscale.xyz[0] +
+                      src_newvert->pos[0] * newscale.xyz[0] + translate.xyz[0];
         dst_vert[1] = normal[1] * shellscale +
-                      src_oldvert->pos[1] * oldscale[1] +
-                      src_newvert->pos[1] * newscale[1] + translate[1];
+                      src_oldvert->pos[1] * oldscale.xyz[1] +
+                      src_newvert->pos[1] * newscale.xyz[1] + translate.xyz[1];
         dst_vert[2] = normal[2] * shellscale +
-                      src_oldvert->pos[2] * oldscale[2] +
-                      src_newvert->pos[2] * newscale[2] + translate[2];
+                      src_oldvert->pos[2] * oldscale.xyz[2] +
+                      src_newvert->pos[2] * newscale.xyz[2] + translate.xyz[2];
         dst_vert += 4;
 
         src_oldvert++;
@@ -208,17 +213,17 @@ static void tess_lerped_shade(const maliasmesh_t *mesh)
     vec_t d;
 
     while (count--) {
-        d = shadedot(get_lerped_normal(normal, src_oldvert, src_newvert));
+        d = shadedot(get_lerped_normal(normal.xyz, src_oldvert, src_newvert));
 
         dst_vert[0] =
-            src_oldvert->pos[0] * oldscale[0] +
-            src_newvert->pos[0] * newscale[0] + translate[0];
+            src_oldvert->pos[0] * oldscale.xyz[0] +
+            src_newvert->pos[0] * newscale.xyz[0] + translate.xyz[0];
         dst_vert[1] =
-            src_oldvert->pos[1] * oldscale[1] +
-            src_newvert->pos[1] * newscale[1] + translate[1];
+            src_oldvert->pos[1] * oldscale.xyz[1] +
+            src_newvert->pos[1] * newscale.xyz[1] + translate.xyz[1];
         dst_vert[2] =
-            src_oldvert->pos[2] * oldscale[2] +
-            src_newvert->pos[2] * newscale[2] + translate[2];
+            src_oldvert->pos[2] * oldscale.xyz[2] +
+            src_newvert->pos[2] * newscale.xyz[2] + translate.xyz[2];
         dst_vert[4] = shadelight[0] * d;
         dst_vert[5] = shadelight[1] * d;
         dst_vert[6] = shadelight[2] * d;
@@ -239,14 +244,14 @@ static void tess_lerped_plain(const maliasmesh_t *mesh)
 
     while (count--) {
         dst_vert[0] =
-            src_oldvert->pos[0] * oldscale[0] +
-            src_newvert->pos[0] * newscale[0] + translate[0];
+            src_oldvert->pos[0] * oldscale.xyz[0] +
+            src_newvert->pos[0] * newscale.xyz[0] + translate.xyz[0];
         dst_vert[1] =
-            src_oldvert->pos[1] * oldscale[1] +
-            src_newvert->pos[1] * newscale[1] + translate[1];
+            src_oldvert->pos[1] * oldscale.xyz[1] +
+            src_newvert->pos[1] * newscale.xyz[1] + translate.xyz[1];
         dst_vert[2] =
-            src_oldvert->pos[2] * oldscale[2] +
-            src_newvert->pos[2] * newscale[2] + translate[2];
+            src_oldvert->pos[2] * oldscale.xyz[2] +
+            src_newvert->pos[2] * newscale.xyz[2] + translate.xyz[2];
         dst_vert += 4;
 
         src_oldvert++;

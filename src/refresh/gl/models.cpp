@@ -221,8 +221,8 @@ qerror_t MOD_LoadMD2_GL(model_t *model, const void *rawdata, size_t length)
             }
         }
 
-        Vec3_ScaleVec3(mins, dst_frame->scale, mins);
-        Vec3_ScaleVec3(maxs, dst_frame->scale, maxs);
+        Vec3_ScaleVec3_(mins, dst_frame->scale, mins);
+        Vec3_ScaleVec3_(maxs, dst_frame->scale, maxs);
 
         dst_frame->radius = RadiusFromBounds(mins, maxs);
 

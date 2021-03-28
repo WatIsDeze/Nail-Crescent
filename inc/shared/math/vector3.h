@@ -269,6 +269,24 @@ static inline vec3_t Vec3_ScaleVec3(const vec3_t& v, const vec3_t &scale) {
 
 //
 //===============
+// LEGACY: Vec3_ScaleVec3_
+// 
+// Returns the vector v scaled by scale.
+// 
+// ALTERNATIVE: Vec3_ScaleVec3
+//===============
+//
+static inline void Vec3_ScaleVec3_(const vec3_t& v, const vec3_t& scale, vec3_t &out) {
+    out = vec3_t{
+        v.x * scale.x,
+        v.y * scale.y,
+        v.z * scale.z
+    };
+}
+
+
+//
+//===============
 // LEGACY: Vec3_Scale_
 // 
 // ALTERNATIVE: Use Vec3_Scale
