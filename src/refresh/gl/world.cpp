@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "gl.h"
 
-void GL_SampleLightPoint(vec3_t color)
+void GL_SampleLightPoint(vec3_t &color)
 {
     mface_t         *surf;
     int             s, t, i;
@@ -72,7 +72,7 @@ void GL_SampleLightPoint(vec3_t color)
     }
 }
 
-static qboolean _GL_LightPoint(vec3_t start, vec3_t color)
+static qboolean _GL_LightPoint(vec3_t start, vec3_t &color)
 {
     bsp_t           *bsp;
     int             i, index;
@@ -210,7 +210,7 @@ static void GL_TransformLights(mmodel_t *model)
     }
 }
 
-static void GL_AddLights(vec3_t origin, vec3_t color)
+static void GL_AddLights(vec3_t origin, vec3_t &color)
 {
     dlight_t *light;
     vec_t f;
@@ -253,7 +253,7 @@ void GL_LightPoint(vec3_t origin, vec4_t color)
 
     if (gl_doublelight_entities->integer) {
         // apply modulate twice to mimic original ref_gl behavior
-        Vec3_Scale_(color, gl_static.entity_modulate, color);
+        Vec3_Scale_(vec3_t{ color[0], color[1], color[2] }, gl_static.entity_modulate, &color);
     }
 }
 
@@ -264,7 +264,7 @@ void R_LightPoint_GL(vec3_t origin, vec3_t color)
     GL_LightPoint(origin, color);
 
     for (i = 0; i < 3; i++) {
-        clamp(color[i], 0, 1);
+        clamp(color.xyz[i], 0, 1);
     }
 }
 
@@ -412,7 +412,7 @@ void GL_DrawBspModel(mmodel_t *model)
     // draw visible faces
     last = model->firstface + model->numfaces;
     for (face = model->firstface; face < last; face++) {
-        dot = PlaneDiffFast(transformed, face->plane);
+        dot = Plane_FastDifference(transformed, face->plane);
         if (BSP_CullFace(face, dot)) {
             c.facesCulled++;
             continue;
@@ -544,7 +544,7 @@ static void GL_WorldNode_r(mnode_t *node, int clipflags)
             break;
         }
 
-        dot = PlaneDiffFast(glr.fd.vieworg, node->plane);
+        dot = Plane_FastDifference(glr.fd.vieworg, node->plane);
         side = dot < 0;
 
         GL_WorldNode_r(node->children[side], clipflags);

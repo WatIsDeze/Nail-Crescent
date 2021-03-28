@@ -84,16 +84,16 @@ adjust_color_ub(byte *out, const vec_t *in)
 {
     vec3_t tmp;
 
-    adjust_color_f(tmp, in, lm.modulate);
-    out[0] = (byte)tmp[0];
-    out[1] = (byte)tmp[1];
-    out[2] = (byte)tmp[2];
+    adjust_color_f(tmp.xyz, in, lm.modulate);
+    out[0] = (byte)tmp.xyz[0];
+    out[1] = (byte)tmp.xyz[1];
+    out[2] = (byte)tmp.xyz[2];
     out[3] = 255;
 }
 
-void GL_AdjustColor(vec3_t color)
+void GL_AdjustColor(vec3_t &color)
 {
-    adjust_color_f(color, color, gl_static.entity_modulate);
+    adjust_color_f(color.xyz, color.xyz, gl_static.entity_modulate);
     Vec3_Scale_(color, (1.0f / 255), color);
 }
 
@@ -131,7 +131,7 @@ static void add_dynamic_lights(mface_t *surf)
             continue;
 
         light = &glr.fd.dlights[i];
-        dist = PlaneDiffFast(light->transformed, surf->plane);
+        dist = Plane_FastDifference(light->transformed, surf->plane);
         rad = light->intensity - fabs(dist);
         if (rad < DLIGHT_CUTOFF)
             continue;
@@ -163,9 +163,9 @@ static void add_dynamic_lights(mface_t *surf)
                     dist = td + (sd >> 1);
                 if (dist < minlight) {
                     frac = rad - dist * scale;
-                    bl[0] += light->color[0] * frac;
-                    bl[1] += light->color[1] * frac;
-                    bl[2] += light->color[2] * frac;
+                    bl[0] += light->color.xyz[0] * frac;
+                    bl[1] += light->color.xyz[1] * frac;
+                    bl[2] += light->color.xyz[2] * frac;
                 }
                 bl += 3;
             }
@@ -202,9 +202,9 @@ static void add_light_styles(mface_t *surf, int size)
         }
     } else {
         for (j = 0; j < size; j++) {
-            bl[0] = src[0] * style->rgb[0];
-            bl[1] = src[1] * style->rgb[1];
-            bl[2] = src[2] * style->rgb[2];
+            bl[0] = src[0] * style->rgb.xyz[0];
+            bl[1] = src[1] * style->rgb.xyz[1];
+            bl[2] = src[2] * style->rgb.xyz[2];
 
             bl += 3; src += 3;
         }
@@ -218,9 +218,9 @@ static void add_light_styles(mface_t *surf, int size)
 
         bl = blocklights;
         for (j = 0; j < size; j++) {
-            bl[0] += src[0] * style->rgb[0];
-            bl[1] += src[1] * style->rgb[1];
-            bl[2] += src[2] * style->rgb[2];
+            bl[0] += src[0] * style->rgb.xyz[0];
+            bl[1] += src[1] * style->rgb.xyz[1];
+            bl[2] += src[2] * style->rgb.xyz[2];
 
             bl += 3; src += 3;
         }
@@ -343,9 +343,9 @@ static void build_style_map(int dynamic)
 
     if (!dynamic) {
         // make all styles fullbright
-        fake.rgb[0] = 1;
-        fake.rgb[1] = 1;
-        fake.rgb[2] = 1;
+        fake.rgb.xyz[0] = 1;
+        fake.rgb.xyz[1] = 1;
+        fake.rgb.xyz[2] = 1;
         fake.white = 1;
         glr.fd.lightstyles = &fake;
 
@@ -627,7 +627,7 @@ static void sample_surface_verts(mface_t *surf, vec_t *vbo)
         glr.lightpoint.t = (int)vbo[7] - surf->texturemins[1];
 
         GL_SampleLightPoint(color);
-        adjust_color_ub((byte *)(vbo + 3), color);
+        adjust_color_ub((byte *)(vbo + 3), color.xyz);
 
         vbo += VERTEX_SIZE;
     }
@@ -819,7 +819,7 @@ static void set_world_size(void)
     int i;
 
     for (i = 0, size = 0; i < 3; i++) {
-        temp = node->maxs[i] - node->mins[i];
+        temp = node->maxs.xyz[i] - node->mins.xyz[i];
         if (temp > size)
             size = temp;
     }

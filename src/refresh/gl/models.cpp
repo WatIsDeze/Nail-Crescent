@@ -214,10 +214,10 @@ qerror_t MOD_LoadMD2_GL(model_t *model, const void *rawdata, size_t length)
 
             for (k = 0; k < 3; k++) {
                 val = dst_vert->pos[k];
-                if (val < mins[k])
-                    mins[k] = val;
-                if (val > maxs[k])
-                    maxs[k] = val;
+                if (val < mins.xyz[k])
+                    mins.xyz[k] = val;
+                if (val > maxs.xyz[k])
+                    maxs.xyz[k] = val;
             }
         }
 
