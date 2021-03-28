@@ -78,18 +78,18 @@ static void DrawSkyPolygon(int nump, vec3_t *vecs)
     av.x = std::fabsf(v.x);
     av.y = std::fabsf(v.y);
     av.z = std::fabsf(v.z);
-    if (av[0] > av[1] && av[0] > av[2]) {
+    if (av.xyz[0] > av.xyz[1] && av.xyz[0] > av.xyz[2]) {
         if (v[0] < 0)
             axis = 1;
         else
             axis = 0;
-    } else if (av[1] > av[2] && av[1] > av[0]) {
-        if (v[1] < 0)
+    } else if (av.xyz[1] > av.xyz[2] && av.xyz[1] > av.xyz[0]) {
+        if (v.xyz[1] < 0)
             axis = 3;
         else
             axis = 2;
     } else {
-        if (v[2] < 0)
+        if (v.xyz[2] < 0)
             axis = 5;
         else
             axis = 4;
@@ -133,7 +133,7 @@ static void DrawSkyPolygon(int nump, vec3_t *vecs)
 #define SIDE_BACK       1
 #define SIDE_ON         2
 
-static void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
+static void ClipSkyPolygon(int nump, vec3_t *vecs, int stage)
 {
     const float     *norm;
     float   *v;
@@ -157,9 +157,9 @@ static void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
     }
 
     front = back = false;
-    norm = skyclip[stage];
-    for (i = 0, v = vecs; i < nump; i++, v += 3) {
-        d = Vec3_Dot(v, norm);
+    norm = &skyclip[stage].xyz[0];
+    for (i = 0, v = &vecs->xyz[0]; i < nump; i++, v += 3) {
+        d = Vec3_Dot({ v[0], v[1], v[2] }, { norm[0], norm[1], norm[2] });
         if (d > ON_EPSILON) {
             front = true;
             sides[i] = SIDE_FRONT;
@@ -181,23 +181,45 @@ static void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
     // clip it
     sides[i] = sides[0];
     dists[i] = dists[0];
-    Vec3_Copy_(vecs, (vecs + (i * 3)));
+// MATHLIB: !!!! Replaced with the old define macro.    
+//    Vec3_Copy_(vecs, (vecs + (i * 3)));
+    (vecs[i]).xyz[0] = (*vecs).xyz[0];
+    (vecs[i]).xyz[1] = (*vecs).xyz[1];
+    (vecs[i]).xyz[2] = (*vecs).xyz[2];
+
     newc[0] = newc[1] = 0;
 
-    for (i = 0, v = vecs; i < nump; i++, v += 3) {
+    // MATHLIB: !!!! Was v = vecs;
+    for (i = 0, v = &vecs->xyz[0]; i < nump; i++, v += 3) {
         switch (sides[i]) {
         case SIDE_FRONT:
-            Vec3_Copy_(v, newv[0][newc[0]]);
+            // MATHLIB: !!!! Replaced with old define macro content.
+            //Vec3_Copy_(v, newv[0][newc[0]]);
+            (vecs[i * 3]).xyz[0] = v[0];
+            (vecs[i * 3]).xyz[1] = v[1];
+            (vecs[i * 3]).xyz[2] = v[2];
             newc[0]++;
             break;
         case SIDE_BACK:
-            Vec3_Copy_(v, newv[1][newc[1]]);
+            // MATHLIB: !!!! Replaced with old define macro content.
+            //Vec3_Copy_(v, newv[1][newc[1]]);
+            v[0] = newv[1][newc[1]].xyz[0];
+            v[1] = newv[1][newc[1]].xyz[1];
+            v[2] = newv[1][newc[1]].xyz[2];
             newc[1]++;
             break;
         case SIDE_ON:
-            Vec3_Copy_(v, newv[0][newc[0]]);
+            // MATHLIB: !!!! Replaced with old define macro content.
+            //Vec3_Copy_(v, newv[0][newc[0]]);
+            v[0] = newv[0][newc[0]].xyz[0];
+            v[1] = newv[0][newc[0]].xyz[1];
+            v[2] = newv[0][newc[0]].xyz[2];
             newc[0]++;
-            Vec3_Copy_(v, newv[1][newc[1]]);
+            // MATHLIB: !!!! Replaced with old define macro content.
+            //Vec3_Copy_(v, newv[1][newc[1]]);
+            v[0] = newv[1][newc[1]].xyz[0];
+            v[1] = newv[1][newc[1]].xyz[1];
+            v[2] = newv[1][newc[1]].xyz[2];
             newc[1]++;
             break;
         }
@@ -208,16 +230,16 @@ static void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
         d = dists[i] / (dists[i] - dists[i + 1]);
         for (j = 0; j < 3; j++) {
             e = v[j] + d * (v[j + 3] - v[j]);
-            newv[0][newc[0]][j] = e;
-            newv[1][newc[1]][j] = e;
+            newv[0][newc[0]].xyz[j] = e;
+            newv[1][newc[1]].xyz[j] = e;
         }
         newc[0]++;
         newc[1]++;
     }
 
     // continue
-    ClipSkyPolygon(newc[0], newv[0][0], stage + 1);
-    ClipSkyPolygon(newc[1], newv[1][0], stage + 1);
+    ClipSkyPolygon(newc[0], &newv[0][0], stage + 1);
+    ClipSkyPolygon(newc[1], &newv[1][0], stage + 1);
 }
 
 static inline void SkyInverseRotate(vec3_t out, const vec3_t in)
@@ -263,7 +285,7 @@ void R_AddSkySurface(mface_t *fa)
         }
     }
 
-    ClipSkyPolygon(fa->numsurfedges, verts[0], 0);
+    ClipSkyPolygon(fa->numsurfedges, &verts[0], 0);
     skyfaces++;
 }
 
@@ -289,16 +311,16 @@ static void MakeSkyVec(float s, float t, int axis, vec_t *out)
     vec3_t  b, v;
     int     j, k;
 
-    b[0] = s * gl_static.world.size;
-    b[1] = t * gl_static.world.size;
-    b[2] = gl_static.world.size;
+    b.xyz[0] = s * gl_static.world.size;
+    b.xyz[1] = t * gl_static.world.size;
+    b.xyz[2] = gl_static.world.size;
 
     for (j = 0; j < 3; j++) {
         k = st_to_vec[axis][j];
         if (k < 0)
-            v[j] = -b[-k - 1];
+            v.xyz[j] = -b.xyz[-k - 1];
         else
-            v[j] = b[k - 1];
+            v.xyz[j] = b.xyz[k - 1];
     }
 
     if (skyrotate) {
@@ -306,7 +328,13 @@ static void MakeSkyVec(float s, float t, int axis, vec_t *out)
         out[1] = Vec3_Dot(skymatrix[1], v) + glr.fd.vieworg[1];
         out[2] = Vec3_Dot(skymatrix[2], v) + glr.fd.vieworg[2];
     } else {
-        Vec3_Add_(v, glr.fd.vieworg, out);
+        // MATHLIB: !!!! Vec3_Add_(v, glr.fd.vieworg, out);
+//        ((c)[0]=(a)[0]+(b)[0], \
+//         (c)[1]=(a)[1]+(b)[1], \
+//         (c)[2]=(a)[2]+(b)[2])
+        out[0] = v.xyz[0] + glr.fd.vieworg.xyz[0];
+        out[1] = v.xyz[1] + glr.fd.vieworg.xyz[1];
+        out[2] = v.xyz[2] + glr.fd.vieworg.xyz[2];
     }
 
     // avoid bilerp seam

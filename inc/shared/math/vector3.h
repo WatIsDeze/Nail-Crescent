@@ -214,7 +214,7 @@ static inline vec3_t Vec3_Add2(const vec3_t &a, const vec3_t &b, const vec3_t& c
 // ALTERNATIVE: Use Vec3_Add2
 //===============
 //
-static inline void Vec3_Add2_(const vec3_t& a, const vec3_t& b, const vec3_t& c, vec3_t &d) {
+static inline void Vec3_Add3_(const vec3_t& a, const vec3_t& b, const vec3_t& c, vec3_t &d) {
     d = vec3_t{
         a.x + b.x + c.x,
         a.y + b.y + c.y,

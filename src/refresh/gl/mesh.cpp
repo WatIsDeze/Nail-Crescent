@@ -55,19 +55,19 @@ static void setup_dotshading(void)
     shadelight = color;
 
     // matches the anormtab.h precalculations
-    yaw = -DEG2RAD(glr.ent->angles[YAW]);
+    yaw = -DEG2RAD(glr.ent->angles.xyz[YAW]);
     cy = cos(yaw);
     sy = sin(yaw);
     cp = cos(-M_PI / 4);
     sp = sin(-M_PI / 4);
-    shadedir[0] = cp * cy;
-    shadedir[1] = cp * sy;
-    shadedir[2] = -sp;
+    shadedir.xyz[0] = cp * cy;
+    shadedir.xyz[1] = cp * sy;
+    shadedir.xyz[2] = -sp;
 }
 
 static inline vec_t shadedot(const vec_t *normal)
 {
-    vec_t d = Vec3_Dot(normal, shadedir);
+    vec_t d = Vec3_Dot({ normal[0], normal[1], normal[2] }, shadedir); // MATHLIB: Made this a bit easier?
 
     // matches the anormtab.h precalculations
     if (d < 0) {
@@ -77,6 +77,7 @@ static inline vec_t shadedot(const vec_t *normal)
     return d + 1;
 }
 
+// MATHLIB: Changed to vec3_t
 static inline vec_t *get_static_normal(vec_t *normal, const maliasvert_t *vert)
 {
     unsigned int lat = vert->norm[0];
@@ -341,7 +342,10 @@ static void setup_color(void)
     memset(&glr.lightpoint, 0, sizeof(glr.lightpoint));
 
     if (flags & RF_SHELL_MASK) {
-        Vec3_Clear(color);
+        // MATHLIB: !! Vec3_Clear(color);
+        color[0] = 0.f;
+        color[1] = 0.f;
+        color[2] = 0.f;
         if (flags & RF_SHELL_HALF_DAM) {
             color[0] = 0.56f;
             color[1] = 0.59f;
@@ -361,9 +365,15 @@ static void setup_color(void)
             color[2] = 1;
         }
     } else if (flags & RF_FULLBRIGHT) {
-        Vec3_Set_(color, 1, 1, 1);
+        // MATHLIB: !! Vec3_Set_(&color, 1, 1, 1);
+        color[0] = 1.f;
+        color[1] = 1.f;
+        color[2] = 1.f;
     } else if ((flags & RF_IR_VISIBLE) && (glr.fd.rdflags & RDF_IRGOGGLES)) {
-        Vec3_Set_(color, 1, 0, 0);
+        // MATHLIB: !! Vec3_Set_(&color, 1, 0, 0);
+        color[0] = 1.f;
+        color[1] = 0.f;
+        color[2] = 0.f;
     } else {
         GL_LightPoint(origin, color);
 
@@ -374,7 +384,10 @@ static void setup_color(void)
                 }
             }
             if (i == 3) {
-                Vec3_Set_(color, 0.1f, 0.1f, 0.1f);
+                // MATHLIB: !! Vec3_Set_(&color, 0.1f, 0.1f, 0.1f);
+                color[0] = 0.1f;
+                color[1] = 0.1f;
+                color[2] = 0.1f;
             }
         }
 
@@ -414,7 +427,7 @@ static void setup_celshading(void)
         return;
 
     Vec3_Subtract_(origin, glr.fd.vieworg, dir);
-    celscale = 1.0f - Vec3_Length(dir) / 700.0f;
+    celscale = 1.0f - Vec3_Length_(dir) / 700.0f;
 }
 
 static void draw_celshading(maliasmesh_t *mesh)
@@ -463,20 +476,20 @@ static void setup_shadow(void)
     // project shadow on ground plane
     plane = &glr.lightpoint.plane;
 
-    matrix[0] = plane->normal[1] * dir[1] + plane->normal[2] * dir[2];
-    matrix[4] = -plane->normal[1] * dir[0];
-    matrix[8] = -plane->normal[2] * dir[0];
-    matrix[12] = plane->dist * dir[0];
+    matrix[0] = plane->normal.xyz[1] * dir.xyz[1] + plane->normal.xyz[2] * dir.xyz[2];
+    matrix[4] = -plane->normal.xyz[1] * dir.xyz[0];
+    matrix[8] = -plane->normal.xyz[2] * dir.xyz[0];
+    matrix[12] = plane->dist * dir.xyz[0];
 
-    matrix[1] = -plane->normal[0] * dir[1];
-    matrix[5] = plane->normal[0] * dir[0] + plane->normal[2] * dir[2];
-    matrix[9] = -plane->normal[2] * dir[1];
-    matrix[13] = plane->dist * dir[1];
+    matrix[1] = -plane->normal.xyz[0] * dir.xyz[1];
+    matrix[5] = plane->normal.xyz[0] * dir.xyz[0] + plane->normal.xyz[2] * dir.xyz[2];
+    matrix[9] = -plane->normal.xyz[2] * dir.xyz[1];
+    matrix[13] = plane->dist * dir.xyz[1];
 
-    matrix[2] = -plane->normal[0] * dir[2];
-    matrix[6] = -plane->normal[1] * dir[2];
-    matrix[10] = plane->normal[0] * dir[0] + plane->normal[1] * dir[1];
-    matrix[14] = plane->dist * dir[2];
+    matrix[2] = -plane->normal.xyz[0] * dir.xyz[2];
+    matrix[6] = -plane->normal.xyz[1] * dir.xyz[2];
+    matrix[10] = plane->normal.xyz[0] * dir.xyz[0] + plane->normal.xyz[1] * dir.xyz[1];
+    matrix[14] = plane->dist * dir.xyz[2];
 
     matrix[3] = 0;
     matrix[7] = 0;
@@ -486,20 +499,20 @@ static void setup_shadow(void)
     GL_MultMatrix(tmp, glr.viewmatrix, matrix);
 
     // rotate for entity
-    matrix[0] = glr.entaxis[0][0];
-    matrix[4] = glr.entaxis[1][0];
-    matrix[8] = glr.entaxis[2][0];
-    matrix[12] = origin[0];
+    matrix[0] = glr.entaxis[0].xyz[0];
+    matrix[4] = glr.entaxis[1].xyz[0];
+    matrix[8] = glr.entaxis[2].xyz[0];
+    matrix[12] = origin.xyz[0];
 
-    matrix[1] = glr.entaxis[0][1];
-    matrix[5] = glr.entaxis[1][1];
-    matrix[9] = glr.entaxis[2][1];
-    matrix[13] = origin[1];
+    matrix[1] = glr.entaxis[0].xyz[1];
+    matrix[5] = glr.entaxis[1].xyz[1];
+    matrix[9] = glr.entaxis[2].xyz[1];
+    matrix[13] = origin.xyz[1];
 
-    matrix[2] = glr.entaxis[0][2];
-    matrix[6] = glr.entaxis[1][2];
-    matrix[10] = glr.entaxis[2][2];
-    matrix[14] = origin[2];
+    matrix[2] = glr.entaxis[0].xyz[2];
+    matrix[6] = glr.entaxis[1].xyz[2];
+    matrix[10] = glr.entaxis[2].xyz[2];
+    matrix[14] = origin.xyz[2];
 
     matrix[3] = 0;
     matrix[7] = 0;

@@ -155,7 +155,7 @@ glCullResult_t GL_CullSphere(const vec3_t origin, float radius)
 
     cull = CULL_IN;
     for (i = 0, p = glr.frustumPlanes; i < 4; i++, p++) {
-        dist = PlaneDiff(origin, p);
+        dist = PlaneDiff_(origin, p);
         if (dist < -radius) {
             return CULL_OUT;
         }
@@ -175,9 +175,9 @@ static inline void make_box_points(const vec3_t    origin,
 
     for (i = 0; i < 8; i++) {
         Vec3_Copy_(origin, points[i]);
-        Vec3_MA_(points[i], bounds[(i >> 0) & 1][0], glr.entaxis[0], points[i]);
-        Vec3_MA_(points[i], bounds[(i >> 1) & 1][1], glr.entaxis[1], points[i]);
-        Vec3_MA_(points[i], bounds[(i >> 2) & 1][2], glr.entaxis[2], points[i]);
+        Vec3_MA_(points[i], bounds[(i >> 0) & 1].xyz[0], glr.entaxis.xyz[0], points[i]);
+        Vec3_MA_(points[i], bounds[(i >> 1) & 1].xyz[1], glr.entaxis.xyz[1], points[i]);
+        Vec3_MA_(points[i], bounds[(i >> 2) & 1].xyz[2], glr.entaxis.xyz[2], points[i]);
     }
 
 }
@@ -306,20 +306,20 @@ void GL_RotateForEntity(vec3_t origin, float scale)
 {
     GLfloat matrix[16];
 
-    matrix[0] = glr.entaxis[0][0] * scale;
-    matrix[4] = glr.entaxis[1][0] * scale;
-    matrix[8] = glr.entaxis[2][0] * scale;
-    matrix[12] = origin[0];
+    matrix[0] = glr.entaxis[0].xyz[0] * scale;
+    matrix[4] = glr.entaxis[1].xyz[0] * scale;
+    matrix[8] = glr.entaxis[2].xyz[0] * scale;
+    matrix[12] = origin.xyz[0];
 
-    matrix[1] = glr.entaxis[0][1] * scale;
-    matrix[5] = glr.entaxis[1][1] * scale;
-    matrix[9] = glr.entaxis[2][1] * scale;
-    matrix[13] = origin[1];
+    matrix[1] = glr.entaxis[0].xyz[1] * scale;
+    matrix[5] = glr.entaxis[1].xyz[1] * scale;
+    matrix[9] = glr.entaxis[2].xyz[1] * scale;
+    matrix[13] = origin.xyz[1];
 
-    matrix[2] = glr.entaxis[0][2] * scale;
-    matrix[6] = glr.entaxis[1][2] * scale;
-    matrix[10] = glr.entaxis[2][2] * scale;
-    matrix[14] = origin[2];
+    matrix[2] = glr.entaxis[0].xyz[2] * scale;
+    matrix[6] = glr.entaxis[1].xyz[2] * scale;
+    matrix[10] = glr.entaxis[2].xyz[2] * scale;
+    matrix[14] = origin.xyz[2];
 
     matrix[3] = 0;
     matrix[7] = 0;
@@ -378,10 +378,10 @@ static void GL_DrawSpriteModel(model_t *model)
 		Vec3_Scale_(glr.viewaxis[2], frame->height - frame->origin_y, up);
 	}
 
-    Vec3_Add3(e->origin, down, left, points[0]);
-    Vec3_Add3(e->origin, up, left, points[1]);
-    Vec3_Add3(e->origin, down, right, points[2]);
-    Vec3_Add3(e->origin, up, right, points[3]);
+    Vec3_Add3_(e->origin, down, left, points[0]);
+    Vec3_Add3_(e->origin, up, left, points[1]);
+    Vec3_Add3_(e->origin, down, right, points[2]);
+    Vec3_Add3_(e->origin, up, right, points[3]);
 
     GL_TexCoordPointer(2, 0, tcoords);
     GL_VertexPointer(3, 0, &points[0][0]);
@@ -438,7 +438,7 @@ static void GL_DrawEntities(int mask)
         glr.ent = ent;
 
         // convert angles to axis
-        if (Vec3_Empty(ent->angles)) {
+        if (Vec3_Empty_(ent->angles)) {
             glr.entrotated = false;
             Vec3_Set_(glr.entaxis[0], 1, 0, 0);
             Vec3_Set_(glr.entaxis[1], 0, 1, 0);
@@ -954,13 +954,13 @@ static qboolean GL_SetupConfig(void)
 static void GL_InitTables(void)
 {
     vec_t lat, lng;
-    const vec_t *v;
+    const vec3_t *v; // MATHLIB: was vec_t, see code below.
     int i;
 
     for (i = 0; i < NUMVERTEXNORMALS; i++) {
-        v = bytedirs[i];
-        lat = acos(v[2]);
-        lng = atan2(v[1], v[0]);
+        v = &bytedirs[i];
+        lat = acos(v->xyz[2]);
+        lng = atan2(v->xyz[1], v->xyz[0]);
         gl_static.latlngtab[i][0] = lat * (255.0f / (2 * M_PI));
         gl_static.latlngtab[i][1] = lng * (255.0f / (2 * M_PI));
     }

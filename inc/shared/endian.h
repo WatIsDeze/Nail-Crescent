@@ -62,8 +62,8 @@ static inline float FloatSwap(float f)
 #define RawShortMem(p) MakeRawShort((p)[0],(p)[1])
 
 #define LittleVector(a,b) \
-    ((b)[0]=LittleFloat((a)[0]),\
-     (b)[1]=LittleFloat((a)[1]),\
-     (b)[2]=LittleFloat((a)[2]))
+    ((b)[0]=LittleFloat((a).x),\
+     (b)[1]=LittleFloat((a).y),\
+     (b)[2]=LittleFloat((a).z))
 
 #endif // __INC_SHARED_ENDIAN_H__
