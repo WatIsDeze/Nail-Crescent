@@ -100,8 +100,8 @@ void PlayerNoise(edict_t *who, vec3_t where, int type)
     }
 
     Vec3_Copy_(where, noise->s.origin);
-    Vec3_Subtract(where, noise->maxs, noise->absmin);
-    Vec3_Add(where, noise->maxs, noise->absmax);
+    Vec3_Subtract_(where, noise->maxs, noise->absmin);
+    Vec3_Add_(where, noise->maxs, noise->absmax);
     noise->teleport_time = level.time;
     gi.linkentity(noise);
 }

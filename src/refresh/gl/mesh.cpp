@@ -165,7 +165,7 @@ static inline vec_t *get_lerped_normal(vec_t *normal,
 
     // normalize result
     len = 1 / Vec3_Length(tmp);
-    Vec3_Scale(tmp, len, normal);
+    Vec3_Scale_(tmp, len, normal);
 
     return normal;
 }
@@ -273,8 +273,8 @@ static glCullResult_t cull_static_model(model_t *model)
             }
         }
     } else {
-        Vec3_Add(newframe->bounds[0], origin, bounds[0]);
-        Vec3_Add(newframe->bounds[1], origin, bounds[1]);
+        Vec3_Add_(newframe->bounds[0], origin, bounds[0]);
+        Vec3_Add_(newframe->bounds[1], origin, bounds[1]);
         cull = GL_CullBox(bounds);
         if (cull == CULL_OUT) {
             c.boxesCulled++;
@@ -314,8 +314,8 @@ static glCullResult_t cull_lerped_model(model_t *model)
         }
     } else {
         UnionBounds(newframe->bounds, oldframe->bounds, bounds);
-        Vec3_Add(bounds[0], origin, bounds[0]);
-        Vec3_Add(bounds[1], origin, bounds[1]);
+        Vec3_Add_(bounds[0], origin, bounds[0]);
+        Vec3_Add_(bounds[1], origin, bounds[1]);
         cull = GL_CullBox(bounds);
         if (cull == CULL_OUT) {
             c.boxesCulled++;
@@ -323,8 +323,8 @@ static glCullResult_t cull_lerped_model(model_t *model)
         }
     }
 
-    Vec3_Scale(oldframe->scale, backlerp, oldscale);
-    Vec3_Scale(newframe->scale, frontlerp, newscale);
+    Vec3_Scale_(oldframe->scale, backlerp, oldscale);
+    Vec3_Scale_(newframe->scale, frontlerp, newscale);
 
     Vec3_Lerp2(oldframe->translate, newframe->translate,
                 backlerp, frontlerp, translate);
@@ -413,7 +413,7 @@ static void setup_celshading(void)
     if (glr.ent->flags & (RF_TRANSLUCENT | RF_SHELL_MASK))
         return;
 
-    Vec3_Subtract(origin, glr.fd.vieworg, dir);
+    Vec3_Subtract_(origin, glr.fd.vieworg, dir);
     celscale = 1.0f - Vec3_Length(dir) / 700.0f;
 }
 

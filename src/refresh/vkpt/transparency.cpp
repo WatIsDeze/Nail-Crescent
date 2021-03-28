@@ -280,7 +280,7 @@ static void write_particle_geometry(const float* view_matrix, const particle_t* 
 		Vec3_Copy_(particle->origin, origin);
 
 		vec3_t z_axis;
-		Vec3_Subtract(view_origin, origin, z_axis);
+		Vec3_Subtract_(view_origin, origin, z_axis);
 		VectorNormalize(z_axis);
 
 		vec3_t x_axis;
@@ -291,27 +291,27 @@ static void write_particle_geometry(const float* view_matrix, const particle_t* 
 		const float size_factor = pow(particle->alpha, 0.05f);
 		if (particle->radius == 0.f)
 		{
-			Vec3_Scale(y_axis, particle_size * size_factor, y_axis);
-			Vec3_Scale(x_axis, particle_size * size_factor, x_axis);
+			Vec3_Scale_(y_axis, particle_size * size_factor, y_axis);
+			Vec3_Scale_(x_axis, particle_size * size_factor, x_axis);
 		}
 		else
 		{
-			Vec3_Scale(y_axis, particle->radius, y_axis);
-			Vec3_Scale(x_axis, particle->radius, x_axis);
+			Vec3_Scale_(y_axis, particle->radius, y_axis);
+			Vec3_Scale_(x_axis, particle->radius, x_axis);
 		}
 
 		vec3_t temp;
-		Vec3_Subtract(origin, x_axis, temp);
-		Vec3_Add(temp, y_axis, vertex_positions[0]);
+		Vec3_Subtract_(origin, x_axis, temp);
+		Vec3_Add_(temp, y_axis, vertex_positions[0]);
 
-		Vec3_Add(origin, x_axis, temp);
-		Vec3_Add(temp, y_axis, vertex_positions[1]);
+		Vec3_Add_(origin, x_axis, temp);
+		Vec3_Add_(temp, y_axis, vertex_positions[1]);
 
-		Vec3_Add(origin, x_axis, temp);
-		Vec3_Subtract(temp, y_axis, vertex_positions[2]);
+		Vec3_Add_(origin, x_axis, temp);
+		Vec3_Subtract_(temp, y_axis, vertex_positions[2]);
 
-		Vec3_Subtract(origin, x_axis, temp);
-		Vec3_Subtract(temp, y_axis, vertex_positions[3]);
+		Vec3_Subtract_(origin, x_axis, temp);
+		Vec3_Subtract_(temp, y_axis, vertex_positions[3]);
 
 		vertex_positions += 4;
 	}
@@ -354,7 +354,7 @@ static void write_beam_geometry(const float* view_matrix, const entity_t* entiti
 		Vec3_Copy_(beam->origin, end);
 
 		vec3_t to_end;
-		Vec3_Subtract(end, begin, to_end);
+		Vec3_Subtract_(end, begin, to_end);
 
 		vec3_t norm_dir;
 		Vec3_Copy_(to_end, norm_dir);
@@ -363,17 +363,17 @@ static void write_beam_geometry(const float* view_matrix, const entity_t* entiti
 		Vec3_MA_(end, 5.f, norm_dir, end);
 
 		vec3_t to_view;
-		Vec3_Subtract(view_origin, begin, to_view);
+		Vec3_Subtract_(view_origin, begin, to_view);
 
 		vec3_t x_axis;
 		Vec3_Cross(to_end, to_view, x_axis);
 		VectorNormalize(x_axis);
-		Vec3_Scale(x_axis, beam_width, x_axis);
+		Vec3_Scale_(x_axis, beam_width, x_axis);
 
-		Vec3_Subtract(end, x_axis, vertex_positions[0]);
-		Vec3_Add(end, x_axis, vertex_positions[1]);
-		Vec3_Add(begin, x_axis, vertex_positions[2]);
-		Vec3_Subtract(begin, x_axis, vertex_positions[3]);
+		Vec3_Subtract_(end, x_axis, vertex_positions[0]);
+		Vec3_Add_(end, x_axis, vertex_positions[1]);
+		Vec3_Add_(begin, x_axis, vertex_positions[2]);
+		Vec3_Subtract_(begin, x_axis, vertex_positions[3]);
 		vertex_positions += 4;
 	}
 }
@@ -403,7 +403,7 @@ static int compare_beams(const void* _a, const void* _b)
 qboolean vkpt_build_cylinder_light(light_poly_t* light_list, int* num_lights, int max_lights, bsp_t *bsp, vec3_t begin, vec3_t end, vec3_t color, float radius)
 {
 	vec3_t dir, norm_dir;
-	Vec3_Subtract(end, begin, dir);
+	Vec3_Subtract_(end, begin, dir);
 	Vec3_Copy_(dir, norm_dir);
 	VectorNormalize(norm_dir);
 
@@ -523,7 +523,7 @@ void vkpt_build_beam_lights(light_poly_t* light_list, int* num_lights, int max_l
 		Vec3_Copy_(beam->origin, end);
 
 		vec3_t to_end;
-		Vec3_Subtract(end, begin, to_end);
+		Vec3_Subtract_(end, begin, to_end);
 
 		vec3_t norm_dir;
 		Vec3_Copy_(to_end, norm_dir);
@@ -587,17 +587,17 @@ static void write_sprite_geometry(const float* view_matrix, const entity_t* enti
 			// make the sprite always face the camera and always vertical in cylindrical projection mode
 
 			vec3_t to_camera;
-			Vec3_Subtract(view_origin, e->origin, to_camera);
+			Vec3_Subtract_(view_origin, e->origin, to_camera);
 			
 			vec3_t cyl_x;
 			Vec3_Cross(world_y, to_camera, cyl_x);
 			VectorNormalize(cyl_x);
 
-			Vec3_Scale(cyl_x, frame->origin_x, left);
-			Vec3_Scale(cyl_x, frame->origin_x - frame->width, right);
+			Vec3_Scale_(cyl_x, frame->origin_x, left);
+			Vec3_Scale_(cyl_x, frame->origin_x - frame->width, right);
 
-			Vec3_Scale(world_y, -frame->origin_y, down);
-			Vec3_Scale(world_y, frame->height - frame->origin_y, up);
+			Vec3_Scale_(world_y, -frame->origin_y, down);
+			Vec3_Scale_(world_y, frame->height - frame->origin_y, up);
 		}
 		else
 		{
@@ -661,10 +661,10 @@ static void write_sprite_geometry(const float* view_matrix, const entity_t* enti
 			else if (model->sprite_vertical) // inverted true means false better experience for the mappers
 			{
 				// 3D Billboard Game use is for all other sprites, mappers use vrty to use this option
-				Vec3_Scale(view_x, frame->origin_x, left);
-				Vec3_Scale(view_x, frame->origin_x - frame->width, right);
-				Vec3_Scale(view_y, -frame->origin_y, down);
-				Vec3_Scale(view_y, frame->height - frame->origin_y, up);
+				Vec3_Scale_(view_x, frame->origin_x, left);
+				Vec3_Scale_(view_x, frame->origin_x - frame->width, right);
+				Vec3_Scale_(view_y, -frame->origin_y, down);
+				Vec3_Scale_(view_y, frame->height - frame->origin_y, up);
 
 				Vec3_Add3(e->origin, down, left, vertex_positions[0]);
 				Vec3_Add3(e->origin, up, left, vertex_positions[1]);
@@ -674,10 +674,10 @@ static void write_sprite_geometry(const float* view_matrix, const entity_t* enti
 			else
 			{
 				// 2D Billboard Game use is for Rocket Explosion only, defualt for mappers
-				Vec3_Scale(view_x, frame->origin_x, left);
-				Vec3_Scale(view_x, frame->origin_x - frame->width, right);
-				Vec3_Scale(world_y, -frame->origin_y, down);
-				Vec3_Scale(world_y, frame->height - frame->origin_y, up);
+				Vec3_Scale_(view_x, frame->origin_x, left);
+				Vec3_Scale_(view_x, frame->origin_x - frame->width, right);
+				Vec3_Scale_(world_y, -frame->origin_y, down);
+				Vec3_Scale_(world_y, frame->height - frame->origin_y, up);
 
 				Vec3_Add3(e->origin, down, left, vertex_positions[0]);
 				Vec3_Add3(e->origin, up, left, vertex_positions[1]);

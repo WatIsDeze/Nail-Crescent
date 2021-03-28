@@ -42,7 +42,7 @@ static void check_dodge(edict_t *self, vec3_t start, vec3_t dir, int speed)
     Vec3_MA_(start, 8192, dir, end);
     tr = gi.trace(start, NULL, NULL, end, self, CONTENTS_MASK_SHOT);
     if ((tr.ent) && (tr.ent->svflags & SVF_MONSTER) && (tr.ent->health > 0) && (tr.ent->monsterinfo.dodge) && infront(tr.ent, self)) {
-        Vec3_Subtract(tr.endpos, start, v);
+        Vec3_Subtract_(tr.endpos, start, v);
         eta = (Vec3_Length(v) - tr.ent->maxs[0]) / speed;
         tr.ent->monsterinfo.dodge(tr.ent, self, eta);
     }
@@ -66,7 +66,7 @@ qboolean fire_hit(edict_t *self, vec3_t aim, int damage, int kick)
     vec3_t      dir;
 
     //see if enemy is in range
-    Vec3_Subtract(self->enemy->s.origin, self->s.origin, dir);
+    Vec3_Subtract_(self->enemy->s.origin, self->s.origin, dir);
     range = Vec3_Length(dir);
     if (range > aim[0])
         return false;
@@ -97,7 +97,7 @@ qboolean fire_hit(edict_t *self, vec3_t aim, int damage, int kick)
     Vec3_MA_(self->s.origin, range, forward, point);
     Vec3_MA_(point, aim[1], right, point);
     Vec3_MA_(point, aim[2], up, point);
-    Vec3_Subtract(point, self->enemy->s.origin, dir);
+    Vec3_Subtract_(point, self->enemy->s.origin, dir);
 
     // do the damage
     T_Damage(tr.ent, self, self, dir, point, vec3_origin, damage, kick / 2, DAMAGE_NO_KNOCKBACK, MOD_HIT);
@@ -107,7 +107,7 @@ qboolean fire_hit(edict_t *self, vec3_t aim, int damage, int kick)
 
     // do our special form of knockback here
     Vec3_MA_(self->enemy->absmin, 0.5, self->enemy->size, v);
-    Vec3_Subtract(v, point, v);
+    Vec3_Subtract_(v, point, v);
     VectorNormalize(v);
     Vec3_MA_(self->enemy->velocity, kick, v, self->enemy->velocity);
     if (self->enemy->velocity[2] > 0)
@@ -185,7 +185,7 @@ static void fire_lead(edict_t *self, vec3_t start, vec3_t aimdir, int damage, in
                 }
 
                 // change bullet's course when it enters water
-                Vec3_Subtract(end, start, dir);
+                Vec3_Subtract_(end, start, dir);
                 vectoangles(dir, dir);
                 AngleVectors(dir, forward, right, up);
                 r = crandom() * hspread * 2;
@@ -224,7 +224,7 @@ static void fire_lead(edict_t *self, vec3_t start, vec3_t aimdir, int damage, in
     if (water) {
         vec3_t  pos;
 
-        Vec3_Subtract(tr.endpos, water_start, dir);
+        Vec3_Subtract_(tr.endpos, water_start, dir);
         VectorNormalize(dir);
         Vec3_MA_(tr.endpos, -2, dir, pos);
         if (gi.pointcontents(pos) & CONTENTS_MASK_LIQUID)
@@ -232,8 +232,8 @@ static void fire_lead(edict_t *self, vec3_t start, vec3_t aimdir, int damage, in
         else
             tr = gi.trace(pos, NULL, NULL, water_start, tr.ent, CONTENTS_MASK_LIQUID);
 
-        Vec3_Add(water_start, tr.endpos, pos);
-        Vec3_Scale(pos, 0.5, pos);
+        Vec3_Add_(water_start, tr.endpos, pos);
+        Vec3_Scale_(pos, 0.5, pos);
 
         gi.WriteByte(svg_temp_entity);
         gi.WriteByte(TE_BUBBLETRAIL);
@@ -333,7 +333,7 @@ void fire_blaster(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
     Vec3_Copy_(start, bolt->s.origin);
     Vec3_Copy_(start, bolt->s.old_origin);
     vectoangles(dir, bolt->s.angles);
-    Vec3_Scale(dir, speed, bolt->velocity);
+    Vec3_Scale_(dir, speed, bolt->velocity);
     bolt->movetype = MOVETYPE_FLYMISSILE;
     bolt->clipmask = CONTENTS_MASK_SHOT;
     bolt->solid = SOLID_BBOX;
@@ -382,11 +382,11 @@ void Grenade_Explode(edict_t *ent)
         vec3_t  v;
         vec3_t  dir;
 
-        Vec3_Add(ent->enemy->mins, ent->enemy->maxs, v);
+        Vec3_Add_(ent->enemy->mins, ent->enemy->maxs, v);
         Vec3_MA_(ent->enemy->s.origin, 0.5, v, v);
-        Vec3_Subtract(ent->s.origin, v, v);
+        Vec3_Subtract_(ent->s.origin, v, v);
         points = ent->dmg - 0.5 * Vec3_Length(v);
-        Vec3_Subtract(ent->enemy->s.origin, ent->s.origin, dir);
+        Vec3_Subtract_(ent->enemy->s.origin, ent->s.origin, dir);
         if (ent->spawnflags & 1)
             mod = MOD_HANDGRENADE;
         else
@@ -458,7 +458,7 @@ void fire_grenade(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int sp
 
     grenade = G_Spawn();
     Vec3_Copy_(start, grenade->s.origin);
-    Vec3_Scale(aimdir, speed, grenade->velocity);
+    Vec3_Scale_(aimdir, speed, grenade->velocity);
     Vec3_MA_(grenade->velocity, 200 + crandom() * 10.0, up, grenade->velocity);
     Vec3_MA_(grenade->velocity, crandom() * 10.0, right, grenade->velocity);
     Vec3_Set_(grenade->avelocity, 300, 300, 300);
@@ -491,7 +491,7 @@ void fire_grenade2(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 
     grenade = G_Spawn();
     Vec3_Copy_(start, grenade->s.origin);
-    Vec3_Scale(aimdir, speed, grenade->velocity);
+    Vec3_Scale_(aimdir, speed, grenade->velocity);
     Vec3_MA_(grenade->velocity, 200 + crandom() * 10.0, up, grenade->velocity);
     Vec3_MA_(grenade->velocity, crandom() * 10.0, right, grenade->velocity);
     Vec3_Set_(grenade->avelocity, 300, 300, 300);
@@ -582,7 +582,7 @@ void fire_rocket(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed,
     Vec3_Copy_(start, rocket->s.origin);
     Vec3_Copy_(dir, rocket->movedir);
     vectoangles(dir, rocket->s.angles);
-    Vec3_Scale(dir, speed, rocket->velocity);
+    Vec3_Scale_(dir, speed, rocket->velocity);
     rocket->movetype = MOVETYPE_FLYMISSILE;
     rocket->clipmask = CONTENTS_MASK_SHOT;
     rocket->solid = SOLID_BBOX;
@@ -692,9 +692,9 @@ void bfg_explode(edict_t *self)
             if (!CanDamage(ent, self->owner))
                 continue;
 
-            Vec3_Add(ent->mins, ent->maxs, v);
+            Vec3_Add_(ent->mins, ent->maxs, v);
             Vec3_MA_(ent->s.origin, 0.5, v, v);
-            Vec3_Subtract(self->s.origin, v, v);
+            Vec3_Subtract_(self->s.origin, v, v);
             dist = Vec3_Length(v);
             points = self->radius_dmg * (1.0 - sqrt(dist / self->dmg_radius));
             if (ent == self->owner)
@@ -784,7 +784,7 @@ void bfg_think(edict_t *self)
 
         Vec3_MA_(ent->absmin, 0.5, ent->size, point);
 
-        Vec3_Subtract(point, self->s.origin, dir);
+        Vec3_Subtract_(point, self->s.origin, dir);
         VectorNormalize(dir);
 
         ignore = self;
@@ -835,7 +835,7 @@ void fire_bfg(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, fl
     Vec3_Copy_(start, bfg->s.origin);
     Vec3_Copy_(dir, bfg->movedir);
     vectoangles(dir, bfg->s.angles);
-    Vec3_Scale(dir, speed, bfg->velocity);
+    Vec3_Scale_(dir, speed, bfg->velocity);
     bfg->movetype = MOVETYPE_FLYMISSILE;
     bfg->clipmask = CONTENTS_MASK_SHOT;
     bfg->solid = SOLID_BBOX;
@@ -966,7 +966,7 @@ void fire_flaregun(edict_t *self, vec3_t start, vec3_t aimdir,
 
 	flare = G_Spawn();
 	Vec3_Copy_(start, flare->s.origin);
-	Vec3_Scale(aimdir, speed, flare->velocity);
+	Vec3_Scale_(aimdir, speed, flare->velocity);
 	Vec3_Set_(flare->avelocity, 300, 300, 300);
 	flare->movetype = MOVETYPE_BOUNCE;
 	flare->clipmask = CONTENTS_MASK_SHOT;

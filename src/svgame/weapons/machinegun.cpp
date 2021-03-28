@@ -75,7 +75,7 @@ void Machinegun_Fire(edict_t* ent)
     }
 
     // get start / end positions
-    Vec3_Add(ent->client->v_angle, ent->client->kick_angles, angles);
+    Vec3_Add_(ent->client->v_angle, ent->client->kick_angles, angles);
     AngleVectors(angles, forward, right, NULL);
     Vec3_Set_(offset, 0, 8, ent->viewheight - 8);
     P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);

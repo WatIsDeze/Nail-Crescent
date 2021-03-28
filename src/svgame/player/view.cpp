@@ -170,7 +170,7 @@ void P_DamageFeedback(edict_t *player)
         if (kick > 50)
             kick = 50;
 
-        Vec3_Subtract(client->damage_from, player->s.origin, v);
+        Vec3_Subtract_(client->damage_from, player->s.origin, v);
         VectorNormalize(v);
 
         side = Vec3_Dot(v, right);
@@ -303,7 +303,7 @@ void SV_CalcViewOffset(edict_t *ent)
 
     // add kick offset
 
-    Vec3_Add(v, ent->client->kick_origin, v);
+    Vec3_Add_(v, ent->client->kick_origin, v);
 
     // absolutely bound offsets
     // so the view can never be outside the player box
@@ -409,7 +409,7 @@ void SV_CalcBlend(edict_t *ent)
                                    ent->client->ps.blend[2] = ent->client->ps.blend[3] = 0;
 
     // add for contents
-    Vec3_Add(ent->s.origin, ent->client->ps.viewoffset, vieworg);
+    Vec3_Add_(ent->s.origin, ent->client->ps.viewoffset, vieworg);
     contents = gi.pointcontents(vieworg);
 
 	if (contents & (CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA))

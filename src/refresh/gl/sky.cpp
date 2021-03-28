@@ -72,7 +72,7 @@ static void DrawSkyPolygon(int nump, vec3_t vecs)
     // decide which face it maps to
     Vec3_Clear(v);
     for (i = 0, vp = vecs; i < nump; i++, vp += 3) {
-        Vec3_Add(vp, v, v);
+        Vec3_Add_(vp, v, v);
     }
     av[0] = fabs(v[0]);
     av[1] = fabs(v[1]);
@@ -252,13 +252,13 @@ void R_AddSkySurface(mface_t *fa)
 
         for (i = 0; i < fa->numsurfedges; i++, surfedge++) {
             vert = surfedge->edge->v[surfedge->vert];
-            Vec3_Subtract(vert->point, glr.fd.vieworg, temp);
+            Vec3_Subtract_(vert->point, glr.fd.vieworg, temp);
             SkyInverseRotate(verts[i], temp);
         }
     } else {
         for (i = 0; i < fa->numsurfedges; i++, surfedge++) {
             vert = surfedge->edge->v[surfedge->vert];
-            Vec3_Subtract(vert->point, glr.fd.vieworg, verts[i]);
+            Vec3_Subtract_(vert->point, glr.fd.vieworg, verts[i]);
         }
     }
 
@@ -305,7 +305,7 @@ static void MakeSkyVec(float s, float t, int axis, vec_t *out)
         out[1] = Vec3_Dot(skymatrix[1], v) + glr.fd.vieworg[1];
         out[2] = Vec3_Dot(skymatrix[2], v) + glr.fd.vieworg[2];
     } else {
-        Vec3_Add(v, glr.fd.vieworg, out);
+        Vec3_Add_(v, glr.fd.vieworg, out);
     }
 
     // avoid bilerp seam

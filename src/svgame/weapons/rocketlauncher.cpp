@@ -44,7 +44,7 @@ void Weapon_RocketLauncher_Fire(edict_t* ent)
 
     AngleVectors(ent->client->v_angle, forward, right, NULL);
 
-    Vec3_Scale(forward, -2, ent->client->kick_origin);
+    Vec3_Scale_(forward, -2, ent->client->kick_origin);
     ent->client->kick_angles[0] = -1;
 
     Vec3_Set_(offset, 8, 8, ent->viewheight - 8);

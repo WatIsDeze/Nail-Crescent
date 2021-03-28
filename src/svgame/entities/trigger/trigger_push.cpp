@@ -20,10 +20,10 @@ static int windsound;
 void trigger_push_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf)
 {
     if (strcmp(other->classname, "grenade") == 0) {
-        Vec3_Scale(self->movedir, self->speed * 10, other->velocity);
+        Vec3_Scale_(self->movedir, self->speed * 10, other->velocity);
     }
     else if (other->health > 0) {
-        Vec3_Scale(self->movedir, self->speed * 10, other->velocity);
+        Vec3_Scale_(self->movedir, self->speed * 10, other->velocity);
 
         if (other->client) {
             // don't take falling damage immediately from this

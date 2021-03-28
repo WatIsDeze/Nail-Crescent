@@ -245,7 +245,7 @@ static void CLG_SetupFirstPersonView(void)
         lerp = CL_KEYLERPFRAC;
 
         LerpAngles(ops->kick_angles, ps->kick_angles, lerp, kickangles);
-        Vec3_Add(cl->refdef.viewangles, kickangles, cl->refdef.viewangles);
+        Vec3_Add_(cl->refdef.viewangles, kickangles, cl->refdef.viewangles);
     }
 
     // add the weapon
@@ -295,7 +295,7 @@ static void CLG_SetupThirdPersionView(void)
         Vec3_Copy_(trace.endpos, cl->refdef.vieworg);
     }
 
-    Vec3_Subtract(focus, cl->refdef.vieworg, focus);
+    Vec3_Subtract_(focus, cl->refdef.vieworg, focus);
     dist = sqrt(focus[0] * focus[0] + focus[1] * focus[1]);
 
     cl->refdef.viewangles[PITCH] = -180 / M_PI * atan2(focus[2], dist);

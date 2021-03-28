@@ -58,7 +58,7 @@ void path_corner_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_
         other->monsterinfo.stand(other);
     }
     else {
-        Vec3_Subtract(other->goalentity->s.origin, other->s.origin, v);
+        Vec3_Subtract_(other->goalentity->s.origin, other->s.origin, v);
         other->ideal_yaw = vectoyaw(v);
     }
 }

@@ -339,7 +339,7 @@ fix_old_origin(client_t *client, entity_packed_t *state, edict_t *ent, int e)
 
     if (sent->create_framenum > sv.framenum - client->framediv) {
         // created between client frames
-        Vec3_Scale(sent->create_origin, 8.0f, state->old_origin);
+        Vec3_Scale_(sent->create_origin, 8.0f, state->old_origin);
         return;
     }
 
@@ -348,7 +348,7 @@ fix_old_origin(client_t *client, entity_packed_t *state, edict_t *ent, int e)
         j = sv.framenum - (client->framediv - i);
         k = j & ENT_HISTORY_MASK;
         if (sent->history[k].framenum == j) {
-            Vec3_Scale(sent->history[k].origin, 8.0f, state->old_origin);
+            Vec3_Scale_(sent->history[k].origin, 8.0f, state->old_origin);
             return;
         }
     }

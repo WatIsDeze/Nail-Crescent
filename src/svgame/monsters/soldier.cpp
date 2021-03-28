@@ -495,7 +495,7 @@ void soldier_fire(edict_t *self, int flash_number)
     } else {
         Vec3_Copy_(self->enemy->s.origin, end);
         end[2] += self->enemy->viewheight;
-        Vec3_Subtract(end, start, aim);
+        Vec3_Subtract_(end, start, aim);
         vectoangles(aim, dir);
         AngleVectors(dir, forward, right, up);
 
@@ -505,7 +505,7 @@ void soldier_fire(edict_t *self, int flash_number)
         Vec3_MA_(end, r, right, end);
         Vec3_MA_(end, u, up, end);
 
-        Vec3_Subtract(end, start, aim);
+        Vec3_Subtract_(end, start, aim);
         VectorNormalize(aim);
     }
 

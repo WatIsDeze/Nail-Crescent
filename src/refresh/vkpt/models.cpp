@@ -85,8 +85,8 @@ static void computeTangents(model_t * model)
                 float const * tC = (float const *)mesh->tex_coords + ((offset + iC) * 2);
 
                 vec3_t dP0, dP1;
-                Vec3_Subtract(pB, pA, dP0);
-                Vec3_Subtract(pC, pA, dP1);
+                Vec3_Subtract_(pB, pA, dP0);
+                Vec3_Subtract_(pC, pA, dP1);
 
                 vec2_t dt0, dt1;
                 Vec2_Subtract(tB, tA, dt0);
@@ -104,13 +104,13 @@ static void computeTangents(model_t * model)
                     (dt0[0] * dP1[1] - dt1[0] * dP0[1]) * r,
                     (dt0[0] * dP1[2] - dt1[0] * dP0[2]) * r };
 
-                Vec3_Add(stangents + (iA * 3), sdir, stangents + (iA * 3));
-                Vec3_Add(stangents + (iB * 3), sdir, stangents + (iB * 3));
-                Vec3_Add(stangents + (iC * 3), sdir, stangents + (iC * 3));
+                Vec3_Add_(stangents + (iA * 3), sdir, stangents + (iA * 3));
+                Vec3_Add_(stangents + (iB * 3), sdir, stangents + (iB * 3));
+                Vec3_Add_(stangents + (iC * 3), sdir, stangents + (iC * 3));
 
-                Vec3_Add(ttangents + (iA * 3), tdir, ttangents + (iA * 3));
-                Vec3_Add(ttangents + (iB * 3), tdir, ttangents + (iB * 3));
-                Vec3_Add(ttangents + (iC * 3), tdir, ttangents + (iC * 3));
+                Vec3_Add_(ttangents + (iA * 3), tdir, ttangents + (iA * 3));
+                Vec3_Add_(ttangents + (iB * 3), tdir, ttangents + (iB * 3));
+                Vec3_Add_(ttangents + (iC * 3), tdir, ttangents + (iC * 3));
             }
 
             for (int idx_vert = 0; idx_vert < mesh->numverts; ++idx_vert)
@@ -122,8 +122,8 @@ static void computeTangents(model_t * model)
                 float * tangent = (float *)mesh->tangents + ((offset+idx_vert) * 4);
 
                 vec3_t t;
-                Vec3_Scale(normal, Vec3_Dot(normal, stan), t);
-                Vec3_Subtract(stan, t, t);
+                Vec3_Scale_(normal, Vec3_Dot(normal, stan), t);
+                Vec3_Subtract_(stan, t, t);
                 VectorNormalize2(t, tangent); // Graham-Schmidt : t = normalize(t - n * (n.t))
 
                 vec3_t cross;
@@ -440,8 +440,8 @@ qerror_t MOD_LoadMD2_RTX(model_t *model, const void *rawdata, size_t length)
 				vec3_t *p2 = &dst_mesh->positions[i2];
 
 				vec3_t e1, e2, n;
-				Vec3_Subtract(*p1, *p0, e1);
-				Vec3_Subtract(*p2, *p0, e2);
+				Vec3_Subtract_(*p1, *p0, e1);
+				Vec3_Subtract_(*p2, *p0, e2);
 				Vec3_Cross(e2, e1, n);
 				VectorNormalize(n);
 
@@ -456,8 +456,8 @@ qerror_t MOD_LoadMD2_RTX(model_t *model, const void *rawdata, size_t length)
 
 		dst_frame->radius = RadiusFromBounds(mins, maxs);
 
-		Vec3_Add(mins, dst_frame->translate, dst_frame->bounds[0]);
-		Vec3_Add(maxs, dst_frame->translate, dst_frame->bounds[1]);
+		Vec3_Add_(mins, dst_frame->translate, dst_frame->bounds[0]);
+		Vec3_Add_(maxs, dst_frame->translate, dst_frame->bounds[1]);
 
 		src_frame = (dmd2frame_t *)((byte *)src_frame + header.framesize);
 		dst_frame++;

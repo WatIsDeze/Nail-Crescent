@@ -566,12 +566,12 @@ static void CLG_AddBeams(void)
 
 		// if coming from the player, update the start position
 		if (b->entity == cl->frame.clientNum + 1)
-			Vec3_Add(cl->playerEntityOrigin, b->offset, org);
+			Vec3_Add_(cl->playerEntityOrigin, b->offset, org);
 		else
-			Vec3_Add(b->start, b->offset, org);
+			Vec3_Add_(b->start, b->offset, org);
 
 		// calculate pitch and yaw
-		Vec3_Subtract(b->end, org, dist);
+		Vec3_Subtract_(b->end, org, dist);
 		vectoangles2(dist, angles);
 
 		// add new entities for the beams
@@ -674,11 +674,11 @@ static void CLG_AddPlayerBeams(void)
 				Vec3_MA_(org, -1, cl->v_up, org);
 
 			// calculate pitch and yaw
-			Vec3_Subtract(b->end, org, dist);
+			Vec3_Subtract_(b->end, org, dist);
 
 			// FIXME: don't add offset twice?
 			d = Vec3_Length(dist);
-			Vec3_Scale(cl->v_forward, d, dist);
+			Vec3_Scale_(cl->v_forward, d, dist);
 			Vec3_MA_(dist, (hand_multiplier * b->offset[0]), cl->v_right, dist);
 			Vec3_MA_(dist, b->offset[1], cl->v_forward, dist);
 			Vec3_MA_(dist, b->offset[2], cl->v_up, dist);
@@ -697,7 +697,7 @@ static void CLG_AddPlayerBeams(void)
 			Vec3_Copy_(b->start, org);
 
 			// calculate pitch and yaw
-			Vec3_Subtract(b->end, org, dist);
+			Vec3_Subtract_(b->end, org, dist);
 			vectoangles2(dist, angles);
 
 			// if it's a non-origin offset, it's a player, so use the hardcoded player offset
@@ -886,7 +886,7 @@ static void CLG_RailSpiral(void)
 	vec3_t      dir;
 
 	Vec3_Copy_(teParameters.pos1, move);
-	Vec3_Subtract(teParameters.pos2, teParameters.pos1, vec);
+	Vec3_Subtract_(teParameters.pos2, teParameters.pos1, vec);
 	len = VectorNormalize(vec);
 
 	MakeNormalVectors(vec, right, up);
@@ -903,7 +903,7 @@ static void CLG_RailSpiral(void)
 		c = cos(d);
 		s = sin(d);
 
-		Vec3_Scale(right, c, dir);
+		Vec3_Scale_(right, c, dir);
 		Vec3_MA_(dir, s, up, dir);
 
 		p->alpha = 1.0;
@@ -916,7 +916,7 @@ static void CLG_RailSpiral(void)
 			p->vel[j] = dir[j] * 6;
 		}
 
-		Vec3_Add(move, vec, move);
+		Vec3_Add_(move, vec, move);
 	}
 }
 
@@ -932,7 +932,7 @@ static void CLG_RailLights(color_t color)
 	float       len;
 
 	Vec3_Copy_(teParameters.pos1, move);
-	Vec3_Subtract(teParameters.pos2, teParameters.pos1, vec);
+	Vec3_Subtract_(teParameters.pos2, teParameters.pos1, vec);
 	len = VectorNormalize(vec);
 
 	float num_segments = ceilf(len / 100.f);
@@ -945,12 +945,12 @@ static void CLG_RailLights(color_t color)
 		Vec3_MA_(move, offset, vec, pos);
 
 		cdlight_t* dl = CLG_AllocDLight(0);
-		Vec3_Scale(fcolor, 0.25f, dl->color);
+		Vec3_Scale_(fcolor, 0.25f, dl->color);
 		Vec3_Copy_(pos, dl->origin);
 		dl->radius = 400;
 		dl->decay = 400;
 		dl->die = cl->time + 1000;
-		Vec3_Scale(vec, segment_size * 0.5f, dl->velosity);
+		Vec3_Scale_(vec, segment_size * 0.5f, dl->velosity);
 	}
 }
 

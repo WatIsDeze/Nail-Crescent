@@ -25,9 +25,9 @@ void VelocityForDamage(int damage, vec3_t v)
     v[2] = 200.0 + 100.0 * random();
 
     if (damage < 50)
-        Vec3_Scale(v, 0.7, v);
+        Vec3_Scale_(v, 0.7, v);
     else
-        Vec3_Scale(v, 1.2, v);
+        Vec3_Scale_(v, 1.2, v);
 }
 
 void ClipGibVelocity(edict_t *ent)
@@ -102,8 +102,8 @@ void ThrowGib(edict_t *self, const char *gibname, int damage, int type)
 
     gib = G_Spawn();
 
-    Vec3_Scale(self->size, 0.5, size);
-    Vec3_Add(self->absmin, size, origin);
+    Vec3_Scale_(self->size, 0.5, size);
+    Vec3_Add_(self->absmin, size, origin);
     gib->s.origin[0] = origin[0] + crandom() * size[0];
     gib->s.origin[1] = origin[1] + crandom() * size[1];
     gib->s.origin[2] = origin[2] + crandom() * size[2];
@@ -207,7 +207,7 @@ void ThrowClientHead(edict_t *self, int damage)
 
     self->movetype = MOVETYPE_BOUNCE;
     VelocityForDamage(damage, vd);
-    Vec3_Add(self->velocity, vd, self->velocity);
+    Vec3_Add_(self->velocity, vd, self->velocity);
 
     if (self->client) { // bodies in the queue don't have a client anymore
         self->client->anim_priority = ANIM_DEATH;

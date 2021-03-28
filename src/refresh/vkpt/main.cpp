@@ -1580,7 +1580,7 @@ add_dlights(const dlight_t* lights, int num_lights, QVKUniformBuffer_t* ubo)
 		dynlight_data[15] = 0.f;
 
 		Vec3_Copy_(light->origin, center);
-		Vec3_Scale(light->color, light->intensity / 25.f, color);
+		Vec3_Scale_(light->color, light->intensity / 25.f, color);
 		*radius = light->radius;
 
 		ubo->num_sphere_lights++;
@@ -2253,7 +2253,7 @@ static void ProcessLightLookAtTarget(dlight_t *elight, dlightLS_t *elightls)
 	// Calc vector normalized
 	vec3_t dir;
 
-	Vec3_Subtract(elight->origin, lightTarget->s.origin, dir);
+	Vec3_Subtract_(elight->origin, lightTarget->s.origin, dir);
 	VectorNormalize(dir);
 	Vec3_Copy_(dir, elight->nacDirection);
 }
@@ -2417,7 +2417,7 @@ static void add_elights(refdef_t * fd, QVKUniformBuffer_t * ubo)
 		dynlight_data[15] = elight->nacLightType;
 
 		Vec3_Copy_(elight->origin, center);
-		Vec3_Scale(elight->color, elight->intensity / 25.f, color);
+		Vec3_Scale_(elight->color, elight->intensity / 25.f, color);
 
 		*radius = elight->radius;
 
@@ -3275,8 +3275,8 @@ prepare_camera(const vec3_t position, const vec3_t direction, mat4_t data)
 	Vec3_Copy_(forward, data + 4);
 	Vec3_MA_(data + 4, -tan_half_fov_x, right, data + 4);
 	Vec3_MA_(data + 4, tan_half_fov_y, up, data + 4);
-	Vec3_Scale(right, 2.f * tan_half_fov_x, data + 8);
-	Vec3_Scale(up, -2.f * tan_half_fov_y, data + 12);
+	Vec3_Scale_(right, 2.f * tan_half_fov_x, data + 8);
+	Vec3_Scale_(up, -2.f * tan_half_fov_y, data + 12);
 }
 
 static void
@@ -3580,7 +3580,7 @@ R_RenderFrame_RTX(refdef_t *fd)
 	vkpt_bloom_update(ubo, frame_time, ubo->medium != MEDIUM_NONE, menu_mode);
 
 	vec3_t sky_radiance;
-	Vec3_Scale(avg_envmap_color, ubo->pt_env_scale, sky_radiance);
+	Vec3_Scale_(avg_envmap_color, ubo->pt_env_scale, sky_radiance);
 	vkpt_light_buffer_upload_to_staging(render_world, &vkpt_refdef.bsp_mesh_world, bsp_world_model, num_model_lights, model_lights, sky_radiance);
 	
 	float shadowmap_view_proj[16];

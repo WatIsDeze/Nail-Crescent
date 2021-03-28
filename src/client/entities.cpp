@@ -176,7 +176,7 @@ static void entity_update(const entity_state_t *state)
         // N&C: FF Precision.
         // MATHLIB: 
         //Vec3_Copy_(cl.frame.ps.pmove.origin, origin_v);
-        //Vec3_Scale(cl.frame.ps.pmove.origin, 0.125f, origin_v);
+        //Vec3_Scale_(cl.frame.ps.pmove.origin, 0.125f, origin_v);
         origin = cl.frame.ps.pmove.origin;
     } else {
         origin = state->origin;

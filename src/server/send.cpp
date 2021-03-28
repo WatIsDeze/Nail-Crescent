@@ -311,7 +311,7 @@ void SV_Multicast(vec3_t *origin, multicast_t to)
 #if 0
             player_state_t *ps = &client->edict->client->ps;
             // N&C: FF Precision.
-            Vec3_Add(ps->viewoffset, ps->pmove.origin, orig);
+            Vec3_Add_(ps->viewoffset, ps->pmove.origin, orig);
             //Vec3_MA_(ps->viewoffset, 0.125f, ps->pmove.origin, org);
 #else
             // FIXME: for some strange reason, game code assumes the server

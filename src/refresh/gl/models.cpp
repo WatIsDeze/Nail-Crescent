@@ -226,8 +226,8 @@ qerror_t MOD_LoadMD2_GL(model_t *model, const void *rawdata, size_t length)
 
         dst_frame->radius = RadiusFromBounds(mins, maxs);
 
-        Vec3_Add(mins, dst_frame->translate, dst_frame->bounds[0]);
-        Vec3_Add(maxs, dst_frame->translate, dst_frame->bounds[1]);
+        Vec3_Add_(mins, dst_frame->translate, dst_frame->bounds[0]);
+        Vec3_Add_(maxs, dst_frame->translate, dst_frame->bounds[1]);
 
         src_frame = (dmd2frame_t *)((byte *)src_frame + header.framesize);
         dst_frame++;

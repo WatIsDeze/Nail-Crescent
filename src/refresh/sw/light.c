@@ -84,7 +84,7 @@ void R_MarkLights(mnode_t *headnode)
         if (insubmodel) {
             vec3_t      temp;
 
-            Vec3_Subtract(light->origin, currententity->origin, temp);
+            Vec3_Subtract_(light->origin, currententity->origin, temp);
             transformed[0] = Vec3_Dot(temp, entity_rotation[0]);
             transformed[1] = Vec3_Dot(temp, entity_rotation[1]);
             transformed[2] = Vec3_Dot(temp, entity_rotation[2]);
@@ -199,7 +199,7 @@ void R_LightPoint(vec3_t point, vec3_t color)
         }
     }
 
-    Vec3_Scale(color, sw_modulate->value, color);
+    Vec3_Scale_(color, sw_modulate->value, color);
 }
 
 //===================================================================
@@ -236,7 +236,7 @@ static void R_AddDynamicLights(void)
         if (currententity && currententity != &r_worldentity) {
             vec3_t      temp;
 
-            Vec3_Subtract(light->origin, currententity->origin, temp);
+            Vec3_Subtract_(light->origin, currententity->origin, temp);
             transformed[0] = Vec3_Dot(temp, entity_rotation[0]);
             transformed[1] = Vec3_Dot(temp, entity_rotation[1]);
             transformed[2] = Vec3_Dot(temp, entity_rotation[2]);

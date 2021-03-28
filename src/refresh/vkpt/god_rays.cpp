@@ -457,10 +457,10 @@ void vkpt_god_rays_prepare_ubo(
 	const float* shadowmap_viewproj,
 	float shadowmap_depth_scale)
 {
-	Vec3_Add(world_aabb->mins, world_aabb->maxs, ubo->world_center);
-	Vec3_Scale(ubo->world_center, 0.5f, ubo->world_center);
-	Vec3_Subtract(world_aabb->maxs, world_aabb->mins, ubo->world_size);
-	Vec3_Scale(ubo->world_size, 0.5f, ubo->world_half_size_inv);
+	Vec3_Add_(world_aabb->mins, world_aabb->maxs, ubo->world_center);
+	Vec3_Scale_(ubo->world_center, 0.5f, ubo->world_center);
+	Vec3_Subtract_(world_aabb->maxs, world_aabb->mins, ubo->world_size);
+	Vec3_Scale_(ubo->world_size, 0.5f, ubo->world_half_size_inv);
 	ubo->world_half_size_inv[0] = 1.f / ubo->world_half_size_inv[0];
 	ubo->world_half_size_inv[1] = 1.f / ubo->world_half_size_inv[1];
 	ubo->world_half_size_inv[2] = 1.f / ubo->world_half_size_inv[2];

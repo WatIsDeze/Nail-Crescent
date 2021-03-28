@@ -45,7 +45,7 @@ void weapon_flaregun_fire(edict_t* ent)
     AngleVectors(ent->client->v_angle, forward, right, NULL);
     P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
 
-    Vec3_Scale(forward, -2, ent->client->kick_origin);
+    Vec3_Scale_(forward, -2, ent->client->kick_origin);
     ent->client->kick_angles[0] = -1;
 
     // Make the flaregun actually shoot the flare 

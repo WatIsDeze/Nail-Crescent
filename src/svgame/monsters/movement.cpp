@@ -39,8 +39,8 @@ qboolean M_CheckBottom(edict_t *ent)
     int     x, y;
     float   mid, bottom;
 
-    Vec3_Add(ent->s.origin, ent->mins, mins);
-    Vec3_Add(ent->s.origin, ent->maxs, maxs);
+    Vec3_Add_(ent->s.origin, ent->mins, mins);
+    Vec3_Add_(ent->s.origin, ent->maxs, maxs);
 
 // if all of the points under the corners are solid world, don't bother
 // with the tougher checks
@@ -117,13 +117,13 @@ qboolean SV_movestep(edict_t *ent, vec3_t move, qboolean relink)
 
 // try the move
     Vec3_Copy_(ent->s.origin, oldorg);
-    Vec3_Add(ent->s.origin, move, neworg);
+    Vec3_Add_(ent->s.origin, move, neworg);
 
 // flying monsters don't step up
     if (ent->flags & (FL_SWIM | FL_FLY)) {
         // try one move with vertical motion, then one without
         for (i = 0 ; i < 2 ; i++) {
-            Vec3_Add(ent->s.origin, move, neworg);
+            Vec3_Add_(ent->s.origin, move, neworg);
             if (i == 0 && ent->enemy) {
                 if (!ent->goalentity)
                     ent->goalentity = ent->enemy;
@@ -224,7 +224,7 @@ qboolean SV_movestep(edict_t *ent, vec3_t move, qboolean relink)
     if (trace.fraction == 1) {
         // if monster had the ground pulled out, go ahead and fall
         if (ent->flags & FL_PARTIALGROUND) {
-            Vec3_Add(ent->s.origin, move, ent->s.origin);
+            Vec3_Add_(ent->s.origin, move, ent->s.origin);
             if (relink) {
                 gi.linkentity(ent);
                 G_TouchTriggers(ent);

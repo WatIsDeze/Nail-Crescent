@@ -34,7 +34,7 @@ void target_laser_think(edict_t* self)
     if (self->enemy) {
         Vec3_Copy_(self->movedir, last_movedir);
         Vec3_MA_(self->enemy->absmin, 0.5, self->enemy->size, point);
-        Vec3_Subtract(point, self->s.origin, self->movedir);
+        Vec3_Subtract_(point, self->s.origin, self->movedir);
         VectorNormalize(self->movedir);
         if (!Vec3_Compare(self->movedir, last_movedir))
             self->spawnflags |= 0x80000000;

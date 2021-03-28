@@ -149,9 +149,9 @@ void vkpt_freecam_update(float frame_time)
 	if (freecam_keystate[5]) velocity[2] -= 1.f;
 
 	if (Key_IsDown(K_SHIFT))
-		Vec3_Scale(velocity, 5.f, velocity);
+		Vec3_Scale_(velocity, 5.f, velocity);
 	else if (Key_IsDown(K_CTRL))
-		Vec3_Scale(velocity, 0.1f, velocity);
+		Vec3_Scale_(velocity, 0.1f, velocity);
 
 	vec3_t forward, right, up;
 	AngleVectors(freecam_viewangles, forward, right, up);

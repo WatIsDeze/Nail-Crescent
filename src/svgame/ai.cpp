@@ -106,7 +106,7 @@ void ai_stand(edict_t *self, float dist)
 
     if (self->monsterinfo.aiflags & AI_STAND_GROUND) {
         if (self->enemy) {
-            Vec3_Subtract(self->enemy->s.origin, self->s.origin, v);
+            Vec3_Subtract_(self->enemy->s.origin, self->s.origin, v);
             self->ideal_yaw = vectoyaw(v);
             if (self->s.angles[YAW] != self->ideal_yaw && self->monsterinfo.aiflags & AI_TEMP_STAND_GROUND) {
                 self->monsterinfo.aiflags &= ~(AI_STAND_GROUND | AI_TEMP_STAND_GROUND);
@@ -176,7 +176,7 @@ void ai_charge(edict_t *self, float dist)
 {
     vec3_t  v;
 
-    Vec3_Subtract(self->enemy->s.origin, self->s.origin, v);
+    Vec3_Subtract_(self->enemy->s.origin, self->s.origin, v);
     self->ideal_yaw = vectoyaw(v);
     M_ChangeYaw(self);
 
@@ -247,7 +247,7 @@ int range(edict_t *self, edict_t *other)
     vec3_t  v;
     float   len;
 
-    Vec3_Subtract(self->s.origin, other->s.origin, v);
+    Vec3_Subtract_(self->s.origin, other->s.origin, v);
     len = Vec3_Length(v);
     if (len < MELEE_DISTANCE)
         return RANGE_MELEE;
@@ -297,7 +297,7 @@ qboolean infront(edict_t *self, edict_t *other)
     vec3_t  forward;
 
     AngleVectors(self->s.angles, forward, NULL, NULL);
-    Vec3_Subtract(other->s.origin, self->s.origin, vec);
+    Vec3_Subtract_(other->s.origin, self->s.origin, vec);
     VectorNormalize(vec);
     dot = Vec3_Dot(vec, forward);
 
@@ -318,7 +318,7 @@ void HuntTarget(edict_t *self)
         self->monsterinfo.stand(self);
     else
         self->monsterinfo.run(self);
-    Vec3_Subtract(self->enemy->s.origin, self->s.origin, vec);
+    Vec3_Subtract_(self->enemy->s.origin, self->s.origin, vec);
     self->ideal_yaw = vectoyaw(vec);
     // wait a while before first attack
     if (!(self->monsterinfo.aiflags & AI_STAND_GROUND))
@@ -498,7 +498,7 @@ qboolean FindTarget(edict_t *self)
                 return false;
         }
 
-        Vec3_Subtract(client->s.origin, self->s.origin, temp);
+        Vec3_Subtract_(client->s.origin, self->s.origin, temp);
 
         if (Vec3_Length(temp) > 1000) { // too far to hear
             return false;
@@ -788,7 +788,7 @@ qboolean ai_checkattack(edict_t *self, float dist)
 //  }
 
     enemy_range = range(self, self->enemy);
-    Vec3_Subtract(self->enemy->s.origin, self->s.origin, temp);
+    Vec3_Subtract_(self->enemy->s.origin, self->s.origin, temp);
     enemy_yaw = vectoyaw(temp);
 
 
@@ -838,7 +838,7 @@ void ai_run(edict_t *self, float dist)
     }
 
     if (self->monsterinfo.aiflags & AI_SOUND_TARGET) {
-        Vec3_Subtract(self->s.origin, self->enemy->s.origin, v);
+        Vec3_Subtract_(self->s.origin, self->enemy->s.origin, v);
         if (Vec3_Length(v) < 64) {
             self->monsterinfo.aiflags |= (AI_STAND_GROUND | AI_TEMP_STAND_GROUND);
             self->monsterinfo.stand(self);
@@ -928,7 +928,7 @@ void ai_run(edict_t *self, float dist)
         }
     }
 
-    Vec3_Subtract(self->s.origin, self->monsterinfo.last_sighting, v);
+    Vec3_Subtract_(self->s.origin, self->monsterinfo.last_sighting, v);
     d1 = Vec3_Length(v);
     if (d1 <= dist) {
         self->monsterinfo.aiflags |= AI_PURSUE_NEXT;
@@ -942,7 +942,7 @@ void ai_run(edict_t *self, float dist)
 
         tr = gi.trace(self->s.origin, self->mins, self->maxs, self->monsterinfo.last_sighting, self, CONTENTS_MASK_PLAYERSOLID);
         if (tr.fraction < 1) {
-            Vec3_Subtract(self->goalentity->s.origin, self->s.origin, v);
+            Vec3_Subtract_(self->goalentity->s.origin, self->s.origin, v);
             d1 = Vec3_Length(v);
             center = tr.fraction;
             d2 = d1 * ((center + 1) / 2);
@@ -970,7 +970,7 @@ void ai_run(edict_t *self, float dist)
                 self->monsterinfo.aiflags |= AI_PURSUE_TEMP;
                 Vec3_Copy_(left_target, self->goalentity->s.origin);
                 Vec3_Copy_(left_target, self->monsterinfo.last_sighting);
-                Vec3_Subtract(self->goalentity->s.origin, self->s.origin, v);
+                Vec3_Subtract_(self->goalentity->s.origin, self->s.origin, v);
                 self->s.angles[YAW] = self->ideal_yaw = vectoyaw(v);
 //              gi.dprintf("adjusted left\n");
 //              debug_drawline(self.origin, self.last_sighting, 152);
@@ -984,7 +984,7 @@ void ai_run(edict_t *self, float dist)
                 self->monsterinfo.aiflags |= AI_PURSUE_TEMP;
                 Vec3_Copy_(right_target, self->goalentity->s.origin);
                 Vec3_Copy_(right_target, self->monsterinfo.last_sighting);
-                Vec3_Subtract(self->goalentity->s.origin, self->s.origin, v);
+                Vec3_Subtract_(self->goalentity->s.origin, self->s.origin, v);
                 self->s.angles[YAW] = self->ideal_yaw = vectoyaw(v);
 //              gi.dprintf("adjusted right\n");
 //              debug_drawline(self.origin, self.last_sighting, 152);

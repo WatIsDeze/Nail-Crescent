@@ -44,7 +44,7 @@ void rotating_use(edict_t* self, edict_t* other, edict_t* activator)
     }
     else {
         self->s.sound = self->moveinfo.sound_middle;
-        Vec3_Scale(self->movedir, self->speed, self->avelocity);
+        Vec3_Scale_(self->movedir, self->speed, self->avelocity);
         if (self->spawnflags & 16)
             self->touch = rotating_touch;
     }

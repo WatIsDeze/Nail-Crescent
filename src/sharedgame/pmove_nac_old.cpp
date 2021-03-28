@@ -330,7 +330,7 @@ static void PM_StepSlideMove_(void)
             }
             Vec3_Cross(planes[0], planes[1], dir);
             d = Vec3_Dot(dir, pml.velocity);
-            Vec3_Scale(dir, d, pml.velocity);
+            Vec3_Scale_(dir, d, pml.velocity);
         }
 
         //
@@ -634,7 +634,7 @@ static void PM_WaterMove(void)
     wishspeed = VectorNormalize(wishdir);
 
     if (wishspeed > pmp->maxspeed) {
-        Vec3_Scale(wishvel, pmp->maxspeed / wishspeed, wishvel);
+        Vec3_Scale_(wishvel, pmp->maxspeed / wishspeed, wishvel);
         wishspeed = pmp->maxspeed;
     }
     wishspeed *= pmp->watermult;
@@ -686,7 +686,7 @@ static void PM_AirMove(void)
     maxspeed = (pm->state.flags & PMF_DUCKED) ? pm_duckspeed : pmp->maxspeed;
 
     if (wishspeed > maxspeed) {
-        Vec3_Scale(wishvel, maxspeed / wishspeed, wishvel);
+        Vec3_Scale_(wishvel, maxspeed / wishspeed, wishvel);
         wishspeed = maxspeed;
     }
 
@@ -851,7 +851,7 @@ static void PM_CheckSpecialMovements(void)
     if (cont)
         return;
     // jump out of water
-    Vec3_Scale(flatforward, 50, pml.velocity);
+    Vec3_Scale_(flatforward, 50, pml.velocity);
     pml.velocity[2] = 350;
 
     pm->state.flags |= PMF_TIME_WATERJUMP;
@@ -1149,7 +1149,7 @@ static void PM_FlyMove(void)
             newspeed = 0;
         newspeed /= speed;
 
-        Vec3_Scale(pml.velocity, newspeed, pml.velocity);
+        Vec3_Scale_(pml.velocity, newspeed, pml.velocity);
     }
 
     // accelerate
@@ -1170,7 +1170,7 @@ static void PM_FlyMove(void)
     // clamp to server defined max speed
     //
     if (wishspeed > pmp->maxspeed) {
-        Vec3_Scale(wishvel, pmp->maxspeed / wishspeed, wishvel);
+        Vec3_Scale_(wishvel, pmp->maxspeed / wishspeed, wishvel);
         wishspeed = pmp->maxspeed;
     }
 
@@ -1231,7 +1231,7 @@ static void PM_DeadMove(void)
     }
     else {
         VectorNormalize(pml.velocity);
-        Vec3_Scale(pml.velocity, forward, pml.velocity);
+        Vec3_Scale_(pml.velocity, forward, pml.velocity);
     }
 }
 

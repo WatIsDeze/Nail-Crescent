@@ -51,7 +51,7 @@ static void R_DrawParticle(void)
     /*
     ** transform the particle
     */
-    Vec3_Subtract(partparms.particle->origin, r_origin, local);
+    Vec3_Subtract_(partparms.particle->origin, r_origin, local);
 
     transformed[0] = Vec3_Dot(local, partparms.right);
     transformed[1] = Vec3_Dot(local, partparms.up);
@@ -122,8 +122,8 @@ void R_DrawParticles(void)
     int         i;
     int         alpha;
 
-    Vec3_Scale(vright, r_refdef.xscaleshrink, partparms.right);
-    Vec3_Scale(vup, r_refdef.yscaleshrink, partparms.up);
+    Vec3_Scale_(vright, r_refdef.xscaleshrink, partparms.right);
+    Vec3_Scale_(vup, r_refdef.yscaleshrink, partparms.up);
     Vec3_Copy_(vpn, partparms.pn);
 
     for (p = r_newrefdef.particles, i = 0; i < r_newrefdef.num_particles; i++, p++) {

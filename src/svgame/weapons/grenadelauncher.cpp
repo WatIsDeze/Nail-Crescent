@@ -42,7 +42,7 @@ void weapon_grenadelauncher_fire(edict_t* ent)
     AngleVectors(ent->client->v_angle, forward, right, NULL);
     P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
 
-    Vec3_Scale(forward, -2, ent->client->kick_origin);
+    Vec3_Scale_(forward, -2, ent->client->kick_origin);
     ent->client->kick_angles[0] = -1;
 
     fire_grenade(ent, start, forward, damage, 600, 2.5, radius);

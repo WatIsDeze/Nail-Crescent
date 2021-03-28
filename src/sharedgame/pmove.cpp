@@ -321,7 +321,7 @@ const trace_t PM_TraceCorrectAllSolid(vec3_t start, vec3_t end, vec3_t mins, vec
             for (uint32_t k = 0; k < 3; k++) {
                 vec3_t point;
                 vec3_t offsetVec = { (vec_t)offsets[i], (vec_t)offsets[j], (vec_t)offsets[k] };
-                Vec3_Add(start, offsetVec, point);
+                Vec3_Add_(start, offsetVec, point);
                 const trace_t trace = pm->Trace(point, end, mins, maxs);
 
                 if (!trace.allsolid) {
@@ -456,7 +456,7 @@ static void PM_StepSlideMove_(void)
             }
             Vec3_Cross(planes[0], planes[1], dir);
             d = Vec3_Dot(dir, pml.velocity);
-            Vec3_Scale(dir, d, pml.velocity);
+            Vec3_Scale_(dir, d, pml.velocity);
         }
 
         //
@@ -630,8 +630,8 @@ static bool PM_SlideMove(void)
         }
         else {
             // if we've seen this plane before, nudge our velocity out along it
-            //pm->state.velocity = Vec3_Add(pm->s.velocity, trace.plane.normal);
-            Vec3_Add(pm->state.velocity, trace.plane.normal, pm->state.velocity);
+            //pm->state.velocity = Vec3_Add_(pm->s.velocity, trace.plane.normal);
+            Vec3_Add_(pm->state.velocity, trace.plane.normal, pm->state.velocity);
             continue;
         }
 
@@ -673,7 +673,7 @@ static bool PM_SlideMove(void)
                 VectorNormalize(cross);//cross = Vec3_Normalize(cross);
 
                 const float scale = Vec3_Dot(cross, pm->state.velocity);
-                Vec3_Scale(cross, scale, vel);//vel = Vec3_Scale(cross, scale);
+                Vec3_Scale_(cross, scale, vel);//vel = Vec3_Scale_(cross, scale);
 
                 // See if there is a third plane the the new move enters
                 for (int32_t k = 0; k < numplanes; k++) {
@@ -1011,7 +1011,7 @@ static void PM_WaterMove(void)
     wishspeed = VectorNormalize(wishdir);
 
     if (wishspeed > pmp->maxspeed) {
-        Vec3_Scale(wishvel, pmp->maxspeed / wishspeed, wishvel);
+        Vec3_Scale_(wishvel, pmp->maxspeed / wishspeed, wishvel);
         wishspeed = pmp->maxspeed;
     }
     wishspeed *= pmp->watermult;
@@ -1063,7 +1063,7 @@ static void PM_AirMove(void)
     maxspeed = (pm->state.flags & PMF_DUCKED) ? pm_duckspeed : pmp->maxspeed;
 
     if (wishspeed > maxspeed) {
-        Vec3_Scale(wishvel, maxspeed / wishspeed, wishvel);
+        Vec3_Scale_(wishvel, maxspeed / wishspeed, wishvel);
         wishspeed = maxspeed;
     }
 
@@ -1228,7 +1228,7 @@ static void PM_CheckSpecialMovements(void)
     if (cont)
         return;
     // jump out of water
-    Vec3_Scale(flatforward, 50, pml.velocity);
+    Vec3_Scale_(flatforward, 50, pml.velocity);
     pml.velocity[2] = 350;
 
     pm->state.flags |= PMF_TIME_WATERJUMP;
@@ -1525,7 +1525,7 @@ static void PM_FlyMove(void)
             newspeed = 0;
         newspeed /= speed;
 
-        Vec3_Scale(pml.velocity, newspeed, pml.velocity);
+        Vec3_Scale_(pml.velocity, newspeed, pml.velocity);
     }
 
     // accelerate
@@ -1546,7 +1546,7 @@ static void PM_FlyMove(void)
     // clamp to server defined max speed
     //
     if (wishspeed > pmp->maxspeed) {
-        Vec3_Scale(wishvel, pmp->maxspeed / wishspeed, wishvel);
+        Vec3_Scale_(wishvel, pmp->maxspeed / wishspeed, wishvel);
         wishspeed = pmp->maxspeed;
     }
 
@@ -1607,7 +1607,7 @@ static void PM_DeadMove(void)
     }
     else {
         VectorNormalize(pml.velocity);
-        Vec3_Scale(pml.velocity, forward, pml.velocity);
+        Vec3_Scale_(pml.velocity, forward, pml.velocity);
     }
 }
 

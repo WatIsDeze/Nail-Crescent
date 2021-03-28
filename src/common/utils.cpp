@@ -272,7 +272,7 @@ void Com_PlayerToEntityState(const player_state_t *ps, entity_state_t *es)
 
     // N&C: FF Precision.
     Vec3_Copy_(ps->pmove.origin, es->origin);
-    //Vec3_Scale(ps->pmove.origin, 0.125f, es->origin);
+    //Vec3_Scale_(ps->pmove.origin, 0.125f, es->origin);
 
     pitch = ps->viewangles.xyz[PITCH];
     if (pitch > 180) {

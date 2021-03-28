@@ -107,7 +107,7 @@ static vec3_t Pm_ClipVelocity(const vec3_t in, const vec3_t normal, float bounce
 		backoff /= bounce;
 	}
 
-	return Vec3_Subtract(in, Vec3_Scale(normal, backoff));
+	return Vec3_Subtract_(in, Vec3_Scale_(normal, backoff));
 }
 
 /**
@@ -147,7 +147,7 @@ static cm_trace_t Pm_TraceCorrectAllSolid(const vec3_t start, const vec3_t end, 
 	for (uint32_t i = 0; i < lengthof(offsets); i++) {
 		for (uint32_t j = 0; j < lengthof(offsets); j++) {
 			for (uint32_t k = 0; k < lengthof(offsets); k++) {
-				const vec3_t point = Vec3_Add(start, Vec3(offsets[i], offsets[j], offsets[k]));
+				const vec3_t point = Vec3_Add_(start, Vec3(offsets[i], offsets[j], offsets[k]));
 				const cm_trace_t trace = pm->Trace(point, end, mins, maxs);
 
 				if (!trace.all_solid) {
@@ -247,7 +247,7 @@ static _Bool Pm_SlideMove(void) {
 		}
 		else {
 			// if we've seen this plane before, nudge our velocity out along it
-			pm->s.velocity = Vec3_Add(pm->s.velocity, trace.plane.normal);
+			pm->s.velocity = Vec3_Add_(pm->s.velocity, trace.plane.normal);
 			continue;
 		}
 
@@ -289,7 +289,7 @@ static _Bool Pm_SlideMove(void) {
 				cross = Vec3_Normalize(cross);
 
 				const float scale = Vec3_Dot(cross, pm->s.velocity);
-				vel = Vec3_Scale(cross, scale);
+				vel = Vec3_Scale_(cross, scale);
 
 				// see if there is a third plane the the new move enters
 				for (int32_t k = 0; k < num_planes; k++) {
@@ -464,7 +464,7 @@ static void Pm_Friction(void) {
 	// scale the velocity, taking care to not reverse direction
 	const float scale = Maxf(0.0, speed - (friction * control * pm_locals.time)) / speed;
 
-	pm->s.velocity = Vec3_Scale(pm->s.velocity, scale);
+	pm->s.velocity = Vec3_Scale_(pm->s.velocity, scale);
 }
 
 /**
@@ -632,7 +632,7 @@ static void Pm_CheckHook(void) {
 		// pull physics
 		const float dist = Vec3_DistanceDir(pm->s.hook_position, pm->s.origin, &pm->s.velocity);
 		if (dist > 8.0f && !Pm_CheckHookJump()) {
-			pm->s.velocity = Vec3_Scale(pm->s.velocity, pm->hook_pull_speed);
+			pm->s.velocity = Vec3_Scale_(pm->s.velocity, pm->hook_pull_speed);
 		}
 		else {
 			pm->s.velocity = Vec3_Zero();
@@ -668,7 +668,7 @@ static void Pm_CheckHook(void) {
 			pm->s.hook_length = Minf(pm->s.hook_length + hook_rate, PM_HOOK_MAX_DIST);
 		}
 
-		vec3_t chain_vec = Vec3_Subtract(pm->s.hook_position, pm->s.origin);
+		vec3_t chain_vec = Vec3_Subtract_(pm->s.hook_position, pm->s.origin);
 		float chain_len = Vec3_Length(chain_vec);
 
 		// if player's location is already within the chain's reach
@@ -680,7 +680,7 @@ static void Pm_CheckHook(void) {
 		vec3_t vel_part;
 
 		// determine player's velocity component of chain vector
-		vel_part = Vec3_Scale(chain_vec, Vec3_Dot(pm->s.velocity, chain_vec) / Vec3_Dot(chain_vec, chain_vec));
+		vel_part = Vec3_Scale_(chain_vec, Vec3_Dot(pm->s.velocity, chain_vec) / Vec3_Dot(chain_vec, chain_vec));
 
 		// restrainment default force
 		float force = (chain_len - pm->s.hook_length) * 5.0f;
@@ -692,7 +692,7 @@ static void Pm_CheckHook(void) {
 			if (chain_len > pm->s.hook_length + 24.0f) {
 
 				// remove player's velocity component moving away from hook
-				pm->s.velocity = Vec3_Subtract(pm->s.velocity, vel_part);
+				pm->s.velocity = Vec3_Subtract_(pm->s.velocity, vel_part);
 			}
 		}
 		else { // if player's velocity heading is towards the hook
@@ -1178,7 +1178,7 @@ static void Pm_WaterMove(void) {
 	// disable water skiing
 	if (pm->s.type != PM_HOOK_PULL && pm->s.type != PM_HOOK_SWING) {
 		if (pm->water_level == WATER_WAIST) {
-			vec3_t view = Vec3_Add(pm->s.origin, pm->s.view_offset);
+			vec3_t view = Vec3_Add_(pm->s.origin, pm->s.view_offset);
 			view.z -= 4.0;
 
 			if (!(pm->PointContents(view) & CONTENTS_MASK_LIQUID)) {
@@ -1314,7 +1314,7 @@ static void Pm_WalkMove(void) {
 
 	// and now scale by the speed to avoid slowing down on slopes
 	pm->s.velocity = Vec3_Normalize(pm->s.velocity);
-	pm->s.velocity = Vec3_Scale(pm->s.velocity, speed);
+	pm->s.velocity = Vec3_Scale_(pm->s.velocity, speed);
 
 	// and finally, step if moving in X/Y
 	if (pm->s.velocity.x || pm->s.velocity.y) {
@@ -1373,13 +1373,13 @@ static void Pm_Init(void) {
 			pm->maxs = PM_GIBLET_MAXS;
 		}
 		else {
-			pm->mins = Vec3_Scale(PM_DEAD_MINS, PM_SCALE);
-			pm->maxs = Vec3_Scale(PM_DEAD_MAXS, PM_SCALE);
+			pm->mins = Vec3_Scale_(PM_DEAD_MINS, PM_SCALE);
+			pm->maxs = Vec3_Scale_(PM_DEAD_MAXS, PM_SCALE);
 		}
 	}
 	else {
-		pm->mins = Vec3_Scale(PM_MINS, PM_SCALE);
-		pm->maxs = Vec3_Scale(PM_MAXS, PM_SCALE);
+		pm->mins = Vec3_Scale_(PM_MINS, PM_SCALE);
+		pm->maxs = Vec3_Scale_(PM_MAXS, PM_SCALE);
 	}
 
 	pm->angles = Vec3_Zero();
@@ -1419,7 +1419,7 @@ static void Pm_ClampAngles(void) {
 	pm->s.view_angles = pm->cmd.angles;
 
 	// add the delta angles
-	pm->angles = Vec3_Add(pm->cmd.angles, pm->s.delta_angles);
+	pm->angles = Vec3_Add_(pm->cmd.angles, pm->s.delta_angles);
 
 	// clamp pitch to prevent the player from looking up or down more than 90º
 	if (pm->angles.x > 90.0f && pm->angles.x < 270.0f) {

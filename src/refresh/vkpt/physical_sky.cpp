@@ -813,7 +813,7 @@ vkpt_evaluate_sun_light(sun_light_t* light, const vec3_t sky_matrix[3], float ti
 
 	// color before occlusion
 	vec3_t sunColor = { sun_color[0]->value, sun_color[1]->value, sun_color[2]->value };
-	Vec3_Scale(sunColor, sun_brightness->value, light->color);
+	Vec3_Scale_(sunColor, sun_brightness->value, light->color);
 
 	// potentially visible - can be overridden if readback data says it's occluded
 	if (physical_sky_space->integer)
@@ -901,7 +901,7 @@ vkpt_physical_sky_update_ubo(QVKUniformBuffer_t * ubo, const sun_light_t* light,
         // compute approximation of reflected radiance from ground
         vec3_t ground_radiance;
         Vec3_Copy_(skyDesc->groundAlbedo, ground_radiance);
-        Vec3_Scale(ground_radiance, max(0.f, light->direction_envmap[2]), ground_radiance); // N.L
+        Vec3_Scale_(ground_radiance, max(0.f, light->direction_envmap[2]), ground_radiance); // N.L
         Vec3_ScaleVec3(ground_radiance, light->color, ground_radiance);
 
 		Vec3_Copy_(ground_radiance, ubo->physical_sky_ground_radiance);
@@ -925,7 +925,7 @@ vkpt_physical_sky_update_ubo(QVKUniformBuffer_t * ubo, const sun_light_t* light,
 	if (render_world && !(skyDesc->flags & PHYSICAL_SKY_FLAG_USE_SKYBOX))
 	{
 		vec3_t forward;
-		Vec3_Scale(light->direction_envmap, -1.0f, forward);
+		Vec3_Scale_(light->direction_envmap, -1.0f, forward);
 		UpdateTerrainShadowMapView(forward);
 	}
 

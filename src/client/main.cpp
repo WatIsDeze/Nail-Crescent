@@ -2195,7 +2195,7 @@ static size_t CL_Ups_m(char *buffer, size_t size)
     } else {
         // N&C: FF Precision.
         Vec3_Copy_(cl.predicted_velocity, vel);
-       // Vec3_Scale(cl.frame.ps.pmove.velocity, 0.125f, vel);
+       // Vec3_Scale_(cl.frame.ps.pmove.velocity, 0.125f, vel);
     }
 
     return Q_scnprintf(buffer, size, "%d", (int)Vec3_Length_(vel));

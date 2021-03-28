@@ -811,9 +811,9 @@ void CLG_ParticleEffect(vec3_t org, vec3_t dir, int color, int count)
         Vec3_Copy_(origin, p->org);
 
         vec3_t velocity;
-        Vec3_Subtract(origin, org, velocity);
+        Vec3_Subtract_(origin, org, velocity);
         VectorNormalize(velocity);
-        Vec3_Scale(velocity, dirt_base_velocity + frand() * dirt_rand_velocity, p->vel);
+        Vec3_Scale_(velocity, dirt_base_velocity + frand() * dirt_rand_velocity, p->vel);
 
         p->accel[0] = p->accel[1] = 0;
         p->accel[2] = -PARTICLE_GRAVITY;
@@ -840,9 +840,9 @@ void CLG_ParticleEffect(vec3_t org, vec3_t dir, int color, int count)
         Vec3_Copy_(origin, p->org);
 
         vec3_t velocity;
-        Vec3_Subtract(origin, org, velocity);
+        Vec3_Subtract_(origin, org, velocity);
         VectorNormalize(velocity);
-        Vec3_Scale(velocity, spark_base_velocity + powf(frand(), 2.0f) * spark_rand_velocity, p->vel);
+        Vec3_Scale_(velocity, spark_base_velocity + powf(frand(), 2.0f) * spark_rand_velocity, p->vel);
 
         p->accel[0] = p->accel[1] = 0;
         p->accel[2] = -PARTICLE_GRAVITY;
@@ -887,9 +887,9 @@ void CLG_ParticleEffectWaterSplash(vec3_t org, vec3_t dir, int color, int count)
         Vec3_Copy_(origin, p->org);
 
         vec3_t velocity;
-        Vec3_Subtract(origin, org, velocity);
+        Vec3_Subtract_(origin, org, velocity);
         VectorNormalize(velocity);
-        Vec3_Scale(velocity, water_base_velocity + frand() * water_rand_velocity, p->vel);
+        Vec3_Scale_(velocity, water_base_velocity + frand() * water_rand_velocity, p->vel);
 
         p->accel[0] = p->accel[1] = 0;
         p->accel[2] = -PARTICLE_GRAVITY;
@@ -1249,11 +1249,11 @@ void CLG_BlasterTrail(vec3_t start, vec3_t end)
     int         dec;
 
     Vec3_Copy_(start, move);
-    Vec3_Subtract(end, start, vec);
+    Vec3_Subtract_(end, start, vec);
     len = VectorNormalize(vec);
 
     dec = 5;
-    Vec3_Scale(vec, 5, vec);
+    Vec3_Scale_(vec, 5, vec);
 
     // FIXME: this is a really silly way to have a loop
     while (len > 0) {
@@ -1278,7 +1278,7 @@ void CLG_BlasterTrail(vec3_t start, vec3_t end)
             p->accel[j] = 0;
         }
 
-        Vec3_Add(move, vec, move);
+        Vec3_Add_(move, vec, move);
     }
 }
 
@@ -1298,11 +1298,11 @@ void CLG_QuadTrail(vec3_t start, vec3_t end)
     int         dec;
 
     Vec3_Copy_(start, move);
-    Vec3_Subtract(end, start, vec);
+    Vec3_Subtract_(end, start, vec);
     len = VectorNormalize(vec);
 
     dec = 5;
-    Vec3_Scale(vec, 5, vec);
+    Vec3_Scale_(vec, 5, vec);
 
     while (len > 0) {
         len -= dec;
@@ -1326,7 +1326,7 @@ void CLG_QuadTrail(vec3_t start, vec3_t end)
             p->accel[j] = 0;
         }
 
-        Vec3_Add(move, vec, move);
+        Vec3_Add_(move, vec, move);
     }
 }
 
@@ -1346,11 +1346,11 @@ void CLG_FlagTrail(vec3_t start, vec3_t end, int color)
     int         dec;
 
     Vec3_Copy_(start, move);
-    Vec3_Subtract(end, start, vec);
+    Vec3_Subtract_(end, start, vec);
     len = VectorNormalize(vec);
 
     dec = 5;
-    Vec3_Scale(vec, 5, vec);
+    Vec3_Scale_(vec, 5, vec);
 
     while (len > 0) {
         len -= dec;
@@ -1374,7 +1374,7 @@ void CLG_FlagTrail(vec3_t start, vec3_t end, int color)
             p->accel[j] = 0;
         }
 
-        Vec3_Add(move, vec, move);
+        Vec3_Add_(move, vec, move);
     }
 }
 
@@ -1396,11 +1396,11 @@ void CLG_DiminishingTrail(vec3_t start, vec3_t end, centity_t* old, int flags)
     float       velscale;
 
     Vec3_Copy_(start, move);
-    Vec3_Subtract(end, start, vec);
+    Vec3_Subtract_(end, start, vec);
     len = VectorNormalize(vec);
 
     dec = 0.5;
-    Vec3_Scale(vec, dec, vec);
+    Vec3_Scale_(vec, dec, vec);
 
     if (old->trailcount > 900) {
         orgscale = 4;
@@ -1473,7 +1473,7 @@ void CLG_DiminishingTrail(vec3_t start, vec3_t end, centity_t* old, int flags)
         old->trailcount -= 5;
         if (old->trailcount < 100)
             old->trailcount = 100;
-        Vec3_Add(move, vec, move);
+        Vec3_Add_(move, vec, move);
     }
 }
 
@@ -1497,11 +1497,11 @@ void CLG_RocketTrail(vec3_t start, vec3_t end, centity_t* old)
 
     // fire
     Vec3_Copy_(start, move);
-    Vec3_Subtract(end, start, vec);
+    Vec3_Subtract_(end, start, vec);
     len = VectorNormalize(vec);
 
     dec = 1;
-    Vec3_Scale(vec, dec, vec);
+    Vec3_Scale_(vec, dec, vec);
 
     while (len > 0) {
         len -= dec;
@@ -1526,7 +1526,7 @@ void CLG_RocketTrail(vec3_t start, vec3_t end, centity_t* old)
             }
             p->accel[2] = -PARTICLE_GRAVITY;
         }
-        Vec3_Add(move, vec, move);
+        Vec3_Add_(move, vec, move);
     }
 }
 
@@ -1551,7 +1551,7 @@ void CLG_OldRailTrail(void)
     byte        clr = 0x74;
 
     Vec3_Copy_(teParameters.pos1, move);
-    Vec3_Subtract(teParameters.pos2, teParameters.pos1, vec);
+    Vec3_Subtract_(teParameters.pos2, teParameters.pos1, vec);
     len = VectorNormalize(vec);
 
     MakeNormalVectors(vec, right, up);
@@ -1568,7 +1568,7 @@ void CLG_OldRailTrail(void)
         c = cos(d);
         s = sin(d);
 
-        Vec3_Scale(right, c, dir);
+        Vec3_Scale_(right, c, dir);
         Vec3_MA_(dir, s, up, dir);
 
         p->alpha = 1.0;
@@ -1582,11 +1582,11 @@ void CLG_OldRailTrail(void)
             p->vel[j] = dir[j] * 6;
         }
 
-        Vec3_Add(move, vec, move);
+        Vec3_Add_(move, vec, move);
     }
 
     dec = 0.75;
-    Vec3_Scale(vec, dec, vec);
+    Vec3_Scale_(vec, dec, vec);
     Vec3_Copy_(teParameters.pos1, move);
 
     while (len > 0) {
@@ -1611,7 +1611,7 @@ void CLG_OldRailTrail(void)
             p->accel[j] = 0;
         }
 
-        Vec3_Add(move, vec, move);
+        Vec3_Add_(move, vec, move);
     }
 }
 
@@ -1632,11 +1632,11 @@ void CLG_BubbleTrail(vec3_t start, vec3_t end)
     float       dec;
 
     Vec3_Copy_(start, move);
-    Vec3_Subtract(end, start, vec);
+    Vec3_Subtract_(end, start, vec);
     len = VectorNormalize(vec);
 
     dec = 32;
-    Vec3_Scale(vec, dec, vec);
+    Vec3_Scale_(vec, dec, vec);
 
     for (i = 0; i < len; i += dec) {
         p = CLG_AllocParticle();
@@ -1658,7 +1658,7 @@ void CLG_BubbleTrail(vec3_t start, vec3_t end)
         }
         p->vel[2] += 6;
 
-        Vec3_Add(move, vec, move);
+        Vec3_Add_(move, vec, move);
     }
 }
 
@@ -1792,7 +1792,7 @@ void CLG_BfgParticles(entity_t* ent)
         Vec3_Clear(p->vel);
         Vec3_Clear(p->accel);
 
-        Vec3_Subtract(p->org, ent->origin, v);
+        Vec3_Subtract_(p->org, ent->origin, v);
         dist = Vec3_Length(v) / 90.0;
 
         p->color = floor(0xd0 + dist * 7);
@@ -1879,7 +1879,7 @@ void CLG_TeleportParticles(vec3_t org)
 
                 VectorNormalize(dir);
                 vel = 50 + (rand() & 63);
-                Vec3_Scale(dir, vel, p->vel);
+                Vec3_Scale_(dir, vel, p->vel);
 
                 p->accel[0] = p->accel[1] = 0;
                 p->accel[2] = -PARTICLE_GRAVITY;

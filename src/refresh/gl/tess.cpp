@@ -117,7 +117,7 @@ void GL_DrawParticles(void)
 
         numverts = 0;
         do {
-            Vec3_Subtract(p->origin, glr.fd.vieworg, transformed);
+            Vec3_Subtract_(p->origin, glr.fd.vieworg, transformed);
             dist = Vec3_Dot(transformed, glr.viewaxis[0]);
 
             scale = gl_partscale->value;
@@ -196,12 +196,12 @@ void GL_DrawBeams(void)
 
         start = ent->origin;
         end = ent->oldorigin;
-        Vec3_Subtract(end, start, d1);
-        Vec3_Subtract(glr.fd.vieworg, start, d2);
+        Vec3_Subtract_(end, start, d1);
+        Vec3_Subtract_(glr.fd.vieworg, start, d2);
         Vec3_Cross(d1, d2, d3);
         length = Vec3_Length(d3);
         length = ent->frame * 1.2f / length;
-        Vec3_Scale(d3, length, d3);
+        Vec3_Scale_(d3, length, d3);
 
         length = Vec3_Length(d1);
 
@@ -220,10 +220,10 @@ void GL_DrawBeams(void)
         }
 
         dst_vert = tess.vertices + numverts * 5;
-        Vec3_Add(start, d3, dst_vert);
-        Vec3_Subtract(start, d3, dst_vert + 5);
-        Vec3_Subtract(end, d3, dst_vert + 10);
-        Vec3_Add(end, d3, dst_vert + 15);
+        Vec3_Add_(start, d3, dst_vert);
+        Vec3_Subtract_(start, d3, dst_vert + 5);
+        Vec3_Subtract_(end, d3, dst_vert + 10);
+        Vec3_Add_(end, d3, dst_vert + 15);
 
         dst_vert[3] = 0; dst_vert[4] = 0;
         dst_vert[8] = 1; dst_vert[9] = 0;

@@ -588,7 +588,7 @@ void monster_start_go(edict_t *self)
             self->monsterinfo.pausetime = 100000000;
             self->monsterinfo.stand(self);
         } else if (strcmp(self->movetarget->classname, "path_corner") == 0) {
-            Vec3_Subtract(self->goalentity->s.origin, self->s.origin, v);
+            Vec3_Subtract_(self->goalentity->s.origin, self->s.origin, v);
             self->ideal_yaw = self->s.angles[YAW] = vectoyaw(v);
             self->monsterinfo.walk(self);
             self->target = NULL;

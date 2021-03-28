@@ -1368,7 +1368,7 @@ static void PM_WaterMove(void) {
     //// disable water skiing
     //if (pm->state.type != PM_HOOK_PULL && pm->state.type != PM_HOOK_SWING) {
     //    if (pm->waterLevel == WATER_WAIST) {
-    //        vec3_t view = Vec3_Add(pm->state.origin, pm->state.view_offset);
+    //        vec3_t view = Vec3_Add_(pm->state.origin, pm->state.view_offset);
     //        view.z -= 4.0;
 
     //        if (!(pm->PointContents(view) & CONTENTS_MASK_LIQUID)) {
@@ -1519,7 +1519,7 @@ static void PM_WalkMove(void) {
 
     //// and now scale by the speed to avoid slowing down on slopes
     //pm->state.velocity = Vec3_Normalize(pm->state.velocity);
-    //pm->state.velocity = Vec3_Scale(pm->state.velocity, speed);
+    //pm->state.velocity = Vec3_Scale_(pm->state.velocity, speed);
 
     //// and finally, step if moving in X/Y
     //if (pm->state.velocity.x || pm->state.velocity.y) {

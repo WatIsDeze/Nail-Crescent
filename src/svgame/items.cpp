@@ -830,7 +830,7 @@ edict_t *Drop_Item(edict_t *ent, gitem_t *item)
         Vec3_Copy_(ent->s.origin, dropped->s.origin);
     }
 
-    Vec3_Scale(forward, 100, dropped->velocity);
+    Vec3_Scale_(forward, 100, dropped->velocity);
     dropped->velocity[2] = 300;
 
     dropped->think = drop_make_touchable;
@@ -884,7 +884,7 @@ void droptofloor(edict_t *ent)
     ent->touch = Touch_Item;
 
     v = tv(0, 0, -128);
-    Vec3_Add(ent->s.origin, v, dest);
+    Vec3_Add_(ent->s.origin, v, dest);
 
     tr = gi.trace(ent->s.origin, ent->mins, ent->maxs, dest, ent, CONTENTS_MASK_SOLID);
     if (tr.startsolid) {

@@ -132,7 +132,7 @@ static inline void Vec3_Cross_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
 // Returns the vector difference of a - b
 //===============
 //
-static inline vec3_t Vec3_Subtract(const vec3_t &a, const vec3_t &b) {
+static inline vec3_t Vec3_Subtract_(const vec3_t &a, const vec3_t &b) {
     return vec3_t {
         a.x - b.x, 
         a.y - b.y, 
@@ -164,7 +164,7 @@ static inline void Vec3_Subtract_(const vec3_t& a, const vec3_t& b, vec3_t &c) {
 // Returns the vector of a + b
 //===============
 //
-static inline vec3_t Vec3_Add(const vec3_t &a, const vec3_t &b) {
+static inline vec3_t Vec3_Add_(const vec3_t &a, const vec3_t &b) {
     return vec3_t {
         a.x + b.x,
         a.y + b.y,
@@ -229,7 +229,7 @@ static inline void Vec3_Add2_(const vec3_t& a, const vec3_t& b, const vec3_t& c,
 // Returns the vector v scaled by scale.
 //===============
 //
-static inline vec3_t Vec3_Scale(const vec3_t &v, float scale) {
+static inline vec3_t Vec3_Scale_(const vec3_t &v, float scale) {
     return vec3_t {
         v.x * scale,
         v.y * scale,
@@ -318,7 +318,7 @@ static inline void Vec3_Clear(vec3_t& v) {
 //===============
 //
 static inline vec3_t Vec3_Negate(const vec3_t &v) {
-    return Vec3_Scale(v, -1.f);
+    return Vec3_Scale_(v, -1.f);
 }
 
 //
@@ -329,7 +329,7 @@ static inline vec3_t Vec3_Negate(const vec3_t &v) {
 //===============
 //
 static inline void Vec3_Inverse(vec3_t& v) {
-    v = Vec3_Scale(v, -1.f);
+    v = Vec3_Scale_(v, -1.f);
 }
 
 //
@@ -712,11 +712,11 @@ static inline void RotatePoint(vec3_t& point, vec3_t* axis)
 //        ((cross)[0]=(v1)[1]*(v2)[2]-(v1)[2]*(v2)[1], \
 //         (cross)[1]=(v1)[2]*(v2)[0]-(v1)[0]*(v2)[2], \
 //         (cross)[2]=(v1)[0]*(v2)[1]-(v1)[1]*(v2)[0])
-//#define Vec3_Subtract(a,b,c) \                                                    /////////////
+//#define Vec3_Subtract_(a,b,c) \                                                    /////////////
 //        ((c)[0]=(a)[0]-(b)[0], \
 //         (c)[1]=(a)[1]-(b)[1], \
 //         (c)[2]=(a)[2]-(b)[2])
-//#define Vec3_Add(a,b,c) \                                                         ////////////////
+//#define Vec3_Add_(a,b,c) \                                                         ////////////////
 //        ((c)[0]=(a)[0]+(b)[0], \
 //         (c)[1]=(a)[1]+(b)[1], \
 //         (c)[2]=(a)[2]+(b)[2])
@@ -745,7 +745,7 @@ static inline void RotatePoint(vec3_t& point, vec3_t* axis)
 //#define Vec3_Compare(v1,v2)    ((v1)[0]==(v2)[0]&&(v1)[1]==(v2)[1]&&(v1)[2]==(v2)[2]) ////////////
 //#define Vec3_Length(v)     (sqrt(Vec3_Dot((v),(v))))
 //#define Vec3_LengthSquared(v)      (Vec3_Dot((v),(v)))
-//#define Vec3_Scale(in,scale,out) \                                                ////////////////
+//#define Vec3_Scale_(in,scale,out) \                                                ////////////////
 //        ((out)[0]=(in)[0]*(scale), \
 //         (out)[1]=(in)[1]*(scale), \
 //         (out)[2]=(in)[2]*(scale))

@@ -941,7 +941,7 @@ void CLG_CalcViewValues(void)
 
     cl->playerEntityAngles[PITCH] = cl->playerEntityAngles[PITCH] / 3;
 
-    Vec3_Add(cl->refdef.vieworg, viewoffset, cl->refdef.vieworg);
+    Vec3_Add_(cl->refdef.vieworg, viewoffset, cl->refdef.vieworg);
 
     // Update the client's listener origin values.
     clgi.UpdateListenerOrigin();

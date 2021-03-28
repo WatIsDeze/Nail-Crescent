@@ -116,8 +116,8 @@ static qboolean _GL_LightPoint(vec3_t start, vec3_t color)
                 continue;
             angles = ent->angles;
         } else {
-            Vec3_Add(model->mins, ent->origin, mins);
-            Vec3_Add(model->maxs, ent->origin, maxs);
+            Vec3_Add_(model->mins, ent->origin, mins);
+            Vec3_Add_(model->maxs, ent->origin, maxs);
             if (start[0] < mins[0] || start[0] > maxs[0])
                 continue;
             if (start[1] < mins[1] || start[1] > maxs[1])
@@ -202,7 +202,7 @@ static void GL_TransformLights(mmodel_t *model)
     glr.dlightframe++;
 
     for (i = 0, light = glr.fd.dlights; i < glr.fd.num_dlights; i++, light++) {
-        Vec3_Subtract(light->origin, glr.ent->origin, temp);
+        Vec3_Subtract_(light->origin, glr.ent->origin, temp);
         light->transformed[0] = Vec3_Dot(temp, glr.entaxis[0]);
         light->transformed[1] = Vec3_Dot(temp, glr.entaxis[1]);
         light->transformed[2] = Vec3_Dot(temp, glr.entaxis[2]);
@@ -247,7 +247,7 @@ void GL_LightPoint(vec3_t origin, vec3_t color)
 
     if (gl_doublelight_entities->integer) {
         // apply modulate twice to mimic original ref_gl behavior
-        Vec3_Scale(color, gl_static.entity_modulate, color);
+        Vec3_Scale_(color, gl_static.entity_modulate, color);
     }
 }
 
@@ -382,19 +382,19 @@ void GL_DrawBspModel(mmodel_t *model)
                 return;
             }
         }
-        Vec3_Subtract(glr.fd.vieworg, ent->origin, temp);
+        Vec3_Subtract_(glr.fd.vieworg, ent->origin, temp);
         transformed[0] = Vec3_Dot(temp, glr.entaxis[0]);
         transformed[1] = Vec3_Dot(temp, glr.entaxis[1]);
         transformed[2] = Vec3_Dot(temp, glr.entaxis[2]);
     } else {
-        Vec3_Add(model->mins, ent->origin, bounds[0]);
-        Vec3_Add(model->maxs, ent->origin, bounds[1]);
+        Vec3_Add_(model->mins, ent->origin, bounds[0]);
+        Vec3_Add_(model->maxs, ent->origin, bounds[1]);
         cull = GL_CullBox(bounds);
         if (cull == CULL_OUT) {
             c.boxesCulled++;
             return;
         }
-        Vec3_Subtract(glr.fd.vieworg, ent->origin, transformed);
+        Vec3_Subtract_(glr.fd.vieworg, ent->origin, transformed);
     }
 
     GL_TransformLights(model);

@@ -35,7 +35,7 @@ void weapon_supershotgun_fire(edict_t* ent)
 
     AngleVectors(ent->client->v_angle, forward, right, NULL);
 
-    Vec3_Scale(forward, -2, ent->client->kick_origin);
+    Vec3_Scale_(forward, -2, ent->client->kick_origin);
     ent->client->kick_angles[0] = -2;
 
     Vec3_Set_(offset, 0, 8, ent->viewheight - 8);

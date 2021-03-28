@@ -34,8 +34,8 @@ qboolean CanDamage(edict_t *targ, edict_t *inflictor)
 
 // bmodels need special checking because their origin is 0,0,0
     if (targ->movetype == MOVETYPE_PUSH) {
-        Vec3_Add(targ->absmin, targ->absmax, dest);
-        Vec3_Scale(dest, 0.5, dest);
+        Vec3_Add_(targ->absmin, targ->absmax, dest);
+        Vec3_Scale_(dest, 0.5, dest);
         trace = gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
         if (trace.fraction == 1.0)
             return true;
@@ -207,7 +207,7 @@ static int CheckPowerArmor(edict_t *ent, vec3_t point, vec3_t normal, int damage
 
         // only works if damage point is in front
         AngleVectors(ent->s.angles, forward, NULL, NULL);
-        Vec3_Subtract(point, ent->s.origin, vec);
+        Vec3_Subtract_(point, ent->s.origin, vec);
         VectorNormalize(vec);
         dot = Vec3_Dot(vec, forward);
         if (dot <= 0.3)
@@ -420,11 +420,11 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
                 mass = targ->mass;
 
             if (targ->client  && attacker == targ)
-                Vec3_Scale(dir, 1600.0 * (float)knockback / mass, kvel);   // the rocket jump hack...
+                Vec3_Scale_(dir, 1600.0 * (float)knockback / mass, kvel);   // the rocket jump hack...
             else
-                Vec3_Scale(dir, 500.0 * (float)knockback / mass, kvel);
+                Vec3_Scale_(dir, 500.0 * (float)knockback / mass, kvel);
 
-            Vec3_Add(targ->velocity, kvel, targ->velocity);
+            Vec3_Add_(targ->velocity, kvel, targ->velocity);
         }
     }
 
@@ -529,15 +529,15 @@ void T_RadiusDamage(edict_t *inflictor, edict_t *attacker, float damage, edict_t
         if (!ent->takedamage)
             continue;
 
-        Vec3_Add(ent->mins, ent->maxs, v);
+        Vec3_Add_(ent->mins, ent->maxs, v);
         Vec3_MA_(ent->s.origin, 0.5, v, v);
-        Vec3_Subtract(inflictor->s.origin, v, v);
+        Vec3_Subtract_(inflictor->s.origin, v, v);
         points = damage - 0.5 * Vec3_Length(v);
         if (ent == attacker)
             points = points * 0.5;
         if (points > 0) {
             if (CanDamage(ent, inflictor)) {
-                Vec3_Subtract(ent->s.origin, inflictor->s.origin, dir);
+                Vec3_Subtract_(ent->s.origin, inflictor->s.origin, dir);
                 T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, (int)points, (int)points, DAMAGE_RADIUS, mod);
             }
         }

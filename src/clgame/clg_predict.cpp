@@ -20,7 +20,7 @@ void CLG_CheckPredictionError(int frame, unsigned int cmd) {
     float len;
 
     // Compare what the server returned with what we had predicted it to be
-    Vec3_Subtract(cl->frame.ps.pmove.origin, cl->predicted_origins[cmd & CMD_MASK], delta);
+    Vec3_Subtract_(cl->frame.ps.pmove.origin, cl->predicted_origins[cmd & CMD_MASK], delta);
 
     len = fabs(delta[0]) + fabs(delta[1]) + fabs(delta[2]);
     if (len < 0.125f  || len > 80.f) {

@@ -51,7 +51,7 @@ void weapon_railgun_fire(edict_t* ent)
 
     AngleVectors(ent->client->v_angle, forward, right, NULL);
 
-    Vec3_Scale(forward, -3, ent->client->kick_origin);
+    Vec3_Scale_(forward, -3, ent->client->kick_origin);
     ent->client->kick_angles[0] = -3;
 
     Vec3_Set_(offset, 0, 7, ent->viewheight - 8);

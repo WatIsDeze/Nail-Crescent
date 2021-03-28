@@ -77,7 +77,7 @@ static void R_EmitEdge(mvertex_t *pv0, mvertex_t *pv1)
         world = &pv0->point[0];
 
         // transform and project
-        Vec3_Subtract(world, modelorg, local);
+        Vec3_Subtract_(world, modelorg, local);
         R_TransformVector(local, transformed);
 
         if (transformed[2] < NEAR_CLIP)
@@ -106,7 +106,7 @@ static void R_EmitEdge(mvertex_t *pv0, mvertex_t *pv1)
     world = &pv1->point[0];
 
 // transform and project
-    Vec3_Subtract(world, modelorg, local);
+    Vec3_Subtract_(world, modelorg, local);
     R_TransformVector(local, transformed);
 
     if (transformed[2] < NEAR_CLIP)

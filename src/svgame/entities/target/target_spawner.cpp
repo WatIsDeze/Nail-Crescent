@@ -47,6 +47,6 @@ void SP_target_spawner(edict_t* self)
     self->svflags = SVF_NOCLIENT;
     if (self->speed) {
         G_SetMovedir(self->s.angles, self->movedir);
-        Vec3_Scale(self->movedir, self->speed, self->movedir);
+        Vec3_Scale_(self->movedir, self->speed, self->movedir);
     }
 }

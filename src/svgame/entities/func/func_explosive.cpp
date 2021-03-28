@@ -33,8 +33,8 @@ void func_explosive_explode(edict_t* self, edict_t* inflictor, edict_t* attacker
     int     mass;
 
     // bmodel origins are (0 0 0), we need to adjust that here
-    Vec3_Scale(self->size, 0.5, size);
-    Vec3_Add(self->absmin, size, origin);
+    Vec3_Scale_(self->size, 0.5, size);
+    Vec3_Add_(self->absmin, size, origin);
     Vec3_Copy_(origin, self->s.origin);
 
     self->takedamage = DAMAGE_NO;
@@ -42,12 +42,12 @@ void func_explosive_explode(edict_t* self, edict_t* inflictor, edict_t* attacker
     if (self->dmg)
         T_RadiusDamage(self, attacker, self->dmg, NULL, self->dmg + 40, MOD_EXPLOSIVE);
 
-    Vec3_Subtract(self->s.origin, inflictor->s.origin, self->velocity);
+    Vec3_Subtract_(self->s.origin, inflictor->s.origin, self->velocity);
     VectorNormalize(self->velocity);
-    Vec3_Scale(self->velocity, 150, self->velocity);
+    Vec3_Scale_(self->velocity, 150, self->velocity);
 
     // start chunks towards the center
-    Vec3_Scale(size, 0.5, size);
+    Vec3_Scale_(size, 0.5, size);
 
     mass = self->mass;
     if (!mass)

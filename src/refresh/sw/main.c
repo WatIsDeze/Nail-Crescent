@@ -460,7 +460,7 @@ static int R_DrawEntities(int translucent)
                 continue;
             }
             Vec3_Copy_(currententity->origin, r_entorigin);
-            Vec3_Subtract(r_origin, r_entorigin, modelorg);
+            Vec3_Subtract_(r_origin, r_entorigin, modelorg);
 
             switch (currentmodel->type) {
             case MOD_ALIAS:
@@ -625,7 +625,7 @@ static void RotatedBBox(vec3_t mins, vec3_t maxs, vec3_t angles,
             tmp[2] = maxs[2];
 
 
-        Vec3_Scale(forward, tmp[0], v);
+        Vec3_Scale_(forward, tmp[0], v);
         Vec3_MA_(v, -tmp[1], right, v);
         Vec3_MA_(v, tmp[2], up, v);
 
@@ -679,8 +679,8 @@ static void R_DrawBEntitiesOnList(void)
         // trivial accept status
         RotatedBBox(model->mins, model->maxs,
                     currententity->angles, mins, maxs);
-        Vec3_Add(mins, currententity->origin, minmaxs);
-        Vec3_Add(maxs, currententity->origin, (minmaxs + 3));
+        Vec3_Add_(mins, currententity->origin, minmaxs);
+        Vec3_Add_(maxs, currententity->origin, (minmaxs + 3));
 
         clipflags = R_BmodelCheckBBox(minmaxs);
         if (clipflags == BMODEL_FULLY_CLIPPED)
@@ -691,7 +691,7 @@ static void R_DrawBEntitiesOnList(void)
             continue;   // no part in a visible leaf
 
         Vec3_Copy_(currententity->origin, r_entorigin);
-        Vec3_Subtract(r_origin, r_entorigin, modelorg);
+        Vec3_Subtract_(r_origin, r_entorigin, modelorg);
 
         // FIXME: stop transforming twice
         R_RotateBmodel();
@@ -896,13 +896,13 @@ void R_DrawBeam(entity_t *e)
         return;
 
     PerpendicularVector(perpvec, normalized_direction);
-    Vec3_Scale(perpvec, e->frame / 2, perpvec);
+    Vec3_Scale_(perpvec, e->frame / 2, perpvec);
 
     for (i = 0; i < NUM_BEAM_SEGS; i++) {
         RotatePointAroundVector(start_points[i], normalized_direction,
                                 perpvec, (360.0f / NUM_BEAM_SEGS) * i);
-        Vec3_Add(start_points[i], origin, start_points[i]);
-        Vec3_Add(start_points[i], direction, end_points[i]);
+        Vec3_Add_(start_points[i], origin, start_points[i]);
+        Vec3_Add_(start_points[i], direction, end_points[i]);
     }
 
     if (e->skinnum == -1)

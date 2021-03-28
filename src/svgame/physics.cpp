@@ -283,7 +283,7 @@ int SV_FlyMove(edict_t *ent, float time, int mask)
             }
             Vec3_Cross(planes[0], planes[1], dir);
             d = Vec3_Dot(dir, ent->velocity);
-            Vec3_Scale(dir, d, ent->velocity);
+            Vec3_Scale_(dir, d, ent->velocity);
         }
 
 //
@@ -334,7 +334,7 @@ trace_t SV_PushEntity(edict_t *ent, vec3_t push)
     int     mask;
 
     Vec3_Copy_(ent->s.origin, start);
-    Vec3_Add(start, push, end);
+    Vec3_Add_(start, push, end);
 
 retry:
     if (ent->clipmask)
@@ -401,7 +401,7 @@ qboolean SV_Push(edict_t *pusher, vec3_t move, vec3_t amove)
     }
 
 // we need this for pushing things later
-    Vec3_Subtract(vec3_origin, amove, org);
+    Vec3_Subtract_(vec3_origin, amove, org);
     AngleVectors(org, forward, right, up);
 
 // save the pusher's original position
@@ -415,8 +415,8 @@ qboolean SV_Push(edict_t *pusher, vec3_t move, vec3_t amove)
     pushed_p++;
 
 // move the pusher to it's final position
-    Vec3_Add(pusher->s.origin, move, pusher->s.origin);
-    Vec3_Add(pusher->s.angles, amove, pusher->s.angles);
+    Vec3_Add_(pusher->s.origin, move, pusher->s.origin);
+    Vec3_Add_(pusher->s.angles, amove, pusher->s.angles);
     gi.linkentity(pusher);
 
 // see if any solid entities are inside the final position
@@ -461,7 +461,7 @@ qboolean SV_Push(edict_t *pusher, vec3_t move, vec3_t amove)
             pushed_p++;
 
             // try moving the contacted entity
-            Vec3_Add(check->s.origin, move, check->s.origin);
+            Vec3_Add_(check->s.origin, move, check->s.origin);
 #if USE_SMOOTH_DELTA_ANGLES
             if (check->client) {
                 // FIXME: doesn't rotate monsters?
@@ -471,12 +471,12 @@ qboolean SV_Push(edict_t *pusher, vec3_t move, vec3_t amove)
 #endif
 
             // figure movement due to the pusher's amove
-            Vec3_Subtract(check->s.origin, pusher->s.origin, org);
+            Vec3_Subtract_(check->s.origin, pusher->s.origin, org);
             org2[0] = Vec3_Dot(org, forward);
             org2[1] = -Vec3_Dot(org, right);
             org2[2] = Vec3_Dot(org, up);
-            Vec3_Subtract(org2, org, move2);
-            Vec3_Add(check->s.origin, move2, check->s.origin);
+            Vec3_Subtract_(org2, org, move2);
+            Vec3_Add_(check->s.origin, move2, check->s.origin);
 
             // may have pushed them off an edge
             if (check->groundentity != pusher)
@@ -493,7 +493,7 @@ qboolean SV_Push(edict_t *pusher, vec3_t move, vec3_t amove)
             // if it is ok to leave in the old position, do it
             // this is only relevent for riding entities, not pushed
             // FIXME: this doesn't acount for rotation
-            Vec3_Subtract(check->s.origin, move, check->s.origin);
+            Vec3_Subtract_(check->s.origin, move, check->s.origin);
             block = SV_TestEntityPosition(check);
             if (!block) {
                 pushed_p--;
@@ -555,8 +555,8 @@ void SV_Physics_Pusher(edict_t *ent)
             part->avelocity[0] || part->avelocity[1] || part->avelocity[2]
            ) {
             // object is moving
-            Vec3_Scale(part->velocity, FRAMETIME, move);
-            Vec3_Scale(part->avelocity, FRAMETIME, amove);
+            Vec3_Scale_(part->velocity, FRAMETIME, move);
+            Vec3_Scale_(part->avelocity, FRAMETIME, amove);
 
             if (!SV_Push(part, move, amove))
                 break;  // move was blocked
@@ -684,7 +684,7 @@ void SV_Physics_Toss(edict_t *ent)
     Vec3_MA_(ent->s.angles, FRAMETIME, ent->avelocity, ent->s.angles);
 
 // move origin
-    Vec3_Scale(ent->velocity, FRAMETIME, move);
+    Vec3_Scale_(ent->velocity, FRAMETIME, move);
     trace = SV_PushEntity(ent, move);
     if (!ent->inuse)
         return;

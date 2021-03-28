@@ -571,7 +571,7 @@ static void R_ClipAndDrawPoly(float alpha, int isturbulent, int textured)
     pv = &r_clip_verts[clip_current][0][0];
 
     for (i = 0; i < nump; i++) {
-        Vec3_Subtract(pv, r_origin, local);
+        Vec3_Subtract_(pv, r_origin, local);
         R_TransformVector(local, transformed);
 
         if (transformed[2] < NEAR_CLIP)
@@ -810,8 +810,8 @@ void R_IMFlatShadedQuad(vec3_t a, vec3_t b, vec3_t c, vec3_t d, color_t color, f
     r_clip_verts[0][2][4] = 0;
     r_clip_verts[0][3][4] = 0;
 
-    Vec3_Subtract(d, c, s0);
-    Vec3_Subtract(c, b, s1);
+    Vec3_Subtract_(d, c, s0);
+    Vec3_Subtract_(c, b, s1);
     Vec3_Cross(s0, s1, r_polydesc.vpn);
     VectorNormalize(r_polydesc.vpn);
 
@@ -853,13 +853,13 @@ void R_DrawSprite(void)
     Vec3_Copy_(vpn, r_polydesc.vpn);
 
 // build the sprite poster in worldspace
-    Vec3_Scale(r_polydesc.vright,
+    Vec3_Scale_(r_polydesc.vright,
                 frame->width - frame->origin_x, right);
-    Vec3_Scale(r_polydesc.vup,
+    Vec3_Scale_(r_polydesc.vup,
                 frame->height - frame->origin_y, up);
-    Vec3_Scale(r_polydesc.vright,
+    Vec3_Scale_(r_polydesc.vright,
                 -frame->origin_x, left);
-    Vec3_Scale(r_polydesc.vup,
+    Vec3_Scale_(r_polydesc.vup,
                 -frame->origin_y, down);
 
     // invert UP vector for sprites

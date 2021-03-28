@@ -499,7 +499,7 @@ void vkpt_shadow_map_setup(const sun_light_t* light, const float* bbox_min, cons
 		Vec3_Set_(up_dir, 1.f, 0.f, 0.f);
 
 	vec3_t look_dir;
-	Vec3_Scale(light->direction, -1.f, look_dir);
+	Vec3_Scale_(light->direction, -1.f, look_dir);
 	VectorNormalize(look_dir);
 	vec3_t left_dir;
 	Vec3_Cross(up_dir, look_dir, left_dir);
@@ -553,15 +553,15 @@ void vkpt_shadow_map_setup(const sun_light_t* light, const float* bbox_min, cons
 	}
 
 	vec3_t diagonal;
-	Vec3_Subtract(view_aabb_max, view_aabb_min, diagonal);
+	Vec3_Subtract_(view_aabb_max, view_aabb_min, diagonal);
 
 	float maxXY = max(diagonal[0], diagonal[1]);
 	vec3_t diff;
 	diff[0] = (maxXY - diagonal[0]) * 0.5f;
 	diff[1] = (maxXY - diagonal[1]) * 0.5f;
 	diff[2] = 0.f;
-	Vec3_Subtract(view_aabb_min, diff, view_aabb_min);
-	Vec3_Add(view_aabb_max, diff, view_aabb_max);
+	Vec3_Subtract_(view_aabb_min, diff, view_aabb_min);
+	Vec3_Add_(view_aabb_max, diff, view_aabb_max);
 
 	float projection_matrix[16];
 	create_orthographic_matrix(projection_matrix, view_aabb_min[0], view_aabb_max[0], view_aabb_min[1], view_aabb_max[1], view_aabb_min[2], view_aabb_max[2]);

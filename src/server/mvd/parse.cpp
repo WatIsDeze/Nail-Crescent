@@ -226,7 +226,7 @@ static void MVD_ParseMulticast(mvd_t *mvd, mvd_ops_t op, int extrabits)
             ps = &client->ps;
 #if 0
             // N&C: FF Precision.
-            Vec3_Add(ps->viewoffset, ps->pmove.origin, org);
+            Vec3_Add_(ps->viewoffset, ps->pmove.origin, org);
             //Vec3_MA_(ps->viewoffset, 0.125f, ps->pmove.origin, org);
 #else
             // FIXME: for some strange reason, game code assumes the server
@@ -234,7 +234,7 @@ static void MVD_ParseMulticast(mvd_t *mvd, mvd_ops_t op, int extrabits)
             
             // N&C: FF Precision.
             Vec3_Copy_(ps->pmove.origin, org);
-            //Vec3_Scale(ps->pmove.origin, 0.125f, org);
+            //Vec3_Scale_(ps->pmove.origin, 0.125f, org);
 #endif
             leaf2 = CM_PointLeaf(&mvd->cm, org);
             if (!CM_AreasConnected(&mvd->cm, leaf1->area, leaf2->area))

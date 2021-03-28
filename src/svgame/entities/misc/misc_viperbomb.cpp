@@ -35,7 +35,7 @@ void misc_viper_bomb_prethink(edict_t* self)
         diff = -1.0;
 
     Vec3_Scale_(self->moveinfo.dir, 1.0 + diff, v);
-    v[2] = diff;
+    v.z = diff;
 
     diff = self->s.angles.z;
     vectoangles(v, self->s.angles);
@@ -56,7 +56,7 @@ void misc_viper_bomb_use(edict_t* self, edict_t* other, edict_t* activator)
     self->activator = activator;
 
     viper = G_Find(NULL, FOFS(classname), "misc_viper");
-    Vec3_Scale(viper->moveinfo.dir, viper->moveinfo.speed, self->velocity);
+    Vec3_Scale_(viper->moveinfo.dir, viper->moveinfo.speed, self->velocity);
 
     self->timestamp = level.time;
     Vec3_Copy_(viper->moveinfo.dir, self->moveinfo.dir);

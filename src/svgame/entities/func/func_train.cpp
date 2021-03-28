@@ -122,7 +122,7 @@ again:
             return;
         }
         first = false;
-        Vec3_Subtract(ent->s.origin, self->mins, self->s.origin);
+        Vec3_Subtract_(ent->s.origin, self->mins, self->s.origin);
         Vec3_Copy_(self->s.origin, self->s.old_origin);
         self->s.event = EV_OTHER_TELEPORT;
         gi.linkentity(self);
@@ -138,7 +138,7 @@ again:
         self->s.sound = self->moveinfo.sound_middle;
     }
 
-    Vec3_Subtract(ent->s.origin, self->mins, dest);
+    Vec3_Subtract_(ent->s.origin, self->mins, dest);
     self->moveinfo.state = STATE_TOP;
     Vec3_Copy_(self->s.origin, self->moveinfo.start_origin);
     Vec3_Copy_(dest, self->moveinfo.end_origin);
@@ -153,7 +153,7 @@ void train_resume(edict_t* self)
 
     ent = self->target_ent;
 
-    Vec3_Subtract(ent->s.origin, self->mins, dest);
+    Vec3_Subtract_(ent->s.origin, self->mins, dest);
     self->moveinfo.state = STATE_TOP;
     Vec3_Copy_(self->s.origin, self->moveinfo.start_origin);
     Vec3_Copy_(dest, self->moveinfo.end_origin);
@@ -176,7 +176,7 @@ void func_train_find(edict_t* self)
     }
     self->target = ent->target;
 
-    Vec3_Subtract(ent->s.origin, self->mins, self->s.origin);
+    Vec3_Subtract_(ent->s.origin, self->mins, self->s.origin);
     gi.linkentity(self);
 
     // if not triggered, start immediately

@@ -588,7 +588,7 @@ static void R_AliasSetUpLerpData(float backlerp)
     /*
     ** translation is the vector from last position to this position
     */
-    Vec3_Subtract(currententity->oldorigin, currententity->origin, translation);
+    Vec3_Subtract_(currententity->oldorigin, currententity->origin, translation);
 
     /*
     ** move should be the delta back to the previous frame * backlerp
@@ -597,7 +597,7 @@ static void R_AliasSetUpLerpData(float backlerp)
     r_lerp_move[1] = -Vec3_Dot(translation, vectors[1]);  // left
     r_lerp_move[2] =  Vec3_Dot(translation, vectors[2]);  // up
 
-    Vec3_Add(r_lerp_move, r_lastframe->translate, r_lerp_move);
+    Vec3_Add_(r_lerp_move, r_lastframe->translate, r_lerp_move);
 
     for (i = 0; i < 3; i++) {
         r_lerp_move[i] = backlerp * r_lerp_move[i] + frontlerp * r_thisframe->translate[i];

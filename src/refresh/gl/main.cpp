@@ -95,22 +95,22 @@ static void GL_SetupFrustum(void)
     sf = sin(angle);
     cf = cos(angle);
 
-    Vec3_Scale(glr.viewaxis[0], sf, forward);
-    Vec3_Scale(glr.viewaxis[1], cf, left);
+    Vec3_Scale_(glr.viewaxis[0], sf, forward);
+    Vec3_Scale_(glr.viewaxis[1], cf, left);
 
-    Vec3_Add(forward, left, glr.frustumPlanes[0].normal);
-    Vec3_Subtract(forward, left, glr.frustumPlanes[1].normal);
+    Vec3_Add_(forward, left, glr.frustumPlanes[0].normal);
+    Vec3_Subtract_(forward, left, glr.frustumPlanes[1].normal);
 
     // top/bottom
     angle = DEG2RAD(glr.fd.fov_y / 2);
     sf = sin(angle);
     cf = cos(angle);
 
-    Vec3_Scale(glr.viewaxis[0], sf, forward);
-    Vec3_Scale(glr.viewaxis[2], cf, up);
+    Vec3_Scale_(glr.viewaxis[0], sf, forward);
+    Vec3_Scale_(glr.viewaxis[2], cf, up);
 
-    Vec3_Add(forward, up, glr.frustumPlanes[2].normal);
-    Vec3_Subtract(forward, up, glr.frustumPlanes[3].normal);
+    Vec3_Add_(forward, up, glr.frustumPlanes[2].normal);
+    Vec3_Subtract_(forward, up, glr.frustumPlanes[3].normal);
 
     for (i = 0, p = glr.frustumPlanes; i < 4; i++, p++) {
         p->dist = Vec3_Dot(glr.fd.vieworg, p->normal);
@@ -364,18 +364,18 @@ static void GL_DrawSpriteModel(model_t *model)
     GL_ArrayBits((glArrayBits_t)(GLA_VERTEX | GLA_TC)); // CPP: Cast
     qglColor4f(1, 1, 1, alpha);
 
-    Vec3_Scale(glr.viewaxis[1], frame->origin_x, left);
-    Vec3_Scale(glr.viewaxis[1], frame->origin_x - frame->width, right);
+    Vec3_Scale_(glr.viewaxis[1], frame->origin_x, left);
+    Vec3_Scale_(glr.viewaxis[1], frame->origin_x - frame->width, right);
 
 	if (model->sprite_vertical)
 	{
-		Vec3_Scale(world_y, -frame->origin_y, down);
-		Vec3_Scale(world_y, frame->height - frame->origin_y, up);
+		Vec3_Scale_(world_y, -frame->origin_y, down);
+		Vec3_Scale_(world_y, frame->height - frame->origin_y, up);
 	}
 	else
 	{
-		Vec3_Scale(glr.viewaxis[2], -frame->origin_y, down);
-		Vec3_Scale(glr.viewaxis[2], frame->height - frame->origin_y, up);
+		Vec3_Scale_(glr.viewaxis[2], -frame->origin_y, down);
+		Vec3_Scale_(glr.viewaxis[2], frame->height - frame->origin_y, up);
 	}
 
     Vec3_Add3(e->origin, down, left, points[0]);

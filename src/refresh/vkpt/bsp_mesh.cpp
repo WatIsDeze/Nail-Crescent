@@ -41,8 +41,8 @@ remove_collinear_edges(float* positions, float* tex_coords, int* num_vertices)
 		float* p2 = positions + ((i + 1) % num_vertices_local) * 3;
 
 		vec3_t e1, e2;
-		Vec3_Subtract(p1, p0, e1);
-		Vec3_Subtract(p2, p1, e2);
+		Vec3_Subtract_(p1, p0, e1);
+		Vec3_Subtract_(p2, p1, e2);
 		float l1 = Vec3_Length(e1);
 		float l2 = Vec3_Length(e2);
 
@@ -53,8 +53,8 @@ remove_collinear_edges(float* positions, float* tex_coords, int* num_vertices)
 		}
 		else if (l2 > 0)
 		{
-			Vec3_Scale(e1, 1.f / l1, e1);
-			Vec3_Scale(e2, 1.f / l2, e2);
+			Vec3_Scale_(e1, 1.f / l1, e1);
+			Vec3_Scale_(e2, 1.f / l2, e2);
 
 			float dot = Vec3_Dot(e1, e2);
 			if (dot > 0.999f)
@@ -288,22 +288,22 @@ get_triangle_off_center(const float* positions, float* center, float* anti_cente
 	// Compute the triangle center
 
 	Vec3_Copy_(v0, center);
-	Vec3_Add(center, v1, center);
-	Vec3_Add(center, v2, center);
-	Vec3_Scale(center, 1.f / 3.f, center);
+	Vec3_Add_(center, v1, center);
+	Vec3_Add_(center, v2, center);
+	Vec3_Scale_(center, 1.f / 3.f, center);
 
 	// Compute the normal
 
 	vec3_t e1, e2, normal;
-	Vec3_Subtract(v1, v0, e1);
-	Vec3_Subtract(v2, v0, e2);
+	Vec3_Subtract_(v1, v0, e1);
+	Vec3_Subtract_(v2, v0, e2);
 	Vec3_Cross(e1, e2, normal);
 	float length = VectorNormalize(normal);
 
 	// Offset the center by one normal to make sure that the point is
 	// inside a BSP leaf and not on a boundary plane.
 
-	Vec3_Add(center, normal, center);
+	Vec3_Add_(center, normal, center);
 
 	if (anti_center)
 	{
@@ -336,13 +336,13 @@ get_surf_plane_equation(mface_t* surf, float* plane)
 		float* v1 = surf->firstsurfedge[i + 1].edge->v[surf->firstsurfedge[i + 1].vert]->point;
 		float* v2 = surf->firstsurfedge[(i + 2) % surf->numsurfedges].edge->v[surf->firstsurfedge[(i + 2) % surf->numsurfedges].vert]->point;
 		vec3_t e0, e1;
-		Vec3_Subtract(v1, v0, e0);
-		Vec3_Subtract(v2, v1, e1);
+		Vec3_Subtract_(v1, v0, e0);
+		Vec3_Subtract_(v2, v1, e1);
 		Vec3_Cross(e0, e1, plane);
 		float len = Vec3_Length(plane);
 		if (len > 0)
 		{
-			Vec3_Scale(plane, 1.0f / len, plane);
+			Vec3_Scale_(plane, 1.0f / len, plane);
 			plane[3] = -Vec3_Dot(plane, v0);
 			return true;
 		}
@@ -827,8 +827,8 @@ collect_ligth_polys(bsp_mesh_t *wm, bsp_t *bsp, int model_idx, int* num_lights, 
 
 		// Scale the texture axes according to the original resolution of the game's .wal textures
 		vec4_t tex_axis0, tex_axis1;
-		Vec3_Scale(texinfo->axis[0], tex_scale[0], tex_axis0);
-		Vec3_Scale(texinfo->axis[1], tex_scale[1], tex_axis1);
+		Vec3_Scale_(texinfo->axis[0], tex_scale[0], tex_axis0);
+		Vec3_Scale_(texinfo->axis[1], tex_scale[1], tex_axis1);
 		tex_axis0[3] = texinfo->offset[0] * tex_scale[0];
 		tex_axis1[3] = texinfo->offset[1] * tex_scale[1];
 
@@ -918,9 +918,9 @@ collect_ligth_polys(bsp_mesh_t *wm, bsp_t *bsp, int model_idx, int* num_lights, 
 					// Find a world space point on the texture projection plane
 
 					vec3_t p0, p1, point_on_texture_plane;
-					Vec3_Scale(tex_axis0, (instance.v[vert].x - tex_axis0[3]) * tex_axis0_inv_square_length, p0);
-					Vec3_Scale(tex_axis1, (instance.v[vert].y - tex_axis1[3]) * tex_axis1_inv_square_length, p1);
-					Vec3_Add(p0, p1, point_on_texture_plane);
+					Vec3_Scale_(tex_axis0, (instance.v[vert].x - tex_axis0[3]) * tex_axis0_inv_square_length, p0);
+					Vec3_Scale_(tex_axis1, (instance.v[vert].y - tex_axis1[3]) * tex_axis1_inv_square_length, p1);
+					Vec3_Add_(p0, p1, point_on_texture_plane);
 
 					// Shoot a ray from that point in the texture normal direction,
 					// and intersect it with the surface plane.
@@ -936,8 +936,8 @@ collect_ligth_polys(bsp_mesh_t *wm, bsp_t *bsp, int model_idx, int* num_lights, 
 					float ray_t = -(bn + plane[3]) / surf_normal_dot_tex_normal;
 
 					vec3_t p2;
-					Vec3_Scale(tex_normal, ray_t, p2);
-					Vec3_Add(p2, point_on_texture_plane, instance_positions[vert]);
+					Vec3_Scale_(tex_normal, ray_t, p2);
+					Vec3_Add_(p2, point_on_texture_plane, instance_positions[vert]);
 				}
 
 				// Create triangles for the polygon, using a triangle fan topology
@@ -1153,8 +1153,8 @@ compute_world_tangents(bsp_mesh_t* wm)
 		float const * tC = wm->tex_coords + (iC * 2);
 
 		vec3_t dP0, dP1;
-		Vec3_Subtract(pB, pA, dP0);
-		Vec3_Subtract(pC, pA, dP1);
+		Vec3_Subtract_(pB, pA, dP0);
+		Vec3_Subtract_(pC, pA, dP1);
 
 		vec2_t dt0, dt1;
 		Vec2_Subtract(tB, tA, dt0);
@@ -1179,8 +1179,8 @@ compute_world_tangents(bsp_mesh_t* wm)
 		vec3_t tangent;
 
 		vec3_t t;
-		Vec3_Scale(normal, Vec3_Dot(normal, sdir), t);
-		Vec3_Subtract(sdir, t, t);
+		Vec3_Scale_(normal, Vec3_Dot(normal, sdir), t);
+		Vec3_Subtract_(sdir, t, t);
 		VectorNormalize2(t, tangent); // Graham-Schmidt : t = normalize(t - n * (n.t))
 
 		Vec3_Set_(&wm->tangents[idx_tri * 3], tangent[0], tangent[1], tangent[2]);
@@ -1439,8 +1439,8 @@ light_affects_cluster(light_poly_t* light, aabb_t* aabb)
 	
 	// Get the light plane equation
 	vec3_t e1, e2, normal;
-	Vec3_Subtract(v1, v0, e1);
-	Vec3_Subtract(v2, v0, e2);
+	Vec3_Subtract_(v1, v0, e1);
+	Vec3_Subtract_(v2, v0, e2);
 	Vec3_Cross(e1, e2, normal);
 	VectorNormalize(normal);
 	
@@ -1724,15 +1724,15 @@ bsp_mesh_create_from_bsp(bsp_mesh_t *wm, bsp_t *bsp, const char* map_name)
 
 		compute_aabb(wm->positions + model->idx_offset * 3, model->idx_count, model->aabb_min, model->aabb_max);
 
-		Vec3_Add(model->aabb_min, model->aabb_max, model->center);
-		Vec3_Scale(model->center, 0.5f, model->center);
+		Vec3_Add_(model->aabb_min, model->aabb_max, model->center);
+		Vec3_Scale_(model->center, 0.5f, model->center);
 	}
 
 	compute_aabb(wm->positions, wm->world_idx_count, wm->world_aabb.mins, wm->world_aabb.maxs);
 
 	vec3_t margin = { 1.f, 1.f, 1.f };
-	Vec3_Subtract(wm->world_aabb.mins, margin, wm->world_aabb.mins);
-	Vec3_Add(wm->world_aabb.maxs, margin, wm->world_aabb.maxs);
+	Vec3_Subtract_(wm->world_aabb.mins, margin, wm->world_aabb.mins);
+	Vec3_Add_(wm->world_aabb.maxs, margin, wm->world_aabb.maxs);
 
 	compute_cluster_aabbs(wm);
 

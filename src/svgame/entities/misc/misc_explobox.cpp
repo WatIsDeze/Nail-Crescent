@@ -26,7 +26,7 @@ void barrel_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* su
         return;
 
     ratio = (float)other->mass / (float)self->mass;
-    Vec3_Subtract(self->s.origin, other->s.origin, v);
+    Vec3_Subtract_(self->s.origin, other->s.origin, v);
     M_walkmove(self, vectoyaw(v), 20 * ratio * FRAMETIME);
 }
 

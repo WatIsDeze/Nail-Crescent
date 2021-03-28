@@ -129,7 +129,7 @@ void turret_breach_think(edict_t *self)
             self->move_angles[YAW] = self->pos2[YAW];
     }
 
-    Vec3_Subtract(self->move_angles, current_angles, delta);
+    Vec3_Subtract_(self->move_angles, current_angles, delta);
     if (delta[0] < -180)
         delta[0] += 360;
     else if (delta[0] > 180)
@@ -149,7 +149,7 @@ void turret_breach_think(edict_t *self)
     if (delta[1] < -1 * self->speed * FRAMETIME)
         delta[1] = -1 * self->speed * FRAMETIME;
 
-    Vec3_Scale(delta, 1.0 / FRAMETIME, self->avelocity);
+    Vec3_Scale_(delta, 1.0 / FRAMETIME, self->avelocity);
 
     self->nextthink = level.time + FRAMETIME;
 
@@ -176,7 +176,7 @@ void turret_breach_think(edict_t *self)
         target[1] = (self->s.origin[1] + sin(angle) * self->owner->move_origin[0]); // SnapToEights(self->s.origin[1] + sin(angle) * self->owner->move_origin[0]);
         target[2] = self->owner->s.origin[2];
 
-        Vec3_Subtract(target, self->owner->s.origin, dir);
+        Vec3_Subtract_(target, self->owner->s.origin, dir);
         self->owner->velocity[0] = dir[0] * 1.0 / FRAMETIME;
         self->owner->velocity[1] = dir[1] * 1.0 / FRAMETIME;
 
@@ -201,7 +201,7 @@ void turret_breach_finish_init(edict_t *self)
         gi.dprintf("%s at %s needs a target\n", self->classname, vtos(self->s.origin));
     } else {
         self->target_ent = G_PickTarget(self->target);
-        Vec3_Subtract(self->target_ent->s.origin, self->s.origin, self->move_origin);
+        Vec3_Subtract_(self->target_ent->s.origin, self->s.origin, self->move_origin);
         G_FreeEdict(self->target_ent);
     }
 
@@ -321,7 +321,7 @@ void turret_driver_think(edict_t *self)
     // let the turret know where we want it to aim
     Vec3_Copy_(self->enemy->s.origin, target);
     target[2] += self->enemy->viewheight;
-    Vec3_Subtract(target, self->target_ent->s.origin, dir);
+    Vec3_Subtract_(target, self->target_ent->s.origin, dir);
     vectoangles(dir, self->target_ent->move_angles);
 
     // decide if we should shoot
@@ -355,7 +355,7 @@ void turret_driver_link(edict_t *self)
     vec[2] = 0;
     self->move_origin[0] = Vec3_Length(vec);
 
-    Vec3_Subtract(self->s.origin, self->target_ent->s.origin, vec);
+    Vec3_Subtract_(self->s.origin, self->target_ent->s.origin, vec);
     vectoangles(vec, vec);
     AnglesNormalize(vec);
     self->move_origin[1] = vec[1];

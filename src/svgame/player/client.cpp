@@ -49,7 +49,7 @@ void SP_FixCoopSpots(edict_t *self)
             return;
         if (!spot->targetname)
             continue;
-        Vec3_Subtract(self->s.origin, spot->s.origin, d);
+        Vec3_Subtract_(self->s.origin, spot->s.origin, d);
         if (Vec3_Length(d) < 384) {
             if ((!self->targetname) || Q_stricmp(self->targetname, spot->targetname) != 0) {
 //              gi.dprintf("FixCoopSpots changed %s at %s targetname from %s to %s\n", self->classname, vtos(self->s.origin), self->targetname, spot->targetname);
@@ -446,9 +446,9 @@ void LookAtKiller(edict_t *self, edict_t *inflictor, edict_t *attacker)
     vec3_t      dir;
 
     if (attacker && attacker != world && attacker != self) {
-        Vec3_Subtract(attacker->s.origin, self->s.origin, dir);
+        Vec3_Subtract_(attacker->s.origin, self->s.origin, dir);
     } else if (inflictor && inflictor != world && inflictor != self) {
-        Vec3_Subtract(inflictor->s.origin, self->s.origin, dir);
+        Vec3_Subtract_(inflictor->s.origin, self->s.origin, dir);
     } else {
         self->client->killer_yaw = self->s.angles[YAW];
         return;
@@ -696,7 +696,7 @@ float   PlayersRangeFromSpot(edict_t *spot)
         if (player->health <= 0)
             continue;
 
-        Vec3_Subtract(spot->s.origin, player->s.origin, v);
+        Vec3_Subtract_(spot->s.origin, player->s.origin, v);
         playerdistance = Vec3_Length(v);
 
         if (playerdistance < bestplayerdistance)
