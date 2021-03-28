@@ -124,9 +124,16 @@ static qboolean _GL_LightPoint(vec3_t start, vec3_t &color)
                 continue;
             angles = NULL;
         }
-
-        BSP_TransformedLightPoint(&pt, start, end, model->headnode,
-                                  ent->origin, angles);
+        
+        // MATHLIB: !!!!
+        if (angles) {
+            vec3_t _vangles = { angles[0], angles[1], angles[2] };
+            BSP_TransformedLightPoint(&pt, start, end, model->headnode,
+                                  ent->origin, &_vangles);
+        } else {
+                    BSP_TransformedLightPoint(&pt, start, end, model->headnode,
+                                ent->origin, NULL);
+        }
 
         if (pt.fraction < glr.lightpoint.fraction)
             glr.lightpoint = pt;
@@ -150,7 +157,7 @@ static void GL_MarkLights_r(mnode_t *node, dlight_t *light, int lightbit)
     mface_t *face;
 
     while (node->plane) {
-        dot = PlaneDiffFast(light->transformed, node->plane);
+        dot = Plane_FastDifference(light->transformed, node->plane);
         if (dot > light->intensity - DLIGHT_CUTOFF) {
             node = node->children[0];
             continue;

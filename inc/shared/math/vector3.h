@@ -27,6 +27,16 @@ template<typename T> struct vec3_template {
             T x, y, z;
         };
     };
+    
+    // OPERATOR: cast to float *
+    inline operator float* () { 
+        return &x;
+    } 
+
+    // OPERATOR: cast to const float*
+    inline operator const float* () const { 
+        return &x;
+    }
 
     // OPERATOR: -= float
     const vec3_template& operator -=(const float& other) {
