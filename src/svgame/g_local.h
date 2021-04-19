@@ -526,8 +526,6 @@ extern  cvar_t  *flood_waitdelay;
 
 extern  cvar_t  *sv_maplist;
 
-extern  cvar_t  *sv_features;
-
 extern  cvar_t  *sv_flaregun;
 
 extern  cvar_t  *cl_monsterfootsteps;
