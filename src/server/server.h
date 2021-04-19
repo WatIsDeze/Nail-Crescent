@@ -69,8 +69,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Cheesy macro.
 #define SV_InfoSet(var, val) \
     Cvar_FullSet(var, val, CVAR_SERVERINFO|CVAR_ROM, FROM_CODE)
-//=============================================================================
 
+
+//=============================================================================
 #define EDICT_POOL(c, n) ((entity_t *)((byte *)(c)->pool->edicts + (c)->pool->entity_size*(n)))
 
 #define EDICT_NUM(n) ((entity_t *)((byte *)ge->edicts + ge->entity_size*(n)))
