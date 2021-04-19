@@ -83,6 +83,7 @@ SET(SRC_SVGAME
 	svgame/entities/info/info_player_intermission.cpp
 	svgame/entities/info/info_player_start.cpp
 
+	svgame/entities/misc/misc_explobox.cpp
 	svgame/entities/misc/misc_gib_arm.cpp 
 	svgame/entities/misc/misc_gib_leg.cpp 
 	svgame/entities/misc/misc_gib_head.cpp 
