@@ -153,7 +153,6 @@ size_t  MSG_ReadStringLine(char *dest, size_t size);
 vec3_t  MSG_ReadPosition(void);
 vec3_t  MSG_ReadDirection(void);
 #endif
-int     MSG_ReadBits(int bits);
 void    MSG_ReadDeltaUsercmd(const usercmd_t *from, usercmd_t *cmd);
 int     MSG_ParseEntityBits(int *bits);
 void    MSG_ParseDeltaEntity(const entity_state_t *from, entity_state_t *to, int number, int bits, msgEsFlags_t flags);
@@ -161,7 +160,6 @@ void    MSG_ParseDeltaEntity(const entity_state_t *from, entity_state_t *to, int
 void    MSG_ParseDeltaPlayerstate_Default(const player_state_t *from, player_state_t *to, int flags);
 void    MSG_ParseDeltaPlayerstate_Enhanced(const player_state_t *from, player_state_t *to, int flags, int extraflags);
 #endif
-void    MSG_ParseDeltaPlayerstate_Packet(const player_state_t *from, player_state_t *to, int flags);
 
 #ifdef _DEBUG
 #if USE_CLIENT
