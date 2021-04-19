@@ -77,12 +77,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // game features this server supports
 #define SV_FEATURES (0)
 
-// ugly hack for SV_Shutdown
-#define MVD_SPAWN_DISABLED  0
-#define MVD_SPAWN_ENABLED   0x40000000
-#define MVD_SPAWN_INTERNAL  0x80000000
-#define MVD_SPAWN_MASK      0xc0000000
-
 typedef struct {
     int         number;
     unsigned    num_entities;
@@ -491,7 +485,7 @@ void SV_zfree(voidpf opaque, voidpf address);
 void SV_ClientReset(client_t *client);
 void SV_SpawnServer(mapcmd_t *cmd);
 qboolean SV_ParseMapCmd(mapcmd_t *cmd);
-void SV_InitGame(unsigned mvd_spawn);
+void SV_InitGame();
 
 //
 // sv_send.c

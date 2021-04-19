@@ -158,7 +158,6 @@ void    MSG_WriteDeltaEntity(const entity_packed_t *from, const entity_packed_t 
 void    MSG_PackPlayer(player_packed_t *out, const player_state_t *in);
 void    MSG_WriteDeltaPlayerstate_Default(const player_packed_t *from, const player_packed_t *to);
 int     MSG_WriteDeltaPlayerstate_Enhanced(const player_packed_t *from, player_packed_t *to, msgPsFlags_t flags);
-void    MSG_WriteDeltaPlayerstate_Packet(const player_packed_t *from, const player_packed_t *to, int number, msgPsFlags_t flags);
 
 static inline void *MSG_WriteData(const void *data, size_t len)
 {

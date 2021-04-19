@@ -291,7 +291,7 @@ static void SV_Map(qboolean restart)
 
     // any error will drop from this point
     if ((sv.state != ss_game && sv.state != ss_pic && sv.state != ss_cinematic) || restart)
-        SV_InitGame(MVD_SPAWN_DISABLED);    // the game is just starting
+        SV_InitGame();    // the game is just starting
 
     // clear pending CM
     Com_AbortFunc(NULL, NULL);
