@@ -81,11 +81,12 @@ void MSG_BeginWriting(void)
     msg_write.overflowed = false;
 }
 
-/*
-=============
-MSG_WriteChar
-=============
-*/
+//
+//===============
+// MSG_WriteChar
+// 
+//===============
+//
 void MSG_WriteChar(int c)
 {
     byte    *buf;
@@ -99,11 +100,12 @@ void MSG_WriteChar(int c)
     buf[0] = c;
 }
 
-/*
-=============
-MSG_WriteByte
-=============
-*/
+//
+//===============
+// MSG_WriteByte
+// 
+//===============
+//
 void MSG_WriteByte(int c)
 {
     byte    *buf;
@@ -117,11 +119,12 @@ void MSG_WriteByte(int c)
     buf[0] = c;
 }
 
-/*
-=============
-MSG_WriteShort
-=============
-*/
+//
+//===============
+// MSG_WriteShort
+// 
+//===============
+//
 void MSG_WriteShort(int c)
 {
     byte    *buf;
@@ -136,11 +139,12 @@ void MSG_WriteShort(int c)
     buf[1] = c >> 8;
 }
 
-/*
-=============
-MSG_WriteLong
-=============
-*/
+//
+//===============
+// MSG_WriteLong
+// 
+//===============
+//
 void MSG_WriteLong(int c)
 {
     byte    *buf;
@@ -166,11 +170,12 @@ void MSG_WriteFloat(float c) {
     MSG_WriteLong(vec.i);
 }
 
-/*
-=============
-MSG_WriteString
-=============
-*/
+//
+//===============
+// MSG_WriteString
+// 
+//===============
+//
 void MSG_WriteString(const char *string)
 {
     size_t length;
@@ -190,11 +195,12 @@ void MSG_WriteString(const char *string)
     MSG_WriteData(string, length + 1);
 }
 
-/*
-=============
-MSG_WritePosition
-=============
-*/
+//
+//===============
+// MSG_WritePosition
+// 
+//===============
+//
 void MSG_WritePosition(const vec3_t &pos)
 {
     MSG_WriteFloat(pos[0]);
@@ -202,11 +208,12 @@ void MSG_WritePosition(const vec3_t &pos)
     MSG_WriteFloat(pos[2]);
 }
 
-/*
-=============
-MSG_WriteAngle
-=============
-*/
+//
+//===============
+// MSG_WriteAngle
+// 
+//===============
+//
 
 #define ANGLE2BYTE(x)   ((int)((x)*256.0f/360)&255)
 #define BYTE2ANGLE(x)   ((x)*(360.0f/256))
@@ -221,23 +228,25 @@ void MSG_WriteAngle(float f)
 
 #if USE_CLIENT
 
-/*
-=============
-MSG_WriteDeltaUsercmd
-=============
-*/
-int MSG_WriteDeltaUsercmd(const usercmd_t *from, const usercmd_t *cmd, int version)
+//
+//===============
+// MSG_WriteDeltaUsercmd
+// 
+//===============
+//
+int MSG_WriteDeltaUsercmd(const usercmd_t *from, const usercmd_t *cmd)
 {
-    int     bits, buttons = cmd->buttons & BUTTON_MASK;
-
+    // Send a null message in case we had none.
     if (!from) {
         from = &nullUserCmd;
     }
 
-//
-// send the movement message
-//
-    bits = 0;
+
+    //
+    // send the movement message
+    //
+    int32_t bits = 0;
+
     if (cmd->angles[0] != from->angles[0])
         bits |= CM_ANGLE1;
     if (cmd->angles[1] != from->angles[1])
@@ -255,20 +264,8 @@ int MSG_WriteDeltaUsercmd(const usercmd_t *from, const usercmd_t *cmd, int versi
     if (cmd->impulse != from->impulse)
         bits |= CM_IMPULSE;
 
+    // Write out the changed bits.
     MSG_WriteByte(bits);
-
-    if (bits & CM_BUTTONS) {
-        if ((bits & CM_FORWARD) && !(cmd->forwardmove % 5)) {
-            buttons |= BUTTON_FORWARD;
-        }
-        if ((bits & CM_SIDE) && !(cmd->sidemove % 5)) {
-            buttons |= BUTTON_SIDE;
-        }
-        if ((bits & CM_UP) && !(cmd->upmove % 5)) {
-            buttons |= BUTTON_UP;
-        }
-        MSG_WriteByte(buttons);
-    }
 
     if (bits & CM_ANGLE1)
         MSG_WriteShort(cmd->angles[0]);
@@ -277,178 +274,23 @@ int MSG_WriteDeltaUsercmd(const usercmd_t *from, const usercmd_t *cmd, int versi
     if (bits & CM_ANGLE3)
         MSG_WriteShort(cmd->angles[2]);
 
-    if (bits & CM_FORWARD) {
-        if (buttons & BUTTON_FORWARD) {
-            MSG_WriteChar(cmd->forwardmove / 5);
-        } else {
-            MSG_WriteShort(cmd->forwardmove);
-        }
-    }
-    if (bits & CM_SIDE) {
-        if (buttons & BUTTON_SIDE) {
-            MSG_WriteChar(cmd->sidemove / 5);
-        } else {
-            MSG_WriteShort(cmd->sidemove);
-        }
-    }
-    if (bits & CM_UP) {
-        if (buttons & BUTTON_UP) {
-            MSG_WriteChar(cmd->upmove / 5);
-        } else {
-            MSG_WriteShort(cmd->upmove);
-        }
-    }
+    if (bits & CM_FORWARD)
+        MSG_WriteShort(cmd->forwardmove);
+    if (bits & CM_SIDE)
+        MSG_WriteShort(cmd->sidemove);
+    if (bits & CM_UP)
+        MSG_WriteShort(cmd->upmove);
+
+    if (bits & CM_BUTTONS)
+        MSG_WriteByte(cmd->buttons);
 
     if (bits & CM_IMPULSE)
         MSG_WriteByte(cmd->impulse);
 
     MSG_WriteByte(cmd->msec);
+    MSG_WriteByte(cmd->lightlevel);
 
-    return bits;
-}
-
-/*
-=============
-MSG_WriteBits
-=============
-*/
-void MSG_WriteBits(int value, int bits)
-{
-    int i;
-    size_t bitpos;
-
-    if (bits == 0 || bits < -31 || bits > 32) {
-        Com_Error(ERR_FATAL, "MSG_WriteBits: bad bits: %d", bits);
-    }
-
-    if (msg_write.maxsize - msg_write.cursize < 4) {
-        Com_Error(ERR_FATAL, "MSG_WriteBits: overflow");
-    }
-
-    if (bits < 0) {
-        bits = -bits;
-    }
-
-    bitpos = msg_write.bitpos;
-    if ((bitpos & 7) == 0) {
-        // optimized case
-        switch (bits) {
-        case 8:
-            MSG_WriteByte(value);
-            return;
-        case 16:
-            MSG_WriteShort(value);
-            return;
-        case 32:
-            MSG_WriteLong(value);
-            return;
-        default:
-            break;
-        }
-    }
-    for (i = 0; i < bits; i++, bitpos++) {
-        if ((bitpos & 7) == 0) {
-            msg_write.data[bitpos >> 3] = 0;
-        }
-        msg_write.data[bitpos >> 3] |= (value & 1) << (bitpos & 7);
-        value >>= 1;
-    }
-    msg_write.bitpos = bitpos;
-    msg_write.cursize = (bitpos + 7) >> 3;
-}
-
-/*
-=============
-MSG_WriteDeltaUsercmd_Enhanced
-=============
-*/
-int MSG_WriteDeltaUsercmd_Enhanced(const usercmd_t *from,
-                                   const usercmd_t *cmd,
-                                   int       version)
-{
-    int     bits, delta, count;
-
-    if (!from) {
-        from = &nullUserCmd;
-    }
-
-//
-// send the movement message
-//
-    bits = 0;
-    if (cmd->angles[0] != from->angles[0])
-        bits |= CM_ANGLE1;
-    if (cmd->angles[1] != from->angles[1])
-        bits |= CM_ANGLE2;
-    if (cmd->angles[2] != from->angles[2])
-        bits |= CM_ANGLE3;
-    if (cmd->forwardmove != from->forwardmove)
-        bits |= CM_FORWARD;
-    if (cmd->sidemove != from->sidemove)
-        bits |= CM_SIDE;
-    if (cmd->upmove != from->upmove)
-        bits |= CM_UP;
-    if (cmd->buttons != from->buttons)
-        bits |= CM_BUTTONS;
-    if (cmd->msec != from->msec)
-        bits |= CM_IMPULSE;
-
-    if (!bits) {
-        MSG_WriteBits(0, 1);
-        return 0;
-    }
-
-    MSG_WriteBits(1, 1);
-    MSG_WriteBits(bits, 8);
-
-    if (bits & CM_ANGLE1) {
-        delta = cmd->angles[0] - from->angles[0];
-        if (delta >= -128 && delta <= 127) {
-            MSG_WriteBits(1, 1);
-            MSG_WriteBits(delta, -8);
-        } else {
-            MSG_WriteBits(0, 1);
-            MSG_WriteBits(cmd->angles[0], -16);
-        }
-    }
-    if (bits & CM_ANGLE2) {
-        delta = cmd->angles[1] - from->angles[1];
-        if (delta >= -128 && delta <= 127) {
-            MSG_WriteBits(1, 1);
-            MSG_WriteBits(delta, -8);
-        } else {
-            MSG_WriteBits(0, 1);
-            MSG_WriteBits(cmd->angles[1], -16);
-        }
-    }
-    if (bits & CM_ANGLE3) {
-        MSG_WriteBits(cmd->angles[2], -16);
-    }
-
-//    if (version >= PROTOCOL_VERSION_Q2PRO_UCMD) { // MSG: !! Removed: PROTOCOL_VERSION_Q2PRO_UCMD
-        count = -10;
-    //} else {
-    //    count = -16;
-    //}
-
-    if (bits & CM_FORWARD) {
-        MSG_WriteBits(cmd->forwardmove, count);
-    }
-    if (bits & CM_SIDE) {
-        MSG_WriteBits(cmd->sidemove, count);
-    }
-    if (bits & CM_UP) {
-        MSG_WriteBits(cmd->upmove, count);
-    }
-
-    if (bits & CM_BUTTONS) {
-        int buttons = (cmd->buttons & 3) | (cmd->buttons >> 5);
-        MSG_WriteBits(buttons, 3);
-    }
-    if (bits & CM_IMPULSE) {
-        MSG_WriteBits(cmd->msec, 8);
-    }
-
+    // (Returned bits isn't used anywhere, but might as well keep it around.)
     return bits;
 }
 
@@ -1367,13 +1209,14 @@ void MSG_ReadDeltaUsercmd(const usercmd_t *from, usercmd_t *to)
 
     if (from) {
         memcpy(to, from, sizeof(*to));
-    } else {
+    }
+    else {
         memset(to, 0, sizeof(*to));
     }
 
     bits = MSG_ReadByte();
 
-// read current angles
+    // read current angles
     if (bits & CM_ANGLE1)
         to->angles[0] = MSG_ReadShort();
     if (bits & CM_ANGLE2)
@@ -1381,7 +1224,7 @@ void MSG_ReadDeltaUsercmd(const usercmd_t *from, usercmd_t *to)
     if (bits & CM_ANGLE3)
         to->angles[2] = MSG_ReadShort();
 
-// read movement
+    // read movement
     if (bits & CM_FORWARD)
         to->forwardmove = MSG_ReadShort();
     if (bits & CM_SIDE)
@@ -1389,204 +1232,18 @@ void MSG_ReadDeltaUsercmd(const usercmd_t *from, usercmd_t *to)
     if (bits & CM_UP)
         to->upmove = MSG_ReadShort();
 
-// read buttons
+    // read buttons
     if (bits & CM_BUTTONS)
         to->buttons = MSG_ReadByte();
 
     if (bits & CM_IMPULSE)
         to->impulse = MSG_ReadByte();
 
-// read time to run command
-    to->msec = MSG_ReadByte();
-
-// read the light level
-    to->lightlevel = MSG_ReadByte();
-}
-
-void MSG_ReadDeltaUsercmd_Hacked(const usercmd_t *from, usercmd_t *to)
-{
-    int bits, buttons = 0;
-
-    if (from) {
-        memcpy(to, from, sizeof(*to));
-    } else {
-        memset(to, 0, sizeof(*to));
-    }
-
-    bits = MSG_ReadByte();
-
-// read buttons
-    if (bits & CM_BUTTONS) {
-        buttons = MSG_ReadByte();
-        to->buttons = buttons & BUTTON_MASK;
-    }
-
-// read current angles
-    if (bits & CM_ANGLE1) {
-        if (buttons & BUTTON_ANGLE1) {
-            to->angles[0] = MSG_ReadChar() * 64;
-        } else {
-            to->angles[0] = MSG_ReadShort();
-        }
-    }
-    if (bits & CM_ANGLE2) {
-        if (buttons & BUTTON_ANGLE2) {
-            to->angles[1] = MSG_ReadChar() * 256;
-        } else {
-            to->angles[1] = MSG_ReadShort();
-        }
-    }
-    if (bits & CM_ANGLE3)
-        to->angles[2] = MSG_ReadShort();
-
-// read movement
-    if (bits & CM_FORWARD) {
-        if (buttons & BUTTON_FORWARD) {
-            to->forwardmove = MSG_ReadChar() * 5;
-        } else {
-            to->forwardmove = MSG_ReadShort();
-        }
-    }
-    if (bits & CM_SIDE) {
-        if (buttons & BUTTON_SIDE) {
-            to->sidemove = MSG_ReadChar() * 5;
-        } else {
-            to->sidemove = MSG_ReadShort();
-        }
-    }
-    if (bits & CM_UP) {
-        if (buttons & BUTTON_UP) {
-            to->upmove = MSG_ReadChar() * 5;
-        } else {
-            to->upmove = MSG_ReadShort();
-        }
-    }
-
-    if (bits & CM_IMPULSE)
-        to->impulse = MSG_ReadByte();
-
-// read time to run command
-    to->msec = MSG_ReadByte();
-
-// read the light level
-    to->lightlevel = MSG_ReadByte();
-}
-
-int MSG_ReadBits(int bits)
-{
-    int i, get;
-    size_t bitpos;
-    qboolean sgn;
-    int value;
-
-    if (bits == 0 || bits < -31 || bits > 32) {
-        Com_Error(ERR_FATAL, "MSG_ReadBits: bad bits: %d", bits);
-    }
-
-    bitpos = msg_read.bitpos;
-    if ((bitpos & 7) == 0) {
-        // optimized case
-        switch (bits) {
-        case -8:
-            value = MSG_ReadChar();
-            return value;
-        case 8:
-            value = MSG_ReadByte();
-            return value;
-        case -16:
-            value = MSG_ReadShort();
-            return value;
-        case 32:
-            value = MSG_ReadLong();
-            return value;
-        default:
-            break;
-        }
-    }
-
-    sgn = false;
-    if (bits < 0) {
-        bits = -bits;
-        sgn = true;
-    }
-
-    value = 0;
-    for (i = 0; i < bits; i++, bitpos++) {
-        get = (msg_read.data[bitpos >> 3] >> (bitpos & 7)) & 1;
-        value |= get << i;
-    }
-    msg_read.bitpos = bitpos;
-    msg_read.readcount = (bitpos + 7) >> 3;
-
-    if (sgn) {
-        if (value & (1 << (bits - 1))) {
-            value |= -1 ^((1 << bits) - 1);
-        }
-    }
-
-    return value;
-}
-
-void MSG_ReadDeltaUsercmd_Enhanced(const usercmd_t *from,
-                                   usercmd_t *to,
-                                   int       version)
-{
-    int bits, count;
-
-    if (from) {
-        memcpy(to, from, sizeof(*to));
-    } else {
-        memset(to, 0, sizeof(*to));
-    }
-
-    if (!MSG_ReadBits(1)) {
-        return;
-    }
-
-    bits = MSG_ReadBits(8);
-
-// read current angles
-    if (bits & CM_ANGLE1) {
-        if (MSG_ReadBits(1)) {
-            to->angles[0] += MSG_ReadBits(-8);
-        } else {
-            to->angles[0] = MSG_ReadBits(-16);
-        }
-    }
-    if (bits & CM_ANGLE2) {
-        if (MSG_ReadBits(1)) {
-            to->angles[1] += MSG_ReadBits(-8);
-        } else {
-            to->angles[1] = MSG_ReadBits(-16);
-        }
-    }
-    if (bits & CM_ANGLE3) {
-        to->angles[2] = MSG_ReadBits(-16);
-    }
-
-    // Read movement
-    count = -10;    // Was -16 in protocol versions before Q2PRO_UCMD, however, we spawned from Q2PRO so.
-
-    if (bits & CM_FORWARD) {
-        to->forwardmove = MSG_ReadBits(count);
-    }
-    if (bits & CM_SIDE) {
-        to->sidemove = MSG_ReadBits(count);
-    }
-    if (bits & CM_UP) {
-        to->upmove = MSG_ReadBits(count);
-    }
-
-    // read buttons
-    if (bits & CM_BUTTONS) {
-        int buttons = MSG_ReadBits(3);
-        to->buttons = (buttons & 3) | ((buttons & 4) << 5);
-    }
-
     // read time to run command
-    if (bits & CM_IMPULSE) {
-        to->msec = MSG_ReadBits(8);
-    }
+    to->msec = MSG_ReadByte();
+
+    // read the light level
+    to->lightlevel = MSG_ReadByte();
 }
 
 #if USE_CLIENT
