@@ -63,36 +63,6 @@ typedef struct {
 } entity_packed_t;
 
 //---------------
-// This is the actual packed player data that is transferred over the network.
-// It is bit precise, sensitive, and any change here would required changes elsewhere.
-// 
-// Be careful, and only touch this if you know what you are doing.
-//---------------
-typedef struct {
-    // Player Move.
-    pm_state_t      pmove;
-
-    // View angles and offsets.
-    int16_t         viewAngles[3];
-    int8_t          viewoffset[3];
-    int8_t          kickAngles[3];
-
-    // Gun info.
-    int8_t          gunangles[3];
-    int8_t          gunoffset[3];
-    uint8_t         gunindex;
-    uint8_t         gunframe;
-
-    // View related.
-    uint8_t         blend[4];
-    uint8_t         fov;
-    uint8_t         rdflags;
-
-    // Player status.
-    int16_t         stats[MAX_STATS];
-} player_packed_t;
-
-//---------------
 // Player state messaging flags.
 //---------------
 typedef enum {
@@ -134,7 +104,7 @@ extern sizebuf_t    msg_read;
 extern byte         msg_read_buffer[MAX_MSGLEN];
 
 extern const entity_packed_t    nullEntityState;
-extern const player_packed_t    nullPlayerState;
+extern const player_state_t     nullPlayerState;
 extern const usercmd_t          nullUserCmd;
 
 void    MSG_Init(void);
@@ -155,9 +125,8 @@ int     MSG_WriteDeltaUsercmd(const usercmd_t *from, const usercmd_t *cmd);
 void    MSG_WriteDirection(const vec3_t &dir);
 void    MSG_PackEntity(entity_packed_t *out, const entity_state_t *in, qboolean short_angles);
 void    MSG_WriteDeltaEntity(const entity_packed_t *from, const entity_packed_t *to, msgEsFlags_t flags);
-void    MSG_PackPlayer(player_packed_t *out, const player_state_t *in);
-void    MSG_WriteDeltaPlayerstate_Default(const player_packed_t *from, const player_packed_t *to);
-int     MSG_WriteDeltaPlayerstate_Enhanced(const player_packed_t *from, player_packed_t *to, msgPsFlags_t flags);
+void    MSG_WriteDeltaPlayerstate_Default(const player_state_t *from, const player_state_t *to);
+int     MSG_WriteDeltaPlayerstate_Enhanced(const player_state_t *from, player_state_t *to, msgPsFlags_t flags);
 
 static inline void *MSG_WriteData(const void *data, size_t len)
 {

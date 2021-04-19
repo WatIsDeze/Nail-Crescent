@@ -81,7 +81,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //=============================================================================
 // Master/heartbeat settings.
 static constexpr uint32_t MAX_MASTERS = 8;       // max recipients for heartbeat packets
-static constexpr uint32_t HEARTBEAT_SECONDS = 300;
+static constexpr int32_t HEARTBEAT_SECONDS = 300;
 
 // Baseline settings per packet.
 static constexpr uint32_t SV_BASELINES_SHIFT = 6;
@@ -107,7 +107,7 @@ typedef struct {
     int         number;
     unsigned    num_entities;
     unsigned    first_entity;
-    player_packed_t playerState;
+    player_state_t playerState;
     int         clientNum;
     int         areabytes;
     byte        areabits[MAX_MAP_AREA_BYTES];  // portalarea visibility bits
