@@ -731,7 +731,7 @@ static void write_datagram_old(client_t *client)
     write_reliables_old(client, client->netchan->maxpacketlen - msg_write.cursize);
 
     // send the datagram
-    cursize = client->netchan->Transmit(client->netchan,
+    cursize = Netchan_Transmit(client->netchan,
                                         msg_write.cursize,
                                         msg_write.data,
                                         client->numpackets);
@@ -801,7 +801,7 @@ static void write_datagram_new(client_t *client)
 #endif
 
     // send the datagram
-    cursize = client->netchan->Transmit(client->netchan,
+    cursize = Netchan_Transmit(client->netchan,
                                         msg_write.cursize,
                                         msg_write.data,
                                         client->numpackets);
@@ -868,7 +868,7 @@ void SV_SendClientMessages(void)
         // don't write any frame data until all fragments are sent
         if (client->netchan->fragment_pending) {
             client->frameflags |= FF_SUPPRESSED;
-            cursize = client->netchan->TransmitNextFragment(client->netchan);
+            cursize = Netchan_TransmitNextFragment(client->netchan);
             SV_CalcSendTime(client, cursize);
             goto advance;
         }
@@ -958,7 +958,7 @@ void SV_SendAsyncPackets(void)
 
         // make sure all fragments are transmitted first
         if (netchan->fragment_pending) {
-            cursize = netchan->TransmitNextFragment(netchan);
+            cursize = Netchan_TransmitNextFragment(netchan);
             SV_DPrintf(0, "%s: frag: %" PRIz "\n", client->name, cursize);
             goto calctime;
         }
@@ -977,16 +977,16 @@ void SV_SendAsyncPackets(void)
         }
 
         // just update reliable if needed
-        if (netchan->type == NETCHAN_OLD) {
-            write_reliables_old(client, netchan->maxpacketlen);
-        }
+        //if (netchan->type == NETCHAN_OLD) {
+        //    write_reliables_old(client, netchan->maxpacketlen);
+        //}
 
         // now fill up remaining buffer space with download
         write_pending_download(client);
 
         if (netchan->message.cursize || netchan->reliable_ack_pending ||
             netchan->reliable_length || retransmit) {
-            cursize = netchan->Transmit(netchan, 0, NULL, 1);
+            cursize = Netchan_Transmit(netchan, 0, NULL, 1);
             SV_DPrintf(0, "%s: send: %" PRIz "\n", client->name, cursize);
 calctime:
             SV_CalcSendTime(client, cursize);
@@ -1008,13 +1008,13 @@ void SV_InitClientSend(client_t *newcl)
     }
 
     // setup protocol
-    if (newcl->netchan->type == NETCHAN_NEW) {
+//    if (newcl->netchan->type == NETCHAN_NEW) {
         newcl->AddMessage = add_message_new;
         newcl->WriteDatagram = write_datagram_new;
-    } else {
-        newcl->AddMessage = add_message_old;
-        newcl->WriteDatagram = write_datagram_old;
-    }
+    //} else {
+    //    newcl->AddMessage = add_message_old;
+    //    newcl->WriteDatagram = write_datagram_old;
+    //}
 }
 
 void SV_ShutdownClientSend(client_t *client)

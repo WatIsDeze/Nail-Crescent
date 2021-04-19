@@ -756,10 +756,10 @@ static qboolean parse_enhanced_params(conn_params_t *p)
     s = Cmd_Argv(6);
     if (*s) {
         p->nctype = atoi(s);
-        if (p->nctype < NETCHAN_OLD || p->nctype > NETCHAN_NEW)
+        if (p->nctype != 1)
             return reject("Invalid netchan type.\n");
     } else {
-        p->nctype = NETCHAN_NEW;
+        p->nctype = 1;
     }
 
     // set zlib
@@ -946,10 +946,10 @@ static void send_connect_packet(client_t *newcl, int nctype)
     const char *dlstring2   = "";
 
     // MSG: !! Removed: PROTOCOL_VERSION_NAC - TODO: NETCHAN_NEW?
-    if (nctype == NETCHAN_NEW)
+    //if (nctype == NETCHAN_NEW)
         ncstring = " nc=1";
-    else
-        ncstring = " nc=0";
+    //else
+    //    ncstring = " nc=0";
 
     if (sv_downloadserver->string[0]) {
         dlstring1 = " dlserver=";
@@ -1046,10 +1046,7 @@ static void SVC_DirectConnect(void)
     }
 
     // setup netchan
-    newcl->netchan = Netchan_Setup(NS_SERVER, (netchan_type_t)params.nctype, // CPP: Cast
-                                   &net_from, params.qport,
-                                   params.maxlength,
-                                   params.protocol);
+    newcl->netchan = Netchan_Setup(NS_SERVER, &net_from, params.qport, params.maxlength, params.protocol);
     newcl->numpackets = 1;
 
     // parse some info from the info strings
@@ -1392,7 +1389,7 @@ static void SV_PacketEvent(void)
             netchan->remote_address.port = net_from.port;
         }
 
-        if (!netchan->Process(netchan))
+        if (!Netchan_Process(netchan))
             break;
 
         if (client->state == cs_zombie)
@@ -2084,9 +2081,9 @@ static void SV_FinalMessage(const char *message, error_type_t type)
             }
             netchan = client->netchan;
             while (netchan->fragment_pending) {
-                netchan->TransmitNextFragment(netchan);
+                Netchan_TransmitNextFragment(netchan);
             }
-            netchan->Transmit(netchan, msg_write.cursize, msg_write.data, 1);
+            Netchan_Transmit(netchan, msg_write.cursize, msg_write.data, 1);
         }
     }
 

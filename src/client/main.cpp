@@ -685,7 +685,7 @@ void CL_Disconnect(error_type_t type)
         MSG_WriteByte(clc_stringcmd);
         MSG_WriteData("disconnect", 11);
 
-        cls.netchan->Transmit(cls.netchan, msg_write.cursize, msg_write.data, 3);
+        Netchan_Transmit(cls.netchan, msg_write.cursize, msg_write.data, 3);
 
         SZ_Clear(&msg_write);
 
@@ -1172,6 +1172,7 @@ static void CL_ConnectionlessPacket(void)
     const char    *s, *c; // C++20: STRING: Added const to char*
     int     i, j, k;
     size_t  len;
+    int type;
 
     MSG_BeginReading();
     MSG_ReadLong(); // skip the -1
@@ -1256,7 +1257,6 @@ static void CL_ConnectionlessPacket(void)
 
     // server connection
     if (!strcmp(c, "client_connect")) {
-        netchan_type_t type;
         int anticheat = 0;
         char mapname[MAX_QPATH];
         qboolean got_server = false;
@@ -1275,12 +1275,6 @@ static void CL_ConnectionlessPacket(void)
         }
 
         // MSG: !! TODO: Look at demo code and see if we can remove NETCHAN_OLD.
-        if (cls.serverProtocol == PROTOCOL_VERSION_NAC) {
-            type = NETCHAN_NEW;
-        } else {
-            type = NETCHAN_OLD;
-        }
-
         mapname[0] = 0;
 
         // parse additional parameters
@@ -1295,8 +1289,8 @@ static void CL_ConnectionlessPacket(void)
             } else if (!strncmp(s, "nc=", 3)) {
                 s += 3;
                 if (*s) {
-                    type = (netchan_type_t)atoi(s); // CPP: int to (netchan_type_t)
-                    if (type != NETCHAN_OLD && type != NETCHAN_NEW) {
+                    type = atoi(s); // CPP: int to (netchan_type_t)
+                    if (type != 1) {
                         Com_Error(ERR_DISCONNECT,
                                   "Server returned invalid netchan type");
                     }
@@ -1321,7 +1315,7 @@ static void CL_ConnectionlessPacket(void)
             // this may happen after svc_reconnect
             Netchan_Close(cls.netchan);
         }
-        cls.netchan = Netchan_Setup(NS_CLIENT, type, &cls.serverAddress,
+        cls.netchan = Netchan_Setup(NS_CLIENT, &cls.serverAddress,
                                     cls.quakePort, 1024, cls.serverProtocol);
 
         CL_ClientCommand("new");
@@ -1404,7 +1398,7 @@ static void CL_PacketEvent(void)
         return;
     }
 
-    if (!cls.netchan->Process(cls.netchan))
+    if (!Netchan_Process(cls.netchan))
         return;     // wasn't accepted for some reason
 
 #if USE_ICMP

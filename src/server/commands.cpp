@@ -645,7 +645,7 @@ static void dump_protocols(void)
                    cl->number, cl->name, cl->protocol, cl->version,
                    cl->netchan->maxpacketlen,
                    cl->has_zlib ? "yes" : "no ",
-                   cl->netchan->type ? "new" : "old");
+                   "1");
     }
 }
 
@@ -755,7 +755,7 @@ void SV_PrintMiscInfo(void)
                sv_client->protocol, sv_client->version);
     Com_Printf("maxmsglen            %" PRIz "\n", sv_client->netchan->maxpacketlen);
     Com_Printf("zlib support         %s\n", sv_client->has_zlib ? "yes" : "no");
-    Com_Printf("netchan type         %s\n", sv_client->netchan->type ? "new" : "old");
+    Com_Printf("netchan type         %s\n", "1");
     Com_Printf("ping                 %d\n", sv_client->ping);
     Com_Printf("movement fps         %d\n", sv_client->moves_per_sec);
     Com_Printf("RTT (min/avg/max)    %d/%d/%d ms\n",

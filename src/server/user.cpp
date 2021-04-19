@@ -480,13 +480,13 @@ void SV_New_f(void)
 
 #if USE_ZLIB_PACKET_COMPRESSION // MSG: !! Changed from USE_ZLIB
     if (sv_client->has_zlib) {
-        if (sv_client->netchan->type == NETCHAN_NEW) {
+        //if (sv_client->netchan->type == NETCHAN_NEW) {
             write_compressed_gamestate();
-        } else {
-            // FIXME: Z_SYNC_FLUSH is not efficient for baselines
-            write_compressed_configstrings();
-            write_plain_baselines();
-        }
+        //} else {
+        //    // FIXME: Z_SYNC_FLUSH is not efficient for baselines
+        //    write_compressed_configstrings();
+        //    write_plain_baselines();
+        //}
     } else
 #endif //USE_ZLIB_PACKET_COMPRESSION // MSG: !! Changed from USE_ZLIB
     {
