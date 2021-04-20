@@ -335,7 +335,7 @@ void EndDMLevel(void)
     static const char *seps = " ,\n\r";
 
     // stay on same level flag
-    if ((int)dmflags->value & DF_SAME_LEVEL) {
+    if ((int)dmflags->value & DeathMatchFlags::SameLevel) {
         HUD_BeginIntermission(CreateTargetChangeLevel(level.mapname));
         return;
     }

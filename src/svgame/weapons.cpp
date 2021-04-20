@@ -168,17 +168,17 @@ static void fire_lead(entity_t *self, const vec3_t& start, const vec3_t& aimdir,
             if (!VectorCompare(start, tr.endPosition)) {
                 if (tr.contents & CONTENTS_WATER) {
                     if (strcmp(tr.surface->name, "*brwater") == 0)
-                        color = SPLASH_BROWN_WATER;
+                        color = SplashType::BrownWater;
                     else
-                        color = SPLASH_BLUE_WATER;
+                        color = SplashType::BlueWater;
                 } else if (tr.contents & CONTENTS_SLIME)
-                    color = SPLASH_SLIME;
+                    color = SplashType::Slime;
                 else if (tr.contents & CONTENTS_LAVA)
-                    color = SPLASH_LAVA;
+                    color = SplashType::Lava;
                 else
-                    color = SPLASH_UNKNOWN;
+                    color = SplashType::Unknown;
 
-                if (color != SPLASH_UNKNOWN) {
+                if (color != SplashType::Unknown) {
                     gi.WriteByte(svg_temp_entity);
                     gi.WriteByte(TempEntityEvent::Splash);
                     gi.WriteByte(8);

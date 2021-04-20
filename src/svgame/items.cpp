@@ -208,7 +208,7 @@ qboolean Pickup_Ammo(entity_t *ent, entity_t *other)
     qboolean    weapon;
 
     weapon = (ent->item->flags & IT_WEAPON);
-    if ((weapon) && ((int)dmflags->value & DF_INFINITE_AMMO))
+    if ((weapon) && ((int)dmflags->value & DeathMatchFlags::InfiniteAmmo))
         count = 1000;
     else if (ent->count)
         count = ent->count;
@@ -670,25 +670,25 @@ void SpawnItem(entity_t *ent, gitem_t *item)
 
     // some items will be prevented in deathmatch
     if (deathmatch->value) {
-        if ((int)dmflags->value & DF_NO_ARMOR) {
+        if ((int)dmflags->value & DeathMatchFlags::NoArmor) {
             if (item->Pickup == Pickup_Armor) {
                 G_FreeEntity(ent);
                 return;
             }
         }
-        if ((int)dmflags->value & DF_NO_ITEMS) {
+        if ((int)dmflags->value & DeathMatchFlags::NoItems) {
             if (item->Pickup == Pickup_Powerup) {
                 G_FreeEntity(ent);
                 return;
             }
         }
-        if ((int)dmflags->value & DF_NO_HEALTH) {
+        if ((int)dmflags->value & DeathMatchFlags::NoHealth) {
             if (item->Pickup == Pickup_Health) {
                 G_FreeEntity(ent);
                 return;
             }
         }
-        if ((int)dmflags->value & DF_INFINITE_AMMO) {
+        if ((int)dmflags->value & DeathMatchFlags::InfiniteAmmo) {
             if ((item->flags == IT_AMMO)) {
                 G_FreeEntity(ent);
                 return;
@@ -880,7 +880,7 @@ gitem_t itemlist[] = {
 */
 void SP_item_health(entity_t *self)
 {
-    if (deathmatch->value && ((int)dmflags->value & DF_NO_HEALTH)) {
+    if (deathmatch->value && ((int)dmflags->value & DeathMatchFlags::NoHealth)) {
         G_FreeEntity(self);
         return;
     }
@@ -895,7 +895,7 @@ void SP_item_health(entity_t *self)
 */
 void SP_item_health_small(entity_t *self)
 {
-    if (deathmatch->value && ((int)dmflags->value & DF_NO_HEALTH)) {
+    if (deathmatch->value && ((int)dmflags->value & DeathMatchFlags::NoHealth)) {
         G_FreeEntity(self);
         return;
     }
@@ -911,7 +911,7 @@ void SP_item_health_small(entity_t *self)
 */
 void SP_item_health_large(entity_t *self)
 {
-    if (deathmatch->value && ((int)dmflags->value & DF_NO_HEALTH)) {
+    if (deathmatch->value && ((int)dmflags->value & DeathMatchFlags::NoHealth)) {
         G_FreeEntity(self);
         return;
     }
@@ -926,7 +926,7 @@ void SP_item_health_large(entity_t *self)
 */
 void SP_item_health_mega(entity_t *self)
 {
-    if (deathmatch->value && ((int)dmflags->value & DF_NO_HEALTH)) {
+    if (deathmatch->value && ((int)dmflags->value & DeathMatchFlags::NoHealth)) {
         G_FreeEntity(self);
         return;
     }
