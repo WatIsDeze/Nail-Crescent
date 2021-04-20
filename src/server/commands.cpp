@@ -489,7 +489,7 @@ static void SV_Kick_f(void)
 
     // optionally ban their IP address
     if (!strcmp(Cmd_Argv(0), "kickban")) {
-        netadr_t *addr = &sv_client->netchan->remote_address;
+        netadr_t *addr = &sv_client->netchan->remoteAddress;
         if (addr->type == NA_IP || addr->type == NA_IP6) {
             addrmatch_t *match = (addrmatch_t*)Z_Malloc(sizeof(*match)); // CPP: Cast
             match->addr = *addr;
@@ -543,7 +543,7 @@ static void dump_clients(void)
         Com_Printf("%-15.15s ", client->name);
         Com_Printf("%7u ", svs.realtime - client->lastmessage);
         Com_Printf("%-21s ", NET_AdrToString(
-                       &client->netchan->remote_address));
+                       &client->netchan->remoteAddress));
         Com_Printf("%5" PRIz " ", client->rate);
         Com_Printf("%2i ", client->protocol);
         Com_Printf("%3i ", client->moves_per_sec);

@@ -373,7 +373,7 @@ static inline qboolean ready_to_send(void)
     if (cl.sendPacketNow) {
         return true;
     }
-    if (cls.netchan->message.cursize || cls.netchan->reliable_ack_pending) {
+    if (cls.netchan->message.cursize || cls.netchan->reliableAckPending) {
         return true;
     }
     if (!cl_maxpackets->integer) {
@@ -420,7 +420,7 @@ static void CL_SendUserCommand(void)
     client_history_t *history;
 
     // archive this packet
-    history = &cl.history[cls.netchan->outgoing_sequence & CMD_MASK];
+    history = &cl.history[cls.netchan->outgoingSequence & CMD_MASK];
     history->cmdNumber = cl.cmdNumber;
     history->sent = cls.realtime;    // for ping calculation
     history->rcvd = 0;
@@ -429,7 +429,7 @@ static void CL_SendUserCommand(void)
 
     // see if we are ready to send this packet
     if (!ready_to_send_hacked()) {
-        cls.netchan->outgoing_sequence++; // just drop the packet
+        cls.netchan->outgoingSequence++; // just drop the packet
         return;
     }
 
@@ -474,7 +474,7 @@ static void CL_SendUserCommand(void)
     //    msg_write.data[checksumIndex] = COM_BlockSequenceCRCByte(
     //                                        msg_write.data + checksumIndex + 1,
     //                                        msg_write.cursize - checksumIndex - 1,
-    //                                        cls.netchan->outgoing_sequence);
+    //                                        cls.netchan->outgoingSequence);
     //}
 
     P_FRAMES++;
@@ -498,7 +498,7 @@ static void CL_SendKeepAlive(void)
     size_t cursize q_unused;
 
     // archive this packet
-    history = &cl.history[cls.netchan->outgoing_sequence & CMD_MASK];
+    history = &cl.history[cls.netchan->outgoingSequence & CMD_MASK];
     history->cmdNumber = cl.cmdNumber;
     history->sent = cls.realtime;    // for ping calculation
     history->rcvd = 0;

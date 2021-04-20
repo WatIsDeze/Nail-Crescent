@@ -194,8 +194,8 @@ static constexpr uint32_t SERVER_MESSAGES_TICKRATE = 20;
 
 #define PL_S2C(cl) (cl->frames_sent ? \
     (1.0f - (float)cl->frames_acked / cl->frames_sent) * 100.0f : 0.0f)
-#define PL_C2S(cl) (cl->netchan->total_received ? \
-    ((float)cl->netchan->total_dropped / cl->netchan->total_received) * 100.0f : 0.0f)
+#define PL_C2S(cl) (cl->netchan->totalReceived ? \
+    ((float)cl->netchan->totalDropped / cl->netchan->totalReceived) * 100.0f : 0.0f)
 #define AVG_PING(cl) (cl->avg_ping_count ? \
     cl->avg_ping_time / cl->avg_ping_count : cl->ping)
 

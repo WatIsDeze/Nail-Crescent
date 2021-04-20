@@ -610,7 +610,7 @@ static void write_reliables_old(client_t *client, size_t maxsize)
     message_packet_t *msg, *next;
     int count;
 
-    if (client->netchan->reliable_length) {
+    if (client->netchan->reliableLength) {
         SV_DPrintf(1, "%s to %s: unacked\n", __func__, client->name);
         return;    // there is still outgoing reliable message pending
     }
@@ -695,9 +695,9 @@ static void write_datagram_old(client_t *client)
 
     // determine how much space is left for unreliable data
     maxsize = client->netchan->maxpacketlen;
-    if (client->netchan->reliable_length) {
+    if (client->netchan->reliableLength) {
         // there is still unacked reliable message pending
-        maxsize -= client->netchan->reliable_length;
+        maxsize -= client->netchan->reliableLength;
     } else {
         // find at least one reliable message to send
         // and make sure to reserve space for it
@@ -866,7 +866,7 @@ void SV_SendClientMessages(void)
             goto advance;
 
         // don't write any frame data until all fragments are sent
-        if (client->netchan->fragment_pending) {
+        if (client->netchan->fragmentPending) {
             client->frameflags |= FF_SUPPRESSED;
             cursize = Netchan_TransmitNextFragment(client->netchan);
             SV_CalcSendTime(client, cursize);
@@ -899,7 +899,7 @@ static void write_pending_download(client_t *client)
     if (!client->downloadpending)
         return;
 
-    if (client->netchan->reliable_length)
+    if (client->netchan->reliableLength)
         return;
 
     buf = &client->netchan->message;
@@ -957,7 +957,7 @@ void SV_SendAsyncPackets(void)
         netchan = client->netchan;
 
         // make sure all fragments are transmitted first
-        if (netchan->fragment_pending) {
+        if (netchan->fragmentPending) {
             cursize = Netchan_TransmitNextFragment(netchan);
             SV_DPrintf(0, "%s: frag: %" PRIz "\n", client->name, cursize);
             goto calctime;
@@ -969,10 +969,10 @@ void SV_SendAsyncPackets(void)
         }
 
         // see if it's time to resend a (possibly dropped) packet
-        retransmit = (com_localTime - netchan->last_sent > 1000);
+        retransmit = (com_localTime - netchan->lastSent > 1000);
 
         // don't write new reliables if not yet acknowledged
-        if (netchan->reliable_length && !retransmit && client->state != cs_zombie) {
+        if (netchan->reliableLength && !retransmit && client->state != cs_zombie) {
             continue;
         }
 
@@ -984,8 +984,8 @@ void SV_SendAsyncPackets(void)
         // now fill up remaining buffer space with download
         write_pending_download(client);
 
-        if (netchan->message.cursize || netchan->reliable_ack_pending ||
-            netchan->reliable_length || retransmit) {
+        if (netchan->message.cursize || netchan->reliableAckPending ||
+            netchan->reliableLength || retransmit) {
             cursize = Netchan_Transmit(netchan, 0, NULL, 1);
             SV_DPrintf(0, "%s: send: %" PRIz "\n", client->name, cursize);
 calctime:

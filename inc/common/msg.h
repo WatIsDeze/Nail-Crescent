@@ -117,7 +117,6 @@ void    MSG_WriteLong(int c);
 void    MSG_WriteFloat(float c);
 void    MSG_WriteString(const char *s);
 void    MSG_WritePosition(const vec3_t &pos);
-void    MSG_WriteAngle(float f);
 #if USE_CLIENT
 void    MSG_WriteBits(int value, int bits);
 int     MSG_WriteDeltaUsercmd(const usercmd_t *from, const usercmd_t *cmd);

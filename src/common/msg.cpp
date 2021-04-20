@@ -1147,16 +1147,6 @@ vec3_t MSG_ReadPosition(void) {
     };
 }
 
-static inline float MSG_ReadAngle(void)
-{
-    return BYTE2ANGLE(MSG_ReadChar());
-}
-
-static inline float MSG_ReadAngle16(void)
-{
-    return SHORT2ANGLE(MSG_ReadShort());
-}
-
 vec3_t MSG_ReadDirection(void)
 {
     int     b;

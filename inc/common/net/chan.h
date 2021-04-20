@@ -32,45 +32,46 @@ typedef struct netchan_s {
     netsrc_t    sock;
 
     int         dropped;            // between last packet and previous
-    unsigned    total_dropped;      // for statistics
-    unsigned    total_received;
+    unsigned    totalDropped;      // for statistics
+    unsigned    totalReceived;
 
-    unsigned    last_received;      // for timeouts
-    unsigned    last_sent;          // for retransmits
+    unsigned    lastReceived;      // for timeouts
+    unsigned    lastSent;          // for retransmits
 
-    netadr_t    remote_address;
+    netadr_t    remoteAddress;
     int         qport;              // qport value to write when transmitting
 
-    sizebuf_t   message;            // writing buffer for reliable data
+    size_t      reliableLength;
 
-    size_t      reliable_length;
-
-    qboolean    reliable_ack_pending;   // set to true each time reliable is received
-    qboolean    fragment_pending;
-
-    // sequencing variables
-    int         incoming_sequence;
-    int         incoming_acknowledged;
-    int         outgoing_sequence;
+    // Pending states.
+    qboolean    reliableAckPending;   // set to true each time reliable is received
+    qboolean    fragmentPending;
 
     // sequencing variables
-    int         incoming_reliable_acknowledged; // single bit
-    int         incoming_reliable_sequence;     // single bit, maintained local
-    int         reliable_sequence;          // single bit
-    int         last_reliable_sequence;     // sequence number of last send
-    int         fragment_sequence;
+    int         incomingSequence;
+    int         incomingAcknowledged;
+    int         outgoingSequence;
+
+    // sequencing variables
+    int         incomingReliableAcknowledged; // single bit
+    int         incomingReliableSequence;     // single bit, maintained local
+    int         reliableSequence;              // single bit
+    int         lastReliableSequence;         // sequence number of last send
+    int         fragmentSequence;
 
     // reliable staging and holding areas
-    byte        message_buf[MAX_MSGLEN];        // leave space for header
+    sizebuf_t   message;                        // writing buffer for reliable data
+    byte        messageBuffer[MAX_MSGLEN];        // leave space for header
 
 // message is copied to this buffer when it is first transfered
-    byte        reliable_buf[MAX_MSGLEN];   // unacked reliable message
+    sizebuf_t   reliable;
+    byte        reliableBuffer[MAX_MSGLEN];   // unacked reliable message
 
-    sizebuf_t   fragment_in;
-    byte        fragment_in_buf[MAX_MSGLEN];
+    sizebuf_t   inFragment;
+    byte        inFragmentBuffer[MAX_MSGLEN];
 
-    sizebuf_t   fragment_out;
-    byte        fragment_out_buf[MAX_MSGLEN];
+    sizebuf_t   outFragment;
+    byte        outFragmentBuffer[MAX_MSGLEN];
 } netchan_t;
 
 extern cvar_t       *net_qport;

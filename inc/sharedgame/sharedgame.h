@@ -32,11 +32,6 @@ constexpr uint8_t BUTTON_ANY			= (1 << 7);
 //
 //	Game Related, some is shared with the client/server.
 // 
-// TODO: Clean up, ensure that the client/server do not need these flags.
-// So, do an ENGINE_ENTITY_FLAG, ENGINE_ENTITY_GIB, ENGINE_ENTITY_GAMEFLAG,
-// 
-// EF_SOMEFLAG = (ENGINE_ENTITY_GAMEFLAG << 0) etc.
-//
 //=============================================================================
 //
 //-----------------

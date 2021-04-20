@@ -417,7 +417,7 @@ void SV_New_f(void)
 
     // stuff some junk, drop them and expect them to be back soon
     if (sv_force_reconnect->string[0] && !sv_client->reconnect_var[0] &&
-        !NET_IsLocalAddress(&sv_client->netchan->remote_address)) {
+        !NET_IsLocalAddress(&sv_client->netchan->remoteAddress)) {
         stuff_junk();
         SV_DropClient(sv_client, NULL);
         return;
@@ -890,7 +890,7 @@ static void SV_CvarResult_f(void)
             v = (char*)Cmd_RawArgsFrom(2); // C++20: Added a cast.
             if (COM_DEDICATED) {
                 Com_Printf("%s[%s]: %s\n", sv_client->name,
-                           NET_AdrToString(&sv_client->netchan->remote_address), v);
+                           NET_AdrToString(&sv_client->netchan->remoteAddress), v);
             }
             sv_client->version_string = SV_CopyString(v);
         }
@@ -903,7 +903,7 @@ static void SV_CvarResult_f(void)
     } else if (!strcmp(c, "console")) {
         if (sv_client->console_queries > 0) {
             Com_Printf("%s[%s]: \"%s\" is \"%s\"\n", sv_client->name,
-                       NET_AdrToString(&sv_client->netchan->remote_address),
+                       NET_AdrToString(&sv_client->netchan->remoteAddress),
                        Cmd_Argv(2), Cmd_RawArgsFrom(3));
             sv_client->console_queries--;
         }

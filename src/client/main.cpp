@@ -554,7 +554,7 @@ static void CL_Rcon_f(void)
             return;
         }
     } else {
-        address = cls.netchan->remote_address;
+        address = cls.netchan->remoteAddress;
     }
 
     CL_SendRcon(&address, rcon_password->string, Cmd_RawArgs());
@@ -754,7 +754,7 @@ static void CL_ServerStatus_f(void)
             Com_Printf("Usage: %s [address]\n", Cmd_Argv(0));
             return;
         }
-        adr = cls.netchan->remote_address;
+        adr = cls.netchan->remoteAddress;
     } else {
         s = Cmd_Argv(1);
         if (!NET_StringToAdr(s, &adr, PORT_SERVER)) {
@@ -1392,7 +1392,7 @@ static void CL_PacketEvent(void)
     //
     // packet from server
     //
-    if (!NET_IsEqualAdr(&net_from, &cls.netchan->remote_address)) {
+    if (!NET_IsEqualAdr(&net_from, &cls.netchan->remoteAddress)) {
         Com_DPrintf("%s: sequenced packet without connection\n",
                     NET_AdrToString(&net_from));
         return;
@@ -1436,10 +1436,10 @@ void CL_ErrorEvent(netadr_t *from)
     if (!cls.netchan) {
         return;     // dump it if not connected
     }
-    if (!NET_IsEqualBaseAdr(from, &cls.netchan->remote_address)) {
+    if (!NET_IsEqualBaseAdr(from, &cls.netchan->remoteAddress)) {
         return;
     }
-    if (from->port && from->port != cls.netchan->remote_address.port) {
+    if (from->port && from->port != cls.netchan->remoteAddress.port) {
         return;
     }
 
@@ -2125,8 +2125,8 @@ static size_t CL_Ping_m(char *buffer, size_t size)
 static size_t CL_Lag_m(char *buffer, size_t size)
 {
     return Q_scnprintf(buffer, size, "%.2f%%", cls.netchan ?
-                       ((float)cls.netchan->total_dropped /
-                        cls.netchan->total_received) * 100.0f : 0);
+                       ((float)cls.netchan->totalDropped /
+                        cls.netchan->totalReceived) * 100.0f : 0);
 }
 
 static size_t CL_Cluster_m(char *buffer, size_t size)
@@ -2681,7 +2681,7 @@ static void CL_MeasureStats(void)
 
     // measure average ping
     if (cls.netchan) {
-        int ack = cls.netchan->incoming_acknowledged;
+        int ack = cls.netchan->incomingAcknowledged;
         int ping = 0;
         int j, k = 0;
 
@@ -2730,21 +2730,21 @@ static void CL_CheckTimeout(void)
 {
     unsigned delta;
 
-    if (NET_IsLocalAddress(&cls.netchan->remote_address)) {
+    if (NET_IsLocalAddress(&cls.netchan->remoteAddress)) {
         return;
     }
 
 #if USE_ICMP
     if (cls.errorReceived) {
         delta = 5000;
-        if (com_localTime - cls.netchan->last_received > delta)  {
+        if (com_localTime - cls.netchan->lastReceived > delta)  {
             Com_Error(ERR_DISCONNECT, "Server connection was reset.");
         }
     }
 #endif
 
     delta = cl_timeout->value * 1000;
-    if (delta && com_localTime - cls.netchan->last_received > delta)  {
+    if (delta && com_localTime - cls.netchan->lastReceived > delta)  {
         // timeoutcount saves debugger
         if (++cl.timeoutcount > 5) {
             Com_Error(ERR_DISCONNECT, "Server connection timed out.");
