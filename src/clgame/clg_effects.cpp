@@ -1234,7 +1234,7 @@ void CLG_AddParticles(void)
     float           time = 0, time2;
     int             color;
     cparticle_t* active, * tail;
-    particle_t* part;
+    rparticle_t* part;
 
     active = NULL;
     tail = NULL;

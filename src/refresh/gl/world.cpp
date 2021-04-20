@@ -144,7 +144,7 @@ static qboolean _GL_LightPoint(const vec3_t &start, vec3_t &color)
 }
 
 #if USE_DLIGHTS
-static void GL_MarkLights_r(mnode_t *node, dlight_t *light, int lightbit)
+static void GL_MarkLights_r(mnode_t *node, rdlight_t *light, int lightbit)
 {
     vec_t dot;
     int count;
@@ -184,7 +184,7 @@ static void GL_MarkLights_r(mnode_t *node, dlight_t *light, int lightbit)
 static void GL_MarkLights(void)
 {
     int i;
-    dlight_t *light;
+    rdlight_t *light;
 
     glr.dlightframe++;
 
@@ -197,7 +197,7 @@ static void GL_MarkLights(void)
 static void GL_TransformLights(mmodel_t *model)
 {
     int i;
-    dlight_t *light;
+    rdlight_t *light;
     vec3_t temp;
 
     glr.dlightframe++;
@@ -213,7 +213,7 @@ static void GL_TransformLights(mmodel_t *model)
 
 static void GL_AddLights(vec3_t origin, vec3_t &color)
 {
-    dlight_t *light;
+    rdlight_t *light;
     vec_t f;
     int i;
 

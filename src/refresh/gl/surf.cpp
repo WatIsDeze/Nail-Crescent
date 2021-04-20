@@ -114,7 +114,7 @@ static float blocklights[MAX_BLOCKLIGHTS * 3];
 #if USE_DLIGHTS
 static void add_dynamic_lights(mface_t *surf)
 {
-    dlight_t    *light;
+    rdlight_t    *light;
     mtexinfo_t  *tex;
     vec3_t      point;
     int         local[2];
