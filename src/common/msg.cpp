@@ -364,7 +364,7 @@ void MSG_WriteDeltaEntity(const entity_packed_t *from,
     bits = 0;
 
     if (!(flags & MSG_ES_FIRSTPERSON)) {
-        if (!EqualEpsilonf(to->origin[0], from->origin[0]))//if (to->origin[0] != from->origin[0])
+        if (!EqualEpsilonf(to->origin[0], from->origin[0]))
             bits |= U_ORIGIN_X;
         if (!EqualEpsilonf(to->origin[1], from->origin[1]))
             bits |= U_ORIGIN_Y;

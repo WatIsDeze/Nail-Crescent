@@ -89,7 +89,7 @@ static qboolean _GL_LightPoint(const vec3_t &start, vec3_t &color)
 
     end[0] = start[0];
     end[1] = start[1];
-    end[2] = start[2] - 8192;
+    end[2] = start[2] - WORLD_SIZE;
 
     // get base lightpoint from world
     BSP_LightPoint(&glr.lightpoint, start, end, bsp->nodes);

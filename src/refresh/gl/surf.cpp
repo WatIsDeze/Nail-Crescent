@@ -824,10 +824,8 @@ static void set_world_size(void)
             size = temp;
     }
 
-    if (size > 4096)
-        gl_static.world.size = 8192;
-    else if (size > 2048)
-        gl_static.world.size = 4096;
+    if (size > MAX_WORLD_COORD)
+        gl_static.world.size = MAX_WORLD_COORD;
     else
         gl_static.world.size = 2048;
 }

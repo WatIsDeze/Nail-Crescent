@@ -993,6 +993,11 @@ void CLG_ParseTempEntity(void)
 
 	case TempEntityEvent::Gunshot:            // bullet hitting wall
 		CLG_ParticleEffect(teParameters.pos1, teParameters.dir, 0, 40);
+	case TempEntityEvent::Shotgun:            // bullet hitting wall
+		CLG_ParticleEffect(teParameters.pos1, teParameters.dir, 0, 20);
+		CLG_SmokeAndFlash(teParameters.pos1);
+		break;
+
 	case TempEntityEvent::Sparks:
 	case TempEntityEvent::BulletSparks:
 		CLG_ParticleEffect(teParameters.pos1, teParameters.dir, 0xe0, 6);

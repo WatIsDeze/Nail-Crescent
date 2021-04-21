@@ -90,7 +90,9 @@ struct MuzzleFlashType {
     // Weapon Muzzleflashes.
     static constexpr uint8_t Blaster = 16;
     static constexpr uint8_t MachineGun = 17;
-    static constexpr uint8_t Flare = 18;
+    static constexpr uint8_t Shotgun = 18;
+    static constexpr uint8_t SuperShotgun = 19;
+    static constexpr uint8_t Flare = 20;
 };
 
 //-----------------
@@ -131,26 +133,33 @@ struct MuzzleFlashType {
 //-----------------
 struct TempEntityEvent {
     static constexpr uint8_t Gunshot = 0;
-    static constexpr uint8_t Blood = 1;
+    static constexpr uint8_t Shotgun = 1;
     static constexpr uint8_t Blaster = 2;
-    static constexpr uint8_t Explosion1= 3;
-    static constexpr uint8_t Explosion2 = 4;
-    static constexpr uint8_t Sparks = 5;
-    static constexpr uint8_t Splash = 6;
-    static constexpr uint8_t BubbleTrail = 7;
-    static constexpr uint8_t BulletSparks = 8;
-    static constexpr uint8_t Flame = 9;
-    static constexpr uint8_t DebugTrail = 10;
-    static constexpr uint8_t PlainExplosion= 11;
-    static constexpr uint8_t ForceWall = 12;
-    static constexpr uint8_t Steam = 13; 
-    static constexpr uint8_t BubbleTrail2 = 14;
-    static constexpr uint8_t MoreBlood = 15;
-    static constexpr uint8_t ElectricSparks = 16;
-    static constexpr uint8_t TeleportEffect  = 17;
-    static constexpr uint8_t BigExplosion1 = 18;
-    static constexpr uint8_t NPExplosion1 = 19;
-    static constexpr uint8_t Flare = 20;
+    static constexpr uint8_t Flare = 3;
+    static constexpr uint8_t Blood = 10;
+    static constexpr uint8_t MoreBlood = 11;
+
+    static constexpr uint8_t Explosion1= 20;
+    static constexpr uint8_t Explosion2 = 21;
+    static constexpr uint8_t PlainExplosion = 22;
+    static constexpr uint8_t BigExplosion1 = 23;
+    static constexpr uint8_t NPExplosion1 = 24;
+
+    static constexpr uint8_t Sparks = 50;
+    static constexpr uint8_t BulletSparks = 51;
+    static constexpr uint8_t ElectricSparks = 52;
+    static constexpr uint8_t Splash = 60;
+
+    static constexpr uint8_t BubbleTrail = 70;
+    static constexpr uint8_t BubbleTrail2 = 71;
+    static constexpr uint8_t DebugTrail = 79;
+
+    static constexpr uint8_t Flame = 80;
+    static constexpr uint8_t Steam = 90; 
+
+    static constexpr uint8_t ForceWall = 100;
+    static constexpr uint8_t TeleportEffect  = 101;
+
 
     static constexpr uint8_t Max = 255;
 };
