@@ -21,11 +21,11 @@ void SP_misc_gib_leg(entity_t* ent)
 {
     gi.SetModel(ent, "models/objects/gibs/leg/tris.md2");
     ent->solid = Solid::Not;
-    ent->s.effects |= EntityEffectType::Gib;
-    ent->takedamage = DAMAGE_YES;
+    ent->state.effects |= EntityEffectType::Gib;
+    ent->takeDamage = TakeDamage::Yes;
     ent->Die = gib_die;
     ent->moveType = MoveType::Toss;
-    ent->svFlags |= SVF_MONSTER;
+    ent->serverFlags |= EntityServerFlags::Monster;
     ent->deadFlag = DEAD_DEAD;
     ent->avelocity[0] = random() * 200;
     ent->avelocity[1] = random() * 200;

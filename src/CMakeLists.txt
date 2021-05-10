@@ -335,14 +335,17 @@ SET(HEADERS_SHARED
 
 	../inc/shared/clgame.h
 	../inc/shared/cltypes.h
+	../inc/shared/collision.h
 	../inc/shared/config.h
 	../inc/shared/endian.h 
 	../inc/shared/svgame.h 
 	../inc/shared/keys.h 
 	../inc/shared/list.h 
 	../inc/shared/math.h 
+	../inc/shared/messaging.h 
 	../inc/shared/platform.h
 	../inc/shared/refresh.h 
+	../inc/shared/qstring.h 
 	../inc/shared/shared.h 
 	../inc/shared/ui.h 
 )

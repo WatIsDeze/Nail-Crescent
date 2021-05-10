@@ -99,12 +99,12 @@ void Think_AccelMove(entity_t* ent);
 void Brush_Move_Calc(entity_t* ent, const vec3_t &dest, void(*func)(entity_t*))
 {
     VectorClear(ent->velocity);
-    VectorSubtract(dest, ent->s.origin, ent->moveInfo.dir);
+    VectorSubtract(dest, ent->state.origin, ent->moveInfo.dir);
     ent->moveInfo.remaining_distance = VectorNormalize(ent->moveInfo.dir);
     ent->moveInfo.endfunc = func;
 
     if (ent->moveInfo.speed == ent->moveInfo.accel && ent->moveInfo.speed == ent->moveInfo.decel) {
-        if (level.current_entity == ((ent->flags & FL_TEAMSLAVE) ? ent->teamMasterPtr : ent)) {
+        if (level.current_entity == ((ent->flags & EntityFlags::TeamSlave) ? ent->teamMasterPtr : ent)) {
             Brush_Move_Begin(ent);
         }
         else {
@@ -136,9 +136,9 @@ void Brush_AngleMove_Final(entity_t* ent)
     vec3_t  move;
 
     if (ent->moveInfo.state == STATE_UP)
-        VectorSubtract(ent->moveInfo.end_angles, ent->s.angles, move);
+        VectorSubtract(ent->moveInfo.end_angles, ent->state.angles, move);
     else
-        VectorSubtract(ent->moveInfo.start_angles, ent->s.angles, move);
+        VectorSubtract(ent->moveInfo.start_angles, ent->state.angles, move);
 
     if (VectorCompare(move, vec3_origin)) {
         Brush_AngleMove_Done(ent);
@@ -160,9 +160,9 @@ void Brush_AngleMove_Begin(entity_t* ent)
 
     // set destdelta to the vector needed to move
     if (ent->moveInfo.state == STATE_UP)
-        VectorSubtract(ent->moveInfo.end_angles, ent->s.angles, destdelta);
+        VectorSubtract(ent->moveInfo.end_angles, ent->state.angles, destdelta);
     else
-        VectorSubtract(ent->moveInfo.start_angles, ent->s.angles, destdelta);
+        VectorSubtract(ent->moveInfo.start_angles, ent->state.angles, destdelta);
 
     // calculate length of vector
     len = VectorLength(destdelta);
@@ -189,7 +189,7 @@ void Brush_AngleMove_Calc(entity_t* ent, void(*func)(entity_t*))
 {
     VectorClear(ent->avelocity);
     ent->moveInfo.endfunc = func;
-    if (level.current_entity == ((ent->flags & FL_TEAMSLAVE) ? ent->teamMasterPtr : ent)) {
+    if (level.current_entity == ((ent->flags & EntityFlags::TeamSlave) ? ent->teamMasterPtr : ent)) {
         Brush_AngleMove_Begin(ent);
     }
     else {

@@ -141,13 +141,13 @@ void CLG_AddPacketEntities(void)
             // step origin discretely, because the frames
             // do the animation properly
             VectorCopy(cent->current.origin, ent.origin);
-            VectorCopy(cent->current.old_origin, ent.oldorigin);  // FIXME
+            VectorCopy(cent->current.oldOrigin, ent.oldorigin);  // FIXME
         }
         else if (renderfx & RenderEffects::Beam) {
             // interpolate start and end points for beams
             LerpVector(cent->prev.origin, cent->current.origin,
                 cl->lerpFraction, ent.origin);
-            LerpVector(cent->prev.old_origin, cent->current.old_origin,
+            LerpVector(cent->prev.oldOrigin, cent->current.oldOrigin,
                 cl->lerpFraction, ent.oldorigin);
         }
         else {
@@ -168,16 +168,16 @@ void CLG_AddPacketEntities(void)
 
         // tweak the color of beams
         if (renderfx & RenderEffects::Beam) {
-            // the four beam colors are encoded in 32 bits of skinnum (hack)
+            // the four beam colors are encoded in 32 bits of skinNumber (hack)
             ent.alpha = 0.30;
-            ent.skinnum = (s1->skinnum >> ((rand() % 4) * 8)) & 0xff;
+            ent.skinNumber = (s1->skinNumber >> ((rand() % 4) * 8)) & 0xff;
             ent.model = 0;
         } else {
             // set skin
-            if (s1->modelindex == 255) {
+            if (s1->modelIndex == 255) {
                 // use custom player skin
-                ent.skinnum = 0;
-                ci = &cl->clientInfo[s1->skinnum & 0xff];
+                ent.skinNumber = 0;
+                ci = &cl->clientInfo[s1->skinNumber & 0xff];
                 ent.skin = ci->skin;
                 ent.model = ci->model;
                 if (!ent.skin || !ent.model) {
@@ -193,9 +193,9 @@ void CLG_AddPacketEntities(void)
                 }
             }
             else {
-                ent.skinnum = s1->skinnum;
+                ent.skinNumber = s1->skinNumber;
                 ent.skin = 0;
-                ent.model = cl->drawModels[s1->modelindex];
+                ent.model = cl->drawModels[s1->modelIndex];
                 if (ent.model == cl_mod_laser || ent.model == cl_mod_dmspot)
                     renderfx |= RF_NOSHADOW;
             }
@@ -223,7 +223,7 @@ void CLG_AddPacketEntities(void)
                 cl->lerpFraction, ent.angles);
 
             // mimic original ref_gl "leaning" bug (uuugly!)
-            if (s1->modelindex == 255 && cl_rollhack->integer) {
+            if (s1->modelIndex == 255 && cl_rollhack->integer) {
                 ent.angles[vec3_t::Roll] = -ent.angles[vec3_t::Roll];
             }
         }
@@ -252,7 +252,7 @@ void CLG_AddPacketEntities(void)
         }
 
         // if set to invisible, skip
-        if (!s1->modelindex) {
+        if (!s1->modelIndex) {
             goto skip;
         }
 
@@ -297,17 +297,17 @@ void CLG_AddPacketEntities(void)
         }
 
         ent.skin = 0;       // never use a custom skin on others
-        ent.skinnum = 0;
+        ent.skinNumber = 0;
         ent.flags = base_entity_flags;
         ent.alpha = 0;
 
         // Add an entity to the current rendering frame that has model index 2 attached to it.
         // Duplicate for linked models
-        if (s1->modelindex2) {
-            if (s1->modelindex2 == 255) {
+        if (s1->modelIndex2) {
+            if (s1->modelIndex2 == 255) {
                 // custom weapon
-                ci = &cl->clientInfo[s1->skinnum & 0xff];
-                i = (s1->skinnum >> 8); // 0 is default weapon model
+                ci = &cl->clientInfo[s1->skinNumber & 0xff];
+                i = (s1->skinNumber >> 8); // 0 is default weapon model
                 if (i < 0 || i > cl->numWeaponModels - 1)
                     i = 0;
                 ent.model = ci->weaponmodel[i];
@@ -319,10 +319,10 @@ void CLG_AddPacketEntities(void)
                 }
             }
             else
-                ent.model = cl->drawModels[s1->modelindex2];
+                ent.model = cl->drawModels[s1->modelIndex2];
 
             // PMM - check for the defender sphere shell .. make it translucent
-            if (!Q_strcasecmp(cl->configstrings[ConfigStrings::Models+ (s1->modelindex2)], "models/items/shell/tris.md2")) {
+            if (!Q_strcasecmp(cl->configstrings[ConfigStrings::Models+ (s1->modelIndex2)], "models/items/shell/tris.md2")) {
                 ent.alpha = 0.32;
                 ent.flags = RenderEffects::Translucent;
             }
@@ -339,14 +339,14 @@ void CLG_AddPacketEntities(void)
         }
 
         // Add an entity to the current rendering frame that has model index 3 attached to it.
-        if (s1->modelindex3) {
-            ent.model = cl->drawModels[s1->modelindex3];
+        if (s1->modelIndex3) {
+            ent.model = cl->drawModels[s1->modelIndex3];
             V_AddEntity(&ent);
         }
 
         // Add an entity to the current rendering frame that has model index 4 attached to it.
-        if (s1->modelindex4) {
-            ent.model = cl->drawModels[s1->modelindex4];
+        if (s1->modelIndex4) {
+            ent.model = cl->drawModels[s1->modelIndex4];
             V_AddEntity(&ent);
         }
 
@@ -354,16 +354,16 @@ void CLG_AddPacketEntities(void)
         // Add automatic particle trail effects where desired.
         if (effects & ~EntityEffectType::Rotate) {
             if (effects & EntityEffectType::Blaster) {
-                CLG_BlasterTrail(cent->lerp_origin, ent.origin);
+                CLG_BlasterTrail(cent->lerpOrigin, ent.origin);
                 V_AddLight(ent.origin, 200, 0.6f, 0.4f, 0.12f);
             } else if (effects & EntityEffectType::Gib) {
-                CLG_DiminishingTrail(cent->lerp_origin, ent.origin, cent, effects);
+                CLG_DiminishingTrail(cent->lerpOrigin, ent.origin, cent, effects);
             }
         }
 
         //Com_DPrint("[NORMAL] entity ID =%i - origin = [%f, %f, %f]\n", ent.id, ent.origin[0], ent.origin[1], ent.origin[1]);
     skip:
-        VectorCopy(ent.origin, cent->lerp_origin);
+        VectorCopy(ent.origin, cent->lerpOrigin);
 
         //Com_DPrint("[SKIP] entity ID =%i - origin = [%f, %f, %f]\n", ent.id, ent.origin[0], ent.origin[1], ent.origin[1]);
     }
@@ -399,7 +399,7 @@ void CLG_AddViewWeapon(void)
         gun.model = gun_model;  // development tool
     }
     else {
-        gun.model = cl->drawModels[ps->gunindex];
+        gun.model = cl->drawModels[ps->gunIndex];
     }
     if (!gun.model) {
         return;
@@ -409,10 +409,10 @@ void CLG_AddViewWeapon(void)
 
     // set up gun position
     for (i = 0; i < 3; i++) {
-        gun.origin[i] = cl->refdef.vieworg[i] + ops->gunoffset[i] +
-            CL_KEYLERPFRAC * (ps->gunoffset[i] - ops->gunoffset[i]);
-        gun.angles[i] = cl->refdef.viewAngles[i] + LerpAngle(ops->gunangles[i],
-            ps->gunangles[i], CL_KEYLERPFRAC);
+        gun.origin[i] = cl->refdef.vieworg[i] + ops->gunOffset[i] +
+            CL_KEYLERPFRAC * (ps->gunOffset[i] - ops->gunOffset[i]);
+        gun.angles[i] = cl->refdef.viewAngles[i] + LerpAngle(ops->gunAngles[i],
+            ps->gunAngles[i], CL_KEYLERPFRAC);
     }
 
     // adjust for high fov
@@ -453,12 +453,12 @@ void CLG_AddViewWeapon(void)
         gun.oldframe = gun_frame;   // development tool
     }
     else {
-        gun.frame = ps->gunframe;
+        gun.frame = ps->gunFrame;
         if (gun.frame == 0) {
             gun.oldframe = 0;   // just changed weapons, don't lerp from old
         }
         else {
-            gun.oldframe = ops->gunframe;
+            gun.oldframe = ops->gunFrame;
             gun.backlerp = 1.0f - CL_KEYLERPFRAC;
         }
     }
@@ -514,9 +514,10 @@ void CLG_AddEntities(void)
 //===============
 //
 cl_entity_t* CLG_GetClientViewEntity(void) {
-
+    // Fetch clientnumber by default.
     int32_t index = cl->clientNumber;
 
+    // Fetch the chasing entity index if we are chasing.
     if (cl->frame.playerState.stats[STAT_CHASE]) {
         index = cl->frame.playerState.stats[STAT_CHASE] - ConfigStrings::PlayerSkins;
     }
@@ -532,19 +533,20 @@ cl_entity_t* CLG_GetClientViewEntity(void) {
 //===============
 //
 qboolean CLG_IsClientViewEntity(const cl_entity_t* ent) {
-
+    // If the entity number matches, then we're good.
     if (ent->current.number == cl->clientNumber + 1) {
         return true;
     }
 
+    // If not, then we are viewing an other client entity, check whether it is in corpse mode.
     if ((ent->current.effects & EntityEffectType::Corpse) == 0) {
-
-        if (ent->current.modelindex == 255) {
-
+        // In case of no model index, we still want to validate some other cases.
+        if (ent->current.modelIndex == 255) {
             if (ent->current.number == cl->clientNumber) {
                 return true;
             } 
 
+            // If we came to this point, fetch the chasing client.
             const int16_t chase = cl->frame.playerState.stats[STAT_CHASE] - ConfigStrings::PlayerSkins;
 
             if (ent->current.number == chase) {
@@ -553,6 +555,7 @@ qboolean CLG_IsClientViewEntity(const cl_entity_t* ent) {
         }
     }
 
+    // And if we came to this point, all bets are off, this is no client entity which we are viewing.
     return false;
 }
 
@@ -578,25 +581,25 @@ void CLG_EntityEvent(int number) {
     }
         
     switch (cent->current.event) {
-    case EV_ITEM_RESPAWN:
+    case EntityEvent::ItemRespawn:
         clgi.S_StartSound(NULL, number, CHAN_WEAPON, clgi.S_RegisterSound("items/respawn1.wav"), 1, ATTN_IDLE, 0);
         CLG_ItemRespawnParticles(cent->current.origin);
         break;
-    case EV_PLAYER_TELEPORT:
+    case EntityEvent::PlayerTeleport:
         clgi.S_StartSound(NULL, number, CHAN_WEAPON, clgi.S_RegisterSound("misc/tele1.wav"), 1, ATTN_IDLE, 0);
         CLG_TeleportParticles(cent->current.origin);
         break;
-    case EV_FOOTSTEP:
+    case EntityEvent::Footstep:
         if (cl_footsteps->integer)
             clgi.S_StartSound(NULL, number, CHAN_BODY, cl_sfx_footsteps[rand() & 3], 1, ATTN_NORM, 0);
         break;
-    case EV_FALLSHORT:
+    case EntityEvent::FallShort:
         clgi.S_StartSound(NULL, number, CHAN_AUTO, clgi.S_RegisterSound("player/land1.wav"), 1, ATTN_NORM, 0);
         break;
-    case EV_FALL:
+    case EntityEvent::Fall:
         clgi.S_StartSound(NULL, number, CHAN_AUTO, clgi.S_RegisterSound("*fall2.wav"), 1, ATTN_NORM, 0);
         break;
-    case EV_FALLFAR:
+    case EntityEvent::FallFar:
         clgi.S_StartSound(NULL, number, CHAN_AUTO, clgi.S_RegisterSound("*fall1.wav"), 1, ATTN_NORM, 0);
         break;
     }
@@ -614,10 +617,10 @@ static inline float lerp_client_fov(float ofov, float nfov, float lerp)
         else if (fov > 160)
             fov = 160;
 
-        if (info_uf->integer & UF_LOCALFOV)
+        if (info_uf->integer & UserFields::LocalFieldOfView)
             return fov;
 
-        if (!(info_uf->integer & UF_PLAYERFOV)) {
+        if (!(info_uf->integer & UserFields::PlayerFieldOfView)) {
             if (ofov >= 90)
                 ofov = fov;
             if (nfov >= 90)

@@ -33,8 +33,8 @@ When a button is touched, it moves some distance in the direction of it's angle,
 void button_done(entity_t* self)
 {
     self->moveInfo.state = STATE_BOTTOM;
-    self->s.effects &= ~EntityEffectType::AnimCycleFrames23hz2;
-    self->s.effects |= EntityEffectType::AnimCycleFrames01hz2;
+    self->state.effects &= ~EntityEffectType::AnimCycleFrames23hz2;
+    self->state.effects |= EntityEffectType::AnimCycleFrames01hz2;
 }
 
 void button_return(entity_t* self)
@@ -43,20 +43,20 @@ void button_return(entity_t* self)
 
     Brush_Move_Calc(self, self->moveInfo.start_origin, button_done);
 
-    self->s.frame = 0;
+    self->state.frame = 0;
 
     if (self->health)
-        self->takedamage = DAMAGE_YES;
+        self->takeDamage = TakeDamage::Yes;
 }
 
 void button_wait(entity_t* self)
 {
     self->moveInfo.state = STATE_TOP;
-    self->s.effects &= ~EntityEffectType::AnimCycleFrames01hz2;
-    self->s.effects |= EntityEffectType::AnimCycleFrames23hz2;
+    self->state.effects &= ~EntityEffectType::AnimCycleFrames01hz2;
+    self->state.effects |= EntityEffectType::AnimCycleFrames23hz2;
 
     UTIL_UseTargets(self, self->activator);
-    self->s.frame = 1;
+    self->state.frame = 1;
     if (self->moveInfo.wait >= 0) {
         self->nextThink = level.time + self->moveInfo.wait;
         self->Think = button_return;
@@ -69,7 +69,7 @@ void button_fire(entity_t* self)
         return;
 
     self->moveInfo.state = STATE_UP;
-    if (self->moveInfo.sound_start && !(self->flags & FL_TEAMSLAVE))
+    if (self->moveInfo.sound_start && !(self->flags & EntityFlags::TeamSlave))
         gi.Sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveInfo.sound_start, 1, ATTN_STATIC, 0);
     Brush_Move_Calc(self, self->moveInfo.end_origin, button_wait);
 }
@@ -96,7 +96,7 @@ void button_killed(entity_t* self, entity_t* inflictor, entity_t* attacker, int 
 {
     self->activator = attacker;
     self->health = self->maxHealth;
-    self->takedamage = DAMAGE_NO;
+    self->takeDamage = TakeDamage::No;
     button_fire(self);
 }
 
@@ -105,7 +105,7 @@ void SP_func_button(entity_t* ent)
     vec3_t  abs_movedir;
     float   dist;
 
-    UTIL_SetMoveDir(ent->s.angles, ent->moveDirection);
+    UTIL_SetMoveDir(ent->state.angles, ent->moveDirection);
     ent->moveType = MoveType::Stop;
     ent->solid = Solid::BSP;
     gi.SetModel(ent, ent->model);
@@ -125,7 +125,7 @@ void SP_func_button(entity_t* ent)
     if (!st.lip)
         st.lip = 4;
 
-    VectorCopy(ent->s.origin, ent->pos1);
+    VectorCopy(ent->state.origin, ent->pos1);
     abs_movedir[0] = fabs(ent->moveDirection[0]);
     abs_movedir[1] = fabs(ent->moveDirection[1]);
     abs_movedir[2] = fabs(ent->moveDirection[2]);
@@ -133,12 +133,12 @@ void SP_func_button(entity_t* ent)
     VectorMA(ent->pos1, dist, ent->moveDirection, ent->pos2);
 
     ent->Use = button_use;
-    ent->s.effects |= EntityEffectType::AnimCycleFrames01hz2;
+    ent->state.effects |= EntityEffectType::AnimCycleFrames01hz2;
 
     if (ent->health) {
         ent->maxHealth = ent->health;
         ent->Die = button_killed;
-        ent->takedamage = DAMAGE_YES;
+        ent->takeDamage = TakeDamage::Yes;
     }
     else if (!ent->targetName)
         ent->Touch = button_touch;
@@ -150,9 +150,9 @@ void SP_func_button(entity_t* ent)
     ent->moveInfo.decel = ent->decel;
     ent->moveInfo.wait = ent->wait;
     VectorCopy(ent->pos1, ent->moveInfo.start_origin);
-    VectorCopy(ent->s.angles, ent->moveInfo.start_angles);
+    VectorCopy(ent->state.angles, ent->moveInfo.start_angles);
     VectorCopy(ent->pos2, ent->moveInfo.end_origin);
-    VectorCopy(ent->s.angles, ent->moveInfo.end_angles);
+    VectorCopy(ent->state.angles, ent->moveInfo.end_angles);
 
     gi.LinkEntity(ent);
 }

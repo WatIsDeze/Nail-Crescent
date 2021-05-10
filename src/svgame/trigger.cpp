@@ -21,13 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void InitTrigger(entity_t *self)
 {
-    if (!VectorCompare(self->s.angles, vec3_origin))
-        UTIL_SetMoveDir(self->s.angles, self->moveDirection);
+    if (!VectorCompare(self->state.angles, vec3_origin))
+        UTIL_SetMoveDir(self->state.angles, self->moveDirection);
 
     self->solid = Solid::Trigger;
     self->moveType = MoveType::None;
     gi.SetModel(self, self->model);
-    self->svFlags = SVF_NOCLIENT;
+    self->serverFlags = EntityServerFlags::NoClient;
 }
 
 
@@ -71,7 +71,7 @@ void Touch_Multi(entity_t *self, entity_t *other, cplane_t *plane, csurface_t *s
     if (other->client) {
         if (self->spawnFlags & 2)
             return;
-    } else if (other->svFlags & SVF_MONSTER) {
+    } else if (other->serverFlags & EntityServerFlags::Monster) {
         if (!(self->spawnFlags & 1))
             return;
     } else
@@ -80,7 +80,7 @@ void Touch_Multi(entity_t *self, entity_t *other, cplane_t *plane, csurface_t *s
     if (!VectorCompare(self->moveDirection, vec3_origin)) {
         vec3_t  forward;
 
-        AngleVectors(other->s.angles, &forward, NULL, NULL);
+        AngleVectors(other->state.angles, &forward, NULL, NULL);
         if (DotProduct(forward, self->moveDirection) < 0)
             return;
     }

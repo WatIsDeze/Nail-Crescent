@@ -290,7 +290,6 @@ typedef struct client_s {
     int32_t protocol;   // Major version
     int32_t version;    // Minor version
 
-    pmoveParams_t pmp; // Spectator speed, etc
     EntityStateMessageFlags esFlags; // Entity protocol flags
 
     // packetized messages
@@ -440,8 +439,6 @@ extern list_t      sv_clientlist; // linked list of non-free clients
 extern ServerStatic  svs;        // persistant server info
 extern server_t      sv;         // local server
 
-extern pmoveParams_t sv_pmp;
-
 extern cvar_t       *sv_hostname;
 extern cvar_t       *sv_maxclients;
 extern cvar_t       *sv_password;
@@ -545,7 +542,7 @@ void SV_FlushRedirect(int redirected, char *outputbuf, size_t len);
 void SV_SendClientMessages(void);
 void SV_SendAsyncPackets(void);
 
-void SV_Multicast(const vec3_t *origin, MultiCast to);
+void SV_Multicast(const vec3_t *origin, int32_t to);
 void SV_ClientPrintf(client_t *cl, int level, const char *fmt, ...) q_printf(3, 4);
 void SV_BroadcastPrintf(int level, const char *fmt, ...) q_printf(2, 3);
 void SV_ClientCommand(client_t *cl, const char *fmt, ...) q_printf(2, 3);
@@ -577,7 +574,7 @@ void SV_PrintMiscInfo(void);
 //
 
 #define ES_INUSE(s) \
-    ((s)->modelindex || (s)->effects || (s)->sound || (s)->event)
+    ((s)->modelIndex || (s)->effects || (s)->sound || (s)->event)
 
 void SV_BuildProxyClientFrame(client_t *client);
 void SV_BuildClientFrame(client_t *client);

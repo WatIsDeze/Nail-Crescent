@@ -37,7 +37,7 @@ qboolean CanDamage(entity_t *targ, entity_t *inflictor)
     if (targ->moveType == MoveType::Push) {
         VectorAdd(targ->absMin, targ->absMax, dest);
         VectorScale(dest, 0.5, dest);
-        trace = gi.Trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
+        trace = gi.Trace(inflictor->state.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
         if (trace.fraction == 1.0)
             return true;
         if (trace.ent == targ)
@@ -45,35 +45,35 @@ qboolean CanDamage(entity_t *targ, entity_t *inflictor)
         return false;
     }
 
-    trace = gi.Trace(inflictor->s.origin, vec3_origin, vec3_origin, targ->s.origin, inflictor, CONTENTS_MASK_SOLID);
+    trace = gi.Trace(inflictor->state.origin, vec3_origin, vec3_origin, targ->state.origin, inflictor, CONTENTS_MASK_SOLID);
     if (trace.fraction == 1.0)
         return true;
 
-    VectorCopy(targ->s.origin, dest);
+    VectorCopy(targ->state.origin, dest);
     dest[0] += 15.0;
     dest[1] += 15.0;
-    trace = gi.Trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
+    trace = gi.Trace(inflictor->state.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
     if (trace.fraction == 1.0)
         return true;
 
-    VectorCopy(targ->s.origin, dest);
+    VectorCopy(targ->state.origin, dest);
     dest[0] += 15.0;
     dest[1] -= 15.0;
-    trace = gi.Trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
+    trace = gi.Trace(inflictor->state.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
     if (trace.fraction == 1.0)
         return true;
 
-    VectorCopy(targ->s.origin, dest);
+    VectorCopy(targ->state.origin, dest);
     dest[0] -= 15.0;
     dest[1] += 15.0;
-    trace = gi.Trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
+    trace = gi.Trace(inflictor->state.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
     if (trace.fraction == 1.0)
         return true;
 
-    VectorCopy(targ->s.origin, dest);
+    VectorCopy(targ->state.origin, dest);
     dest[0] -= 15.0;
     dest[1] -= 15.0;
-    trace = gi.Trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
+    trace = gi.Trace(inflictor->state.origin, vec3_origin, vec3_origin, dest, inflictor, CONTENTS_MASK_SOLID);
     if (trace.fraction == 1.0)
         return true;
 
@@ -94,8 +94,8 @@ void Killed(entity_t *targ, entity_t *inflictor, entity_t *attacker, int damage,
 
     targ->enemy = attacker;
 
-    if ((targ->svFlags & SVF_MONSTER) && (targ->deadFlag != DEAD_DEAD)) {
-//      targ->svFlags |= SVF_DEADMONSTER;   // now treat as a different content type
+    if ((targ->serverFlags & EntityServerFlags::Monster) && (targ->deadFlag != DEAD_DEAD)) {
+//      targ->serverFlags |= EntityServerFlags::DeadMonster;   // now treat as a different content type
         if (!(targ->monsterInfo.aiflags & AI_GOOD_GUY)) {
             level.killed_monsters++;
             if (coop->value && attacker->client)
@@ -112,7 +112,7 @@ void Killed(entity_t *targ, entity_t *inflictor, entity_t *attacker, int damage,
         return;
     }
 
-    if ((targ->svFlags & SVF_MONSTER) && (targ->deadFlag != DEAD_DEAD)) {
+    if ((targ->serverFlags & EntityServerFlags::Monster) && (targ->deadFlag != DEAD_DEAD)) {
         targ->Touch = NULL;
         monster_death_use(targ);
     }
@@ -135,7 +135,7 @@ void SpawnDamage(int type, const vec3_t &origin, const vec3_t &normal, int damag
 //  gi.WriteByte (damage);
     gi.WritePosition(origin);
     gi.WriteDirection(normal);
-    gi.Multicast(&origin, MULTICAST_PVS);
+    gi.Multicast(&origin, MultiCast::PVS);
 }
 
 
@@ -169,8 +169,8 @@ static int CheckPowerArmor(entity_t *ent, vec3_t point, vec3_t normal, int damag
     int         save;
     int         power_armor_type;
     int         index;
-    int         damagePerCell;
-    int         pa_te_type;
+    int         damagePerCell = 0;
+    int         pa_te_type = 0;
     int         power;
     int         power_used;
 
@@ -184,7 +184,7 @@ static int CheckPowerArmor(entity_t *ent, vec3_t point, vec3_t normal, int damag
 
     index = 0;  // shut up gcc
 
-    if (ent->svFlags & SVF_MONSTER) {
+    if (ent->serverFlags & EntityServerFlags::Monster) {
         power_armor_type = ent->monsterInfo.power_armor_type;
         power = ent->monsterInfo.power_armor_power;
     } else
@@ -255,7 +255,7 @@ static int CheckArmor(entity_t *ent, vec3_t point, vec3_t normal, int damage, in
 
 void M_ReactToDamage(entity_t *targ, entity_t *attacker)
 {
-    if (!(attacker->client) && !(attacker->svFlags & SVF_MONSTER))
+    if (!(attacker->client) && !(attacker->serverFlags & EntityServerFlags::Monster))
         return;
 
     if (attacker == targ || attacker == targ->enemy)
@@ -263,7 +263,7 @@ void M_ReactToDamage(entity_t *targ, entity_t *attacker)
 
     // dead monsters, like misc_deadsoldier, don't have AI functions, but 
     // M_ReactToDamage might still be called on them
-    if (targ->svFlags & SVF_DEADMONSTER)
+    if (targ->serverFlags & EntityServerFlags::DeadMonster)
         return;
 
     // if we are a good guy monster and our attacker is a player
@@ -296,7 +296,7 @@ void M_ReactToDamage(entity_t *targ, entity_t *attacker)
 
     // it's the same base (walk/swim/fly) type and a different classname and it's not a tank
     // (they spray too much), get mad at them
-    if (((targ->flags & (FL_FLY | FL_SWIM)) == (attacker->flags & (FL_FLY | FL_SWIM))) &&
+    if (((targ->flags & (EntityFlags::Fly | EntityFlags::Swim)) == (attacker->flags & (EntityFlags::Fly | EntityFlags::Swim))) &&
         (strcmp(targ->classname, attacker->classname) != 0) &&
         (strcmp(attacker->classname, "monster_tank") != 0) &&
         (strcmp(attacker->classname, "monster_supertank") != 0) &&
@@ -347,7 +347,7 @@ void T_Damage(entity_t *targ, entity_t *inflictor, entity_t *attacker, const vec
         return;
     }
 
-    if (!targ->takedamage)
+    if (!targ->takeDamage)
         return;
 
     // friendly fire avoidance
@@ -383,10 +383,10 @@ void T_Damage(entity_t *targ, entity_t *inflictor, entity_t *attacker, const vec
 
 
 // bonus damage for suprising a monster
-    if (!(dflags & DAMAGE_RADIUS) && (targ->svFlags & SVF_MONSTER) && (attacker->client) && (!targ->enemy) && (targ->health > 0))
+    if (!(dflags & DAMAGE_RADIUS) && (targ->serverFlags & EntityServerFlags::Monster) && (attacker->client) && (!targ->enemy) && (targ->health > 0))
         damage *= 2;
 
-    if (targ->flags & FL_NO_KNOCKBACK)
+    if (targ->flags & EntityFlags::NoKnockBack)
         knockback = 0;
 
 // figure momentum add
@@ -413,7 +413,7 @@ void T_Damage(entity_t *targ, entity_t *inflictor, entity_t *attacker, const vec
     save = 0;
 
     // check for godmode
-    if ((targ->flags & FL_GODMODE) && !(dflags & DAMAGE_NO_PROTECTION)) {
+    if ((targ->flags & EntityFlags::GodMode) && !(dflags & DAMAGE_NO_PROTECTION)) {
         take = 0;
         save = damage;
         SpawnDamage(te_sparks, point, normal, save);
@@ -434,7 +434,7 @@ void T_Damage(entity_t *targ, entity_t *inflictor, entity_t *attacker, const vec
 
 // do the damage
     if (take) {
-        if ((targ->svFlags & SVF_MONSTER) || (client))
+        if ((targ->serverFlags & EntityServerFlags::Monster) || (client))
         {
             // SpawnDamage(TempEntityEvent::Blood, point, normal, take);
             SpawnDamage(TempEntityEvent::Blood, point, dir, take);
@@ -446,14 +446,14 @@ void T_Damage(entity_t *targ, entity_t *inflictor, entity_t *attacker, const vec
         targ->health = targ->health - take;
 
         if (targ->health <= 0) {
-            if ((targ->svFlags & SVF_MONSTER) || (client))
-                targ->flags |= FL_NO_KNOCKBACK;
+            if ((targ->serverFlags & EntityServerFlags::Monster) || (client))
+                targ->flags |= EntityFlags::NoKnockBack;
             Killed(targ, inflictor, attacker, take, point);
             return;
         }
     }
 
-    if (targ->svFlags & SVF_MONSTER) {
+    if (targ->serverFlags & EntityServerFlags::Monster) {
         M_ReactToDamage(targ, attacker);
         if (!(targ->monsterInfo.aiflags & AI_DUCKED) && (take)) {
             targ->Pain(targ, attacker, knockback, take);
@@ -462,7 +462,7 @@ void T_Damage(entity_t *targ, entity_t *inflictor, entity_t *attacker, const vec
                 targ->debouncePainTime = level.time + 5;
         }
     } else if (client) {
-        if (!(targ->flags & FL_GODMODE) && (take))
+        if (!(targ->flags & EntityFlags::GodMode) && (take))
             targ->Pain(targ, attacker, knockback, take);
     } else if (take) {
         if (targ->Pain)
@@ -501,18 +501,18 @@ void T_RadiusDamage(entity_t *inflictor, entity_t *attacker, float damage, entit
     }
 
     // Find entities within radius.
-    while ((ent = G_FindEntitiesWithinRadius(ent, inflictor->s.origin, radius)) != NULL) {
+    while ((ent = G_FindEntitiesWithinRadius(ent, inflictor->state.origin, radius)) != NULL) {
         // Continue in case this entity has to be ignored from applying damage.
         if (ent == ignore)
             continue;
         // Continue in case this entity CAN'T take any damage.
-        if (!ent->takedamage)
+        if (!ent->takeDamage)
             continue;
 
         // Calculate damage points.
         v = ent->mins + ent->maxs, v;
-        v = vec3_fmaf(ent->s.origin, 0.5, v);
-        v -= inflictor->s.origin;
+        v = vec3_fmaf(ent->state.origin, 0.5, v);
+        v -= inflictor->state.origin;
         points = damage - 0.5 * vec3_length(v);
 
         // In case the attacker is the own entity, half damage.
@@ -524,10 +524,10 @@ void T_RadiusDamage(entity_t *inflictor, entity_t *attacker, float damage, entit
             // Ensure whether we CAN actually apply damage.
             if (CanDamage(ent, inflictor)) {
                 // Calculate direcion.
-                dir = ent->s.origin - inflictor->s.origin;
+                dir = ent->state.origin - inflictor->state.origin;
 
                 // Apply damages.
-                T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_zero(), (int)points, (int)points, DAMAGE_RADIUS, mod);
+                T_Damage(ent, inflictor, attacker, dir, inflictor->state.origin, vec3_zero(), (int)points, (int)points, DAMAGE_RADIUS, mod);
             }
         }
     }

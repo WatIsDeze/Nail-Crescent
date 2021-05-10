@@ -40,8 +40,8 @@ qboolean M_CheckBottom(entity_t *ent)
     int     x, y;
     float   mid, bottom;
 
-    VectorAdd(ent->s.origin, ent->mins, mins);
-    VectorAdd(ent->s.origin, ent->maxs, maxs);
+    VectorAdd(ent->state.origin, ent->mins, mins);
+    VectorAdd(ent->state.origin, ent->maxs, maxs);
 
 // if all of the points under the corners are solid world, don't bother
 // with the tougher checks
@@ -117,22 +117,22 @@ qboolean SV_movestep(entity_t *ent, vec3_t move, qboolean relink)
     int         contents;
 
 // try the move
-    VectorCopy(ent->s.origin, oldorg);
-    VectorAdd(ent->s.origin, move, neworg);
+    VectorCopy(ent->state.origin, oldorg);
+    VectorAdd(ent->state.origin, move, neworg);
 
 // flying monsters don't step up
-    if (ent->flags & (FL_SWIM | FL_FLY)) {
+    if (ent->flags & (EntityFlags::Swim | EntityFlags::Fly)) {
         // try one move with vertical motion, then one without
         for (i = 0 ; i < 2 ; i++) {
-            VectorAdd(ent->s.origin, move, neworg);
+            VectorAdd(ent->state.origin, move, neworg);
             if (i == 0 && ent->enemy) {
                 if (!ent->goalEntityPtr)
                     ent->goalEntityPtr = ent->enemy;
-                dz = ent->s.origin[2] - ent->goalEntityPtr->s.origin[2];
+                dz = ent->state.origin[2] - ent->goalEntityPtr->state.origin[2];
                 if (ent->goalEntityPtr->client) {
                     if (dz > 40)
                         neworg[2] -= 8;
-                    if (!((ent->flags & FL_SWIM) && (ent->waterLevel < 2)))
+                    if (!((ent->flags & EntityFlags::Swim) && (ent->waterLevel < 2)))
                         if (dz < 30)
                             neworg[2] += 8;
                 } else {
@@ -146,10 +146,10 @@ qboolean SV_movestep(entity_t *ent, vec3_t move, qboolean relink)
                         neworg[2] += dz;
                 }
             }
-            trace = gi.Trace(ent->s.origin, ent->mins, ent->maxs, neworg, ent, CONTENTS_MASK_MONSTERSOLID);
+            trace = gi.Trace(ent->state.origin, ent->mins, ent->maxs, neworg, ent, CONTENTS_MASK_MONSTERSOLID);
 
             // fly monsters don't enter water voluntarily
-            if (ent->flags & FL_FLY) {
+            if (ent->flags & EntityFlags::Fly) {
                 if (!ent->waterLevel) {
                     test[0] = trace.endPosition[0];
                     test[1] = trace.endPosition[1];
@@ -161,7 +161,7 @@ qboolean SV_movestep(entity_t *ent, vec3_t move, qboolean relink)
             }
 
             // swim monsters don't exit water voluntarily
-            if (ent->flags & FL_SWIM) {
+            if (ent->flags & EntityFlags::Swim) {
                 if (ent->waterLevel < 2) {
                     test[0] = trace.endPosition[0];
                     test[1] = trace.endPosition[1];
@@ -173,7 +173,7 @@ qboolean SV_movestep(entity_t *ent, vec3_t move, qboolean relink)
             }
 
             if (trace.fraction == 1) {
-                VectorCopy(trace.endPosition, ent->s.origin);
+                VectorCopy(trace.endPosition, ent->state.origin);
                 if (relink) {
                     gi.LinkEntity(ent);
                     UTIL_TouchTriggers(ent);
@@ -224,8 +224,8 @@ qboolean SV_movestep(entity_t *ent, vec3_t move, qboolean relink)
 
     if (trace.fraction == 1) {
         // if monster had the ground pulled out, go ahead and fall
-        if (ent->flags & FL_PARTIALGROUND) {
-            VectorAdd(ent->s.origin, move, ent->s.origin);
+        if (ent->flags & EntityFlags::PartiallyOnGround) {
+            VectorAdd(ent->state.origin, move, ent->state.origin);
             if (relink) {
                 gi.LinkEntity(ent);
                 UTIL_TouchTriggers(ent);
@@ -238,10 +238,10 @@ qboolean SV_movestep(entity_t *ent, vec3_t move, qboolean relink)
     }
 
 // check point traces down for dangling corners
-    VectorCopy(trace.endPosition, ent->s.origin);
+    VectorCopy(trace.endPosition, ent->state.origin);
 
     if (!M_CheckBottom(ent)) {
-        if (ent->flags & FL_PARTIALGROUND) {
+        if (ent->flags & EntityFlags::PartiallyOnGround) {
             // entity had floor mostly pulled out from underneath it
             // and is trying to correct
             if (relink) {
@@ -250,12 +250,12 @@ qboolean SV_movestep(entity_t *ent, vec3_t move, qboolean relink)
             }
             return true;
         }
-        VectorCopy(oldorg, ent->s.origin);
+        VectorCopy(oldorg, ent->state.origin);
         return false;
     }
 
-    if (ent->flags & FL_PARTIALGROUND) {
-        ent->flags &= ~FL_PARTIALGROUND;
+    if (ent->flags & EntityFlags::PartiallyOnGround) {
+        ent->flags &= ~EntityFlags::PartiallyOnGround;
     }
     ent->groundEntityPtr = trace.ent;
     ent->groundEntityLinkCount = trace.ent->linkCount;
@@ -284,7 +284,7 @@ void M_ChangeYaw(entity_t *ent)
     float   move;
     float   speed;
 
-    current = anglemod(ent->s.angles[vec3_t::Yaw]);
+    current = anglemod(ent->state.angles[vec3_t::Yaw]);
     ideal = ent->idealYaw;
 
     if (current == ideal)
@@ -307,7 +307,7 @@ void M_ChangeYaw(entity_t *ent)
             move = -speed;
     }
 
-    ent->s.angles[vec3_t::Yaw] = anglemod(current + move);
+    ent->state.angles[vec3_t::Yaw] = anglemod(current + move);
 }
 
 
@@ -333,12 +333,12 @@ qboolean SV_StepDirection(entity_t *ent, float yaw, float dist)
     move[1] = std::sinf(yaw) * dist;
     move[2] = 0;
 
-    VectorCopy(ent->s.origin, oldorigin);
+    VectorCopy(ent->state.origin, oldorigin);
     if (SV_movestep(ent, move, false)) {
-        delta = ent->s.angles[vec3_t::Yaw] - ent->idealYaw;
+        delta = ent->state.angles[vec3_t::Yaw] - ent->idealYaw;
         if (delta > 45 && delta < 315) {
             // not turned far enough, so don't take the step
-            VectorCopy(oldorigin, ent->s.origin);
+            VectorCopy(oldorigin, ent->state.origin);
         }
         gi.LinkEntity(ent);
         UTIL_TouchTriggers(ent);
@@ -357,7 +357,7 @@ SV_FixCheckBottom
 */
 void SV_FixCheckBottom(entity_t *ent)
 {
-    ent->flags |= FL_PARTIALGROUND;
+    ent->flags |= EntityFlags::PartiallyOnGround;
 }
 
 
@@ -382,8 +382,8 @@ void SV_NewChaseDir(entity_t *actor, entity_t *enemy, float dist)
     olddir = anglemod((int)(actor->idealYaw / 45) * 45);
     turnaround = anglemod(olddir - 180);
 
-    deltax = enemy->s.origin[0] - actor->s.origin[0];
-    deltay = enemy->s.origin[1] - actor->s.origin[1];
+    deltax = enemy->state.origin[0] - actor->state.origin[0];
+    deltay = enemy->state.origin[1] - actor->state.origin[1];
     if (deltax > 10)
         d[1] = 0;
     else if (deltax < -10)
@@ -481,7 +481,7 @@ void M_MoveToGoal(entity_t *ent, float dist)
 
     goal = ent->goalEntityPtr;
 
-    if (!ent->groundEntityPtr && !(ent->flags & (FL_FLY | FL_SWIM)))
+    if (!ent->groundEntityPtr && !(ent->flags & (EntityFlags::Fly | EntityFlags::Swim)))
         return;
 
 // if the next step hits the enemy, return immediately
@@ -505,7 +505,7 @@ qboolean M_walkmove(entity_t *ent, float yaw, float dist)
 {
     vec3_t  move;
 
-    if (!ent->groundEntityPtr && !(ent->flags & (FL_FLY | FL_SWIM)))
+    if (!ent->groundEntityPtr && !(ent->flags & (EntityFlags::Fly | EntityFlags::Swim)))
         return false;
 
     yaw = yaw * M_PI * 2 / 360;

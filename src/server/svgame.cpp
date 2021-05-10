@@ -328,7 +328,7 @@ static void PF_setmodel(entity_t *ent, const char *name)
 
     i = PF_ModelIndex(name);
 
-    ent->s.modelindex = i;
+    ent->state.modelIndex = i;
 
 // if it is an inline model, get the size information for it
     if (name[0] == '*') {
@@ -571,9 +571,9 @@ static void PF_StartSound(entity_t *edict, int channel,
         // use the entity origin unless it is a bmodel
         if (edict->solid == Solid::BSP) {
             VectorAverage(edict->mins, edict->maxs, origin);
-            VectorAdd(edict->s.origin, origin, origin);
+            VectorAdd(edict->state.origin, origin, origin);
         } else {
-            VectorCopy(edict->s.origin, origin);
+            VectorCopy(edict->state.origin, origin);
         }
 
         // reliable sounds will always have position explicitly set,
@@ -604,7 +604,7 @@ static void PF_StartSound(entity_t *edict, int channel,
         }
 
         // send origin for invisible entities
-        if (edict->svFlags & SVF_NOCLIENT) {
+        if (edict->serverFlags & EntityServerFlags::NoClient) {
             flags |= SND_POS;
         }
 
@@ -680,23 +680,17 @@ static void PF_PositionedSound(vec3_t origin, entity_t *entity, int channel,
     // (global radio chatter, voiceovers, etc)
     if (attenuation == ATTN_NONE || (channel & CHAN_NO_PHS_ADD)) {
         if (channel & CHAN_RELIABLE) {
-            SV_Multicast(NULL, MULTICAST_ALL_R);
+            SV_Multicast(NULL, MultiCast::All_R);
         } else {
-            SV_Multicast(NULL, MULTICAST_ALL);
+            SV_Multicast(NULL, MultiCast::All);
         }
     } else {
         if (channel & CHAN_RELIABLE) {
-            SV_Multicast(&origin, MULTICAST_PHS_R);
+            SV_Multicast(&origin, MultiCast::PHS_R);
         } else {
-            SV_Multicast(&origin, MULTICAST_PHS);
+            SV_Multicast(&origin, MultiCast::PHS);
         }
     }
-}
-
-// N&C: This returns the current PMoveParams to execute a PMove with in the
-// svgame dll code.
-pmoveParams_t* PF_GetPMoveParams(void) {
-    return (sv_client ? &sv_client->pmp : &sv_pmp);
 }
 
 static cvar_t *PF_cvar(const char *name, const char *value, int flags)
@@ -891,8 +885,6 @@ void SV_InitGameProgs(void)
     importAPI.SetModel = PF_setmodel;
     importAPI.InPVS = PF_InPVS;
     importAPI.InPHS = PF_InPHS;
-    //import.PMove = PF_PMove;
-    importAPI.GetPMoveParams = PF_GetPMoveParams;
 
     importAPI.ModelIndex = PF_ModelIndex;
     importAPI.SoundIndex = PF_SoundIndex;

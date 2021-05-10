@@ -52,24 +52,24 @@ typedef struct {
 
 static const save_field_t entityfields[] = {
 #define _OFS FOFS
-    V(s.origin),
-    V(s.angles),
-    V(s.old_origin),
-    I(s.modelindex),
-    I(s.modelindex2),
-    I(s.modelindex3),
-    I(s.modelindex4),
-    I(s.frame),
-    I(s.skinnum),
-    I(s.effects),
-    I(s.renderfx),
-    I(s.solid),
-    I(s.sound),
-    I(s.event),
+    V(state.origin),
+    V(state.angles),
+    V(state.oldOrigin),
+    I(state.modelIndex),
+    I(state.modelIndex2),
+    I(state.modelIndex3),
+    I(state.modelIndex4),
+    I(state.frame),
+    I(state.skinNumber),
+    I(state.effects),
+    I(state.renderfx),
+    I(state.solid),
+    I(state.sound),
+    I(state.event),
 
     // [...]
 
-    I(svFlags),
+    I(serverFlags),
     V(mins),
     V(maxs),
     V(absMin),
@@ -144,7 +144,7 @@ static const save_field_t entityfields[] = {
     L(map),
 
     I(viewHeight),
-    I(takedamage),
+    I(takeDamage),
     I(dmg),
     I(radius_dmg),
     F(dmg_radius),
@@ -302,10 +302,10 @@ static const save_field_t clientfields[] = {
     V(playerState.pmove.viewOffset),
     V(playerState.kickAngles),
 
-    V(playerState.gunangles),
-    V(playerState.gunoffset),
-    I(playerState.gunindex),
-    I(playerState.gunframe),
+    V(playerState.gunAngles),
+    V(playerState.gunOffset),
+    I(playerState.gunIndex),
+    I(playerState.gunFrame),
 
     FA(playerState.blend, 4),
 
@@ -381,10 +381,10 @@ static const save_field_t clientfields[] = {
 
     I(machinegunShots),
 
-    I(anim_end),
-    I(anim_priority),
-    I(anim_duck),
-    I(anim_run),
+    I(animation.endFrame),
+    I(animation.priorityAnimation),
+    I(animation.isDucking),
+    I(animation.isRunning),
 
     // powerup timers
     I(weaponSound),
@@ -941,7 +941,7 @@ void ReadLevel(const char *filename)
         ent = &g_edicts[entnum];
         read_fields(f, entityfields, ent);
         ent->inUse = true;
-        ent->s.number = entnum;
+        ent->state.number = entnum;
 
         // let the server rebuild world links for this ent
         memset(&ent->area, 0, sizeof(ent->area));

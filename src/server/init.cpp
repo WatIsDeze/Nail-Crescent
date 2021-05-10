@@ -403,10 +403,7 @@ void SV_InitGame()
     }
 #endif
 
-        SV_InitGameProgs();
-
-    // N&C: PMove init here.
-    ge->PMoveInit(&sv_pmp);
+    SV_InitGameProgs();
 
     // send heartbeat very soon
     svs.last_heartbeat = -(HEARTBEAT_SECONDS - 5) * 1000;
@@ -415,7 +412,7 @@ void SV_InitGame()
         client = svs.client_pool + i;
         entnum = i + 1;
         ent = EDICT_NUM(entnum);
-        ent->s.number = entnum;
+        ent->state.number = entnum;
         client->edict = ent;
         client->number = i;
     }

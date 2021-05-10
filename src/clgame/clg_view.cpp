@@ -328,10 +328,10 @@ static void CLG_FinishViewValues(void)
         goto first;
     
     ent = &cs->entities[cl->frame.clientNumber + 1];
-    if (ent->serverframe != cl->frame.number)
+    if (ent->serverFrame != cl->frame.number)
         goto first;
 
-    if (!ent->current.modelindex)
+    if (!ent->current.modelIndex)
         goto first;
 
     CLG_SetupThirdPersionView();

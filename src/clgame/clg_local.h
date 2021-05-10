@@ -24,6 +24,8 @@
 #include "shared/refresh.h"
 
 // Common.
+#include "common/cmodel.h"
+#include "common/cmd.h"
 #include "common/msg.h"
 #include "common/protocol.h"
 
@@ -86,10 +88,8 @@ extern clg_view_t view;
 typedef struct clientgame_s {
     // This is required for C to compile. It doesn't like to compile an empty
     // struct.
-    //int nothingHereYet;
+    int nothingHereYet;
 
-    // The player move parameters.
-    pmoveParams_t pmoveParams;
 } clientgame_t;
 
 extern clientgame_t clg;
@@ -118,7 +118,7 @@ typedef enum {
 //-------------------
 // Core - Used to access the client's internals.
 //-------------------
-extern clgame_import_t  clgi;
+extern ClientGameImport  clgi;
 extern ClientState   *cl;
 extern ClientShared  *cs;
 

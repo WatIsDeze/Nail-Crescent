@@ -23,9 +23,9 @@
 // Core.
 //
 // Contains the function pointers being passed in from the engine.
-clgame_import_t clgi;
+ClientGameImport clgi;
 // Static export variable, lives as long as the client game dll lives.
-clgame_export_t clge;
+ClientGameExport clge;
 
 // Pointer to the actual client frame state.
 ClientState* cl = NULL;
@@ -93,7 +93,7 @@ cvar_t* vid_rtx = NULL;
 //extern "C" {
 //#endif
 
-q_exported clgame_export_t *GetClientGameAPI (clgame_import_t *clgimp)
+q_exported ClientGameExport *GetClientGameAPI (ClientGameImport *clgimp)
 {
     // Store a copy of the engine imported function pointer struct.
     clgi = *clgimp;
@@ -108,9 +108,6 @@ q_exported clgame_export_t *GetClientGameAPI (clgame_import_t *clgimp)
         CGAME_API_VERSION_MINOR,
         CGAME_API_VERSION_POINT,
     };
-
-    // Export the player move parameters.
-    clge.pmoveParams                = &clg.pmoveParams;
 
     // Test if it is compatible, if not, return clge with only the apiversion set.
     // The client will handle the issue from there on.
@@ -150,10 +147,6 @@ q_exported clgame_export_t *GetClientGameAPI (clgame_import_t *clgimp)
     clge.LoadScreenMedia            = CLG_LoadScreenMedia;
     clge.LoadWorldMedia             = CLG_LoadWorldMedia;
     clge.ShutdownMedia              = CLG_ShutdownMedia;
-
-    // Player Movement. (Client Side)
-    clge.PMoveInit                  = PMoveInit;
-    clge.PMoveEnableQW              = PMoveEnableQW;
 
     // Predict Movement (Client Side)
     clge.CheckPredictionError       = CLG_CheckPredictionError;
@@ -258,7 +251,7 @@ static size_t CL_Armor_m(char* buffer, size_t size)
 static size_t CL_WeaponModel_m(char* buffer, size_t size)
 {
     return Q_scnprintf(buffer, size, "%s",
-        cl->configstrings[cl->frame.playerState.gunindex + ConfigStrings::Models]);
+        cl->configstrings[cl->frame.playerState.gunIndex + ConfigStrings::Models]);
 }
 
 //---------------

@@ -20,11 +20,11 @@ Walking monsters that touch this will jump in the direction of the trigger's ang
 
 void trigger_monsterjump_touch(entity_t* self, entity_t* other, cplane_t* plane, csurface_t* surf)
 {
-    if (other->flags & (FL_FLY | FL_SWIM))
+    if (other->flags & (EntityFlags::Fly | EntityFlags::Swim))
         return;
-    if (other->svFlags & SVF_DEADMONSTER)
+    if (other->serverFlags & EntityServerFlags::DeadMonster)
         return;
-    if (!(other->svFlags & SVF_MONSTER))
+    if (!(other->serverFlags & EntityServerFlags::Monster))
         return;
 
     // set XY even if not on ground, so the jump will clear lips
@@ -44,8 +44,8 @@ void SP_trigger_monsterjump(entity_t* self)
         self->speed = 200;
     if (!st.height)
         st.height = 200;
-    if (self->s.angles[vec3_t::Yaw] == 0)
-        self->s.angles[vec3_t::Yaw] = 360;
+    if (self->state.angles[vec3_t::Yaw] == 0)
+        self->state.angles[vec3_t::Yaw] = 360;
     InitTrigger(self);
     self->Touch = trigger_monsterjump_touch;
     self->moveDirection[2] = st.height;

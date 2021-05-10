@@ -90,7 +90,7 @@ static void CLG_ClipMoveToEntities(const vec3_t &start, const vec3_t &mins, cons
 
         if (ent->current.solid == PACKED_BSP) {
             // special value for bmodel
-            cmodel = cl->clipModels[ent->current.modelindex];
+            cmodel = cl->clipModels[ent->current.modelIndex];
             if (!cmodel)
                 continue;
             headNode = cmodel->headNode;
@@ -145,7 +145,7 @@ static int CLG_PointContents(const vec3_t &point)
         if (ent->current.solid != PACKED_BSP) // special value for bmodel
             continue;
 
-        cmodel = cl->clipModels[ent->current.modelindex];
+        cmodel = cl->clipModels[ent->current.modelIndex];
         if (!cmodel)
             continue;
 
@@ -203,10 +203,10 @@ static void CLG_UpdateClientSoundSpecialEffects(PlayerMove* pm)
 // Predicts the actual client side movement.
 //================
 //
-void CLG_PredictMovement(unsigned int ack, unsigned int currentFrame) {
+void CLG_PredictMovement(unsigned int acknowledgedCommandIndex, unsigned int currentCommandIndex) {
     PlayerMove   pm = {};
 
-    if (!ack || !currentFrame)
+    if (!acknowledgedCommandIndex || !currentCommandIndex)
         return;
 
     // Setup base trace calls.
@@ -223,9 +223,9 @@ void CLG_PredictMovement(unsigned int ack, unsigned int currentFrame) {
 #endif
 
     // Run frames in order.
-    while (++ack <= currentFrame) {
+    while (++acknowledgedCommandIndex <= currentCommandIndex) {
         // Fetch the command.
-        ClientUserCommand* cmd = &cl->clientUserCommands[ack & CMD_MASK];
+        ClientUserCommand* cmd = &cl->clientUserCommands[acknowledgedCommandIndex & CMD_MASK];
 
         // Execute a pmove with it.
         if (cmd->moveCommand.msec) {
@@ -233,7 +233,7 @@ void CLG_PredictMovement(unsigned int ack, unsigned int currentFrame) {
             cmd->prediction.simulationTime = clgi.GetRealTime();
 
             pm.clientUserCommand = *cmd;
-            PMove(&pm, &clg.pmoveParams);
+            PMove(&pm);
 
             // Update player move client side audio effects.
             CLG_UpdateClientSoundSpecialEffects(&pm);
@@ -252,7 +252,8 @@ void CLG_PredictMovement(unsigned int ack, unsigned int currentFrame) {
         pm.clientUserCommand.moveCommand.forwardMove = cl->localmove[0];
         pm.clientUserCommand.moveCommand.rightMove = cl->localmove[1];
         pm.clientUserCommand.moveCommand.upMove = cl->localmove[2];
-        PMove(&pm, &clg.pmoveParams);
+        PMove(&pm);
+
         // Update player move client side audio effects.
         CLG_UpdateClientSoundSpecialEffects(&pm);
 

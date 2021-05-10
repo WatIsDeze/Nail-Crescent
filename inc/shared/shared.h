@@ -168,6 +168,8 @@ constexpr int32_t WORLD_SIZE = (MAX_WORLD_COORD - MIN_WORLD_COORD);
 // Tests if specified character has special meaning to quake console
 #define Q_isspecial(c)  ((c) == '\r' || (c) == '\n' || (c) == 127)
 
+
+
 //
 //=============================================================================
 //
@@ -186,6 +188,8 @@ constexpr int32_t WORLD_SIZE = (MAX_WORLD_COORD - MIN_WORLD_COORD);
 //=============================================================================
 //
 #include "shared/math.h"
+
+
 
 //
 //=============================================================================
@@ -301,6 +305,28 @@ typedef enum {
 } memtag_t;
 
 
+
+//
+//=============================================================================
+//
+//	Key / Value Info Strings
+//
+//=============================================================================
+//
+#define MAX_INFO_KEY        64
+#define MAX_INFO_VALUE      64
+#define MAX_INFO_STRING     512
+
+char* Info_ValueForKey(const char* s, const char* key);
+void    Info_RemoveKey(char* s, const char* key);
+qboolean    Info_SetValueForKey(char* s, const char* key, const char* value);
+qboolean    Info_Validate(const char* s);
+size_t  Info_SubValidate(const char* s);
+void    Info_NextPair(const char** string, char* key, char* value);
+void    Info_Print(const char* infostring);
+
+
+
 //
 //=============================================================================
 //
@@ -309,6 +335,7 @@ typedef enum {
 //=============================================================================
 //
 #include "shared/keys.h"
+
 
 
 //
@@ -333,6 +360,7 @@ typedef enum {
 #define U32_WHITE   MakeColor(255, 255, 255, 255)
 
 
+
 //
 //=============================================================================
 //
@@ -345,25 +373,25 @@ typedef enum {
 // Channel 0 never willingly overrides
 // Other channels (1-7) allways override a playing sound on that channel
 //-----------------
-#define CHAN_AUTO               0
-#define CHAN_WEAPON             1
-#define CHAN_VOICE              2
-#define CHAN_ITEM               3
-#define CHAN_BODY               4
+constexpr int32_t CHAN_AUTO = 0;
+constexpr int32_t CHAN_WEAPON = 1;
+constexpr int32_t CHAN_VOICE = 2;
+constexpr int32_t CHAN_ITEM = 3;
+constexpr int32_t CHAN_BODY = 4;
 
 //-----------------
 // Modifier flags
 //-----------------
-#define CHAN_NO_PHS_ADD         8   // send to all clients, not just ones in PHS (ATTN 0 will also do this)
-#define CHAN_RELIABLE           16  // send by reliable message, not datagram
+constexpr int32_t CHAN_NO_PHS_ADD = 8;   // send to all clients, not just ones in PHS (ATTN 0 will also do this)
+constexpr int32_t CHAN_RELIABLE = 16;  // send by reliable message, not datagram
 
 //-----------------
 // Sound attenuation values
 //-----------------
-#define ATTN_NONE               0   // full volume the entire level
-#define ATTN_NORM               1
-#define ATTN_IDLE               2
-#define ATTN_STATIC             3   // diminish very rapidly with distance
+constexpr int32_t ATTN_NONE = 0;   // full volume the entire level
+constexpr int32_t ATTN_NORM = 1;
+constexpr int32_t ATTN_IDLE = 2;
+constexpr int32_t ATTN_STATIC = 3;   // diminish very rapidly with distance
 
 
 //
@@ -401,9 +429,6 @@ constexpr uint32_t CVAR_EXTENDED_MASK   = (~31);
 // Only include here, in case CVar has not been defined yet? TODO: Investigate, this is CLG related.
 #ifndef CVAR
 #define CVAR
-
-
-
 struct cvar_s;
 struct genctx_s;
 
@@ -477,75 +502,8 @@ inline static uint32_t CS_SIZE(uint32_t cs) {
 //
 //=============================================================================
 //
+#include "shared/pmove.h"
 
-struct EnginePlayerMoveType {
-    static constexpr int32_t Dead = 32;     // No movement, but the ability to rotate in place
-    static constexpr int32_t Freeze = 33;    // No movement at all
-    static constexpr int32_t Gib = 34;      // No movement, different bounding box
-};
-
-//-----------------
-// Player movement flags.The game is free to define up to 16 bits.
-//-----------------
-constexpr int32_t PMF_ENGINE        = (1 << 0);         // Engine flags first.
-constexpr int32_t PMF_TIME_TELEPORT = (PMF_ENGINE << 1);// time frozen in place
-constexpr int32_t PMF_NO_PREDICTION = (PMF_ENGINE << 2);// temporarily disables client side prediction
-constexpr int32_t PMF_GAME          = (PMF_ENGINE << 3);// Game flags start from here.
-
-//-----------------
-// This structure needs to be communicated bit-accurate from the server to the 
-// client to guarantee that prediction stays in sync, so no floats are used.
-// 
-// If any part of the game code modifies this struct, it will result in a 
-// prediction error of some degree.
-//-----------------
-typedef struct {
-    uint32_t    type;
-
-    vec3_t      origin;
-    vec3_t      velocity;
-
-    uint16_t    flags;       // Ducked, jump_held, etc
-    uint16_t    time;        // Each unit = 8 ms
-    uint16_t    gravity;
-
-    // Changed by spawns, rotating objects, and teleporters
-    vec3_t      deltaAngles;    // Add to command angles to get view direction
-
-    // View offsets. (Only Z is used atm, beware.)
-    vec3_t viewOffset;
-    vec3_t viewAngles;
-
-    // Step offset, used for stair interpolations.
-    float stepOffset;
-
-} PlayerMoveState;
-
-//-----------------
-// PlayerMoveCommand is part of each client user cmd.
-//-----------------
-typedef struct {
-    uint8_t msec;   // Duration of the command, in milliseconds
-    vec3_t viewAngles;  // The final view angles for this command
-    int16_t forwardMove, rightMove, upMove; // Directional intentions
-    uint8_t buttons;    // Bit mask of buttons down
-    uint8_t impulse;    // Impulse cmd.
-    uint8_t lightLevel; // Lightlevel.
-} PlayerMoveCommand;
-
-//-----------------
-// ClientUserCommand is sent to the server each client frame
-//-----------------
-typedef struct {
-    PlayerMoveCommand moveCommand;       // the movement command
-    uint32_t time;      // simulation time when the command was sent
-    uint32_t timeStamp; // system time when the command was sent
-    struct {
-        uint32_t simulationTime;  // The simulation time when prediction was run
-        vec3_t origin;  // The predicted origin for this command
-        vec3_t error;   // The prediction error for this command
-    } prediction;
-} ClientUserCommand;
 
 
 //
@@ -555,118 +513,7 @@ typedef struct {
 //
 //=============================================================================
 //
-//-----------------
-// Destination class for gi.Multicast()
-//-----------------
-typedef enum {
-    MULTICAST_ALL,
-    MULTICAST_PHS,
-    MULTICAST_PVS,
-    MULTICAST_ALL_R,
-    MULTICAST_PHS_R,
-    MULTICAST_PVS_R
-} MultiCast;
-
-//-----------------
-// Connection State of the client.
-//-----------------
-struct ClientConnectionState {
-    static constexpr int32_t Uninitialized = 0;
-    static constexpr int32_t Disconnected = 1;  // Not talking to a server
-    static constexpr int32_t Challenging = 2;   // Sending getchallenge packets to the server
-    static constexpr int32_t Connecting = 3;    // Sending connect packets to the server
-    static constexpr int32_t Connected = 4;     // Netchan_t established, waiting for svc_serverdata
-    static constexpr int32_t Loading = 5;       // Loading level data
-    static constexpr int32_t Precached = 6;     // Loaded level data, waiting for svc_frame
-    static constexpr int32_t Active = 7;        // Game views should be displayed
-    static constexpr int32_t Cinematic = 8;     // Running a cinematic
-};
-
-//-----------------
-// Run State of the server.
-//-----------------
-struct ServerState {
-    static constexpr int32_t Dead = 0;            // No map loaded
-    static constexpr int32_t Loading = 1;         // Spawning level edicts
-    static constexpr int32_t Game = 2;            // Actively running
-    static constexpr int32_t Pic = 3;             // Showing static picture
-    static constexpr int32_t Cinematic = 4;
-};
-
-//-----------------
-// EntityState->event values
-// 
-// Entity events are for effects that take place relative to an existing 
-// entities origin. Very network efficient.
-// 
-// All muzzle flashes really should be converted to events...
-//-----------------
-typedef enum {
-    EV_NONE,
-    EV_ITEM_RESPAWN,
-    EV_FOOTSTEP,
-    EV_FALLSHORT,
-    EV_FALL,
-    EV_FALLFAR,
-    EV_PLAYER_TELEPORT,
-    EV_OTHER_TELEPORT
-} EntityEvent;
-
-//-----------------
-// EntityState is the information conveyed from the server
-// in an update message about entities that the client will
-// need to render in some way
-//-----------------
-typedef struct entity_state_s {
-    int32_t number;         // Entity index
-
-    vec3_t  origin;
-    vec3_t  angles;
-    vec3_t  old_origin;     // For lerping
-    int32_t modelindex;
-    int32_t modelindex2, modelindex3, modelindex4;  // Weapons, CTF flags, etc
-    int32_t frame;
-    int32_t skinnum;
-    uint32_t effects;        // PGM - we're filling it, so it needs to be unsigned
-    int32_t renderfx;
-    int32_t solid;          // For client side prediction, 8*(bits 0-4) is x/y radius
-                            // 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
-                            // gi.LinkEntity sets this properly
-    int32_t sound;          // For looping sounds, to guarantee shutoff
-    int32_t event;          // Impulse events -- muzzle flashes, footsteps, etc
-                            // events only go out for a single frame, they
-                            // are automatically cleared each frame
-} EntityState;
-
-//-----------------
-// PlayerState is the information needed in addition to PlayerMoveState
-// to rendered a view.  There will only be 10 PlayerState sent each second,
-// but the number of PlayerMoveState changes will be reletive to client
-// frame rates
-//-----------------
-// Maximum amount of stats available to the player state.
-#define MAX_STATS               32
-
-typedef struct {
-    PlayerMoveState   pmove;         // For prediction
-
-    // These fields do not need to be communicated bit-precise
-    vec3_t      kickAngles;     // Add to view direction to get render angles
-                                // Set by weapon kicks, pain effects, etc
-
-    vec3_t      gunangles;
-    vec3_t      gunoffset;
-    int         gunindex;
-    int         gunframe;
-
-    float       blend[4];       // RGBA full screen effect
-
-    float       fov;            // Horizontal field of view
-
-    int         rdflags;        // Refdef flags
-
-    short       stats[MAX_STATS]; // Fast status bar updates
-} PlayerState;
+#include "shared/messaging.h"
 
 
 //
@@ -694,153 +541,7 @@ typedef struct file_info_s {
 //
 //=============================================================================
 //
-static inline int Q_tolower(int c) {
-    if (Q_isupper(c)) {
-        c += ('a' - 'A');
-    }
-    return c;
-}
-
-static inline int Q_toupper(int c) {
-    if (Q_islower(c)) {
-        c -= ('a' - 'A');
-    }
-    return c;
-}
-
-static inline char* Q_strlwr(char* s) {
-    char* p = s;
-
-    while (*p) {
-        *p = Q_tolower(*p);
-        p++;
-    }
-
-    return s;
-}
-
-static inline char* Q_strupr(char* s) {
-    char* p = s;
-
-    while (*p) {
-        *p = Q_toupper(*p);
-        p++;
-    }
-
-    return s;
-}
-
-static inline int Q_charhex(int c) {
-    if (c >= 'A' && c <= 'F') {
-        return 10 + (c - 'A');
-    }
-    if (c >= 'a' && c <= 'f') {
-        return 10 + (c - 'a');
-    }
-    if (c >= '0' && c <= '9') {
-        return c - '0';
-    }
-    return -1;
-}
-
-// converts quake char to ASCII equivalent
-static inline int Q_charascii(int c) {
-    if (Q_isspace(c)) {
-        // white-space chars are output as-is
-        return c;
-    }
-    c &= 127; // strip high bits
-    if (Q_isprint(c)) {
-        return c;
-    }
-    switch (c) {
-        // handle bold brackets
-    case 16: return '[';
-    case 17: return ']';
-    }
-    return '.'; // don't output control chars, etc
-}
-
-// portable case insensitive compare
-int Q_strcasecmp(const char* s1, const char* s2);
-int Q_strncasecmp(const char* s1, const char* s2, size_t n);
-char* Q_strcasestr(const char* s1, const char* s2);
-
-#define Q_stricmp   Q_strcasecmp
-#define Q_stricmpn  Q_strncasecmp
-#define Q_stristr   Q_strcasestr
-
-char* Q_strchrnul(const char* s, int c);
-void* Q_memccpy(void* dst, const void* src, int c, size_t size);
-void Q_setenv(const char* name, const char* value);
-
-char* COM_SkipPath(const char* pathname);
-void COM_StripExtension(const char* in, char* out, size_t size);
-void COM_FileBase(char* in, char* out);
-void COM_FilePath(const char* in, char* out, size_t size);
-size_t COM_DefaultExtension(char* path, const char* ext, size_t size);
-char* COM_FileExtension(const char* in);
-
-#define COM_CompareExtension(in, ext) \
-    Q_strcasecmp(COM_FileExtension(in), ext)
-
-qboolean COM_IsFloat(const char* s);
-qboolean COM_IsUint(const char* s);
-qboolean COM_IsPath(const char* s);
-qboolean COM_IsWhite(const char* s);
-
-char* COM_Parse(const char** data_p);
-// data is an in/out parm, returns a parsed out token
-size_t COM_Compress(char* data);
-
-int SortStrcmp(const void* p1, const void* p2);
-int SortStricmp(const void* p1, const void* p2);
-
-size_t COM_strclr(char* s);
-
-// buffer safe operations
-size_t Q_strlcpy(char* dst, const char* src, size_t size);
-size_t Q_strlcat(char* dst, const char* src, size_t size);
-
-size_t Q_concat(char* dest, size_t size, ...) q_sentinel;
-
-size_t Q_vsnprintf(char* dest, size_t size, const char* fmt, va_list argptr);
-size_t Q_vscnprintf(char* dest, size_t size, const char* fmt, va_list argptr);
-size_t Q_snprintf(char* dest, size_t size, const char* fmt, ...) q_printf(3, 4);
-size_t Q_scnprintf(char* dest, size_t size, const char* fmt, ...) q_printf(3, 4);
-
-// Inline utility.
-inline const char* Vec3ToString(const vec3_t& v, qboolean rounded = true) {
-    // 64 should be enough, no? This function shouldn't be used outside of
-    // debugging purposes anyhow...
-    static std::string str[64];
-    static int strIndex = 0;
-
-    str[strIndex = (strIndex > 7 ? 0 : strIndex + 1)] = vec3_to_str(v, rounded);
-    return str[strIndex].c_str();
-}
-
-char* va(const char* format, ...) q_printf(1, 2);
-
-
-//
-//=============================================================================
-//
-//	Key / Value Info Strings
-//
-//=============================================================================
-//
-#define MAX_INFO_KEY        64
-#define MAX_INFO_VALUE      64
-#define MAX_INFO_STRING     512
-
-char* Info_ValueForKey(const char* s, const char* key);
-void    Info_RemoveKey(char* s, const char* key);
-qboolean    Info_SetValueForKey(char* s, const char* key, const char* value);
-qboolean    Info_Validate(const char* s);
-size_t  Info_SubValidate(const char* s);
-void    Info_NextPair(const char** string, char* key, char* value);
-void    Info_Print(const char* infostring);
+#include "shared/qstring.h"
 
 
 //
@@ -850,117 +551,16 @@ void    Info_Print(const char* infostring);
 //
 //=============================================================================
 //
-//-----------------
-// Brush content Flags.
-//-----------------
-// Lower bits are stronger, and will eat weaker brushes completely
-#define CONTENTS_SOLID          1       // An eye is never valid in a solid
-#define CONTENTS_WINDOW         2       // Translucent, but not watery
-#define CONTENTS_AUX            4
-#define CONTENTS_LAVA           8
-#define CONTENTS_SLIME          16
-#define CONTENTS_WATER          32
-#define CONTENTS_MIST           64
-#define LAST_VISIBLE_CONTENTS   64
-
-// Remaining contents are non-visible, and don't eat brushes
-#define CONTENTS_AREAPORTAL     0x8000
-#define CONTENTS_PLAYERCLIP     0x10000
-#define CONTENTS_MONSTERCLIP    0x20000
-
-#define CONTENTS_ORIGIN         0x1000000   // Removed before bsping an entity
-#define CONTENTS_MONSTER        0x2000000   // Should never be on a brush, only in game
-#define CONTENTS_DEADMONSTER    0x4000000
-#define CONTENTS_DETAIL         0x8000000   // Brushes to be added after vis leafs
-#define CONTENTS_TRANSLUCENT    0x10000000  // Auto set if any surface has trans
-#define CONTENTS_LADDER         0x20000000
-
-// Currents can be added to any other contents, and may be mixed
-#define CONTENTS_CURRENT_0      0x40000
-#define CONTENTS_CURRENT_90     0x80000
-#define CONTENTS_CURRENT_180    0x100000
-#define CONTENTS_CURRENT_270    0x200000
-#define CONTENTS_CURRENT_UP     0x400000
-#define CONTENTS_CURRENT_DOWN   0x800000
-
-//-----------------
-// Sets of content masks
-//-----------------
-#define CONTENTS_MASK_ALL                (-1)
-#define CONTENTS_MASK_SOLID              (CONTENTS_SOLID|CONTENTS_WINDOW)
-#define CONTENTS_MASK_PLAYERSOLID        (CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER)
-#define CONTENTS_MASK_DEADSOLID          (CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_WINDOW)
-#define CONTENTS_MASK_MONSTERSOLID       (CONTENTS_SOLID|CONTENTS_MONSTERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER)
-#define CONTENTS_MASK_LIQUID              (CONTENTS_WATER|CONTENTS_LAVA|CONTENTS_SLIME)
-#define CONTENTS_MASK_OPAQUE             (CONTENTS_SOLID|CONTENTS_SLIME|CONTENTS_LAVA)
-#define CONTENTS_MASK_SHOT               (CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_WINDOW|CONTENTS_DEADMONSTER)
-#define CONTENTS_MASK_CURRENT            (CONTENTS_CURRENT_0|CONTENTS_CURRENT_90|CONTENTS_CURRENT_180|CONTENTS_CURRENT_270|CONTENTS_CURRENT_UP|CONTENTS_CURRENT_DOWN)
-
-//-----------------
-// Surface Flags.
-//-----------------
-#define SURF_LIGHT      0x1     // Value will hold the light strength
-#define SURF_SLICK      0x2     // Effects game physics
-#define SURF_SKY        0x4     // Don't draw, but add to skybox
-#define SURF_WARP       0x8     // Turbulent water warp
-#define SURF_TRANS33    0x10
-#define SURF_TRANS66    0x20
-#define SURF_FLOWING    0x40    // Scroll towards angle
-#define SURF_NODRAW     0x80    // Don't bother referencing the texture
-#define SURF_ALPHATEST  0x02000000  // used by kmquake2
+#include "shared/collision.h"
 
 
-//-----------------
-// gi.BoxEntities() can return a list of either solid or trigger entities
-// FIXME: eliminate AREA_ distinction?
-//-----------------
-#define AREA_SOLID      1
-#define AREA_TRIGGERS   2
-
-//-----------------
-// Surface Collision data.
-//-----------------
-typedef struct csurface_s {
-    char        name[16];   // The actual material name used for this surface.
-    int         flags;      // The surface flags.
-    int         value;      // The content vlags. (TODO: Is this correct?)
-} csurface_t;
-
-//-----------------
-// Traces are discrete movements through world space, clipped to the
-// BSP planes they intersect.This is the basis for all collision detection
-// within Quake.
-//-----------------
-typedef struct {
-    // If true, the trace startedand ended within the same solid.
-    qboolean    allSolid;
-    // If true, the trace started within a solid, but exited it.
-    qboolean    startSolid;
-    // The fraction of the desired distance traveled(0.0 - 1.0).If
-    // 1.0, no plane was impacted.
-    float       fraction;
-
-    // The destination position.
-    vec3_t      endPosition;
-
-    // The impacted plane, or empty.Note that a copy of the plane is
-    // returned, rather than a pointer.This is because the plane may belong to
-    // an inline BSP model or the box hull of a solid entity, in which case it must
-    // be transformed by the entity's current position.
-    cplane_t    plane;
-    // The impacted surface, or `NULL`.
-    csurface_t* surface;
-    // The contents mask of the impacted brush, or 0.
-    int         contents;
-
-    // The impacted entity, or `NULL`.
-    struct entity_s* ent;   // Not set by CM_*() functions
-
-    // N&C: Custom added.
-    vec3_t		offsets[8];	// [signbits][x] = either size[0][x] or size[1][x]
-} trace_t;
-
-
+//
+//=============================================================================
+//
+//	Entities & Related.
+//
+//=============================================================================
+//
 //-----------------
 // EntityState->renderfx
 //
@@ -980,7 +580,7 @@ typedef enum {
     Translucent     = (1 << 5),     // Translucent.
 
     FrameLerp       = (1 << 6),     // Linear Interpolation between animation frames.
-    Beam            = (1 << 7),     // Special rendering hand: origin = to, old_origin = from.
+    Beam            = (1 << 7),     // Special rendering hand: origin = to, oldOrigin = from.
 
     CustomSkin      = (1 << 8),     // If CustomSkin is set, ent->skin is an index in precaches.images.
     Glow            = (1 << 9),     // Pulse lighting. Used for items.
@@ -1026,18 +626,14 @@ typedef enum {
 //
 // User Field.
 //
-#define UF_AUTOSCREENSHOT   1
-#define UF_AUTORECORD       2
-#define UF_LOCALFOV         4
-#define UF_MUTE_PLAYERS     8
-#define UF_MUTE_OBSERVERS   16
-#define UF_MUTE_MISC        32
-#define UF_PLAYERFOV        64
-
-// WatIsDeze: Ifdef, for cgame dll.
-#ifdef CGAME_INCLUDE
-#include "common/cmodel.h"
-#include "common/cmd.h"
-#endif // CGAME_INCLUDE
+struct UserFields {
+    static constexpr int32_t AutoScreenshot = 1;
+    static constexpr int32_t AutoRecord = 2;
+    static constexpr int32_t LocalFieldOfView = 4;
+    static constexpr int32_t MutePlayers = 8;
+    static constexpr int32_t MuteObservers = 16;
+    static constexpr int32_t MuteMiscellaneous = 32;
+    static constexpr int32_t PlayerFieldOfView = 64;
+};
 
 #endif // SHARED_H

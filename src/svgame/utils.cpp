@@ -110,7 +110,7 @@ void UTIL_UseTargets(entity_t *ent, entity_t *activator)
 //
 // print the message
 //
-    if ((ent->message) && !(activator->svFlags & SVF_MONSTER)) {
+    if ((ent->message) && !(activator->serverFlags & EntityServerFlags::Monster)) {
         gi.CenterPrintf(activator, "%s", ent->message);
         if (ent->noiseIndex)
             gi.Sound(activator, CHAN_AUTO, ent->noiseIndex, 1, ATTN_NORM, 0);
@@ -241,7 +241,7 @@ void    UTIL_TouchTriggers(entity_t *ent)
     entity_t     *touch[MAX_EDICTS], *hit;
 
     // dead things don't activate triggers!
-    if ((ent->client || (ent->svFlags & SVF_MONSTER)) && (ent->health <= 0))
+    if ((ent->client || (ent->serverFlags & EntityServerFlags::Monster)) && (ent->health <= 0))
         return;
 
     num = gi.BoxEntities(ent->absMin, ent->absMax, touch
@@ -312,12 +312,12 @@ qboolean KillBox(entity_t *ent)
     trace_t     tr;
 
     while (1) {
-        tr = gi.Trace(ent->s.origin, ent->mins, ent->maxs, ent->s.origin, NULL, CONTENTS_MASK_PLAYERSOLID);
+        tr = gi.Trace(ent->state.origin, ent->mins, ent->maxs, ent->state.origin, NULL, CONTENTS_MASK_PLAYERSOLID);
         if (!tr.ent)
             break;
 
         // nail it
-        T_Damage(tr.ent, ent, ent, vec3_origin, ent->s.origin, vec3_origin, 100000, 0, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
+        T_Damage(tr.ent, ent, ent, vec3_origin, ent->state.origin, vec3_origin, 100000, 0, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 
         // if we didn't kill it, fail
         if (tr.ent->solid)

@@ -37,14 +37,14 @@ void func_explosive_explode(entity_t* self, entity_t* inflictor, entity_t* attac
     // bmodel origins are (0 0 0), we need to adjust that here
     VectorScale(self->size, 0.5, size);
     VectorAdd(self->absMin, size, origin);
-    VectorCopy(origin, self->s.origin);
+    VectorCopy(origin, self->state.origin);
 
-    self->takedamage = DAMAGE_NO;
+    self->takeDamage = TakeDamage::No;
 
     if (self->dmg)
         T_RadiusDamage(self, attacker, self->dmg, NULL, self->dmg + 40, MOD_EXPLOSIVE);
 
-    VectorSubtract(self->s.origin, inflictor->s.origin, self->velocity);
+    VectorSubtract(self->state.origin, inflictor->state.origin, self->velocity);
     VectorNormalize(self->velocity);
     VectorScale(self->velocity, 150, self->velocity);
 
@@ -95,7 +95,7 @@ void func_explosive_use(entity_t* self, entity_t* other, entity_t* activator)
 void func_explosive_spawn(entity_t* self, entity_t* other, entity_t* activator)
 {
     self->solid = Solid::BSP;
-    self->svFlags &= ~SVF_NOCLIENT;
+    self->serverFlags &= ~EntityServerFlags::NoClient;
     self->Use = NULL;
     KillBox(self);
     gi.LinkEntity(self);
@@ -117,7 +117,7 @@ void SP_func_explosive(entity_t* self)
     gi.SetModel(self, self->model);
 
     if (self->spawnFlags & 1) {
-        self->svFlags |= SVF_NOCLIENT;
+        self->serverFlags |= EntityServerFlags::NoClient;
         self->solid = Solid::Not;
         self->Use = func_explosive_spawn;
     }
@@ -128,15 +128,15 @@ void SP_func_explosive(entity_t* self)
     }
 
     if (self->spawnFlags & 2)
-        self->s.effects |= EntityEffectType::AnimCycleAll2hz;
+        self->state.effects |= EntityEffectType::AnimCycleAll2hz;
     if (self->spawnFlags & 4)
-        self->s.effects |= EntityEffectType::AnimCycleAll30hz;
+        self->state.effects |= EntityEffectType::AnimCycleAll30hz;
 
     if (self->Use != func_explosive_use) {
         if (!self->health)
             self->health = 100;
         self->Die = func_explosive_explode;
-        self->takedamage = DAMAGE_YES;
+        self->takeDamage = TakeDamage::Yes;
     }
 
     gi.LinkEntity(self);

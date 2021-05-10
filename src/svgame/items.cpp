@@ -117,12 +117,12 @@ void DoRespawn(entity_t *ent)
             ;
     }
 
-    ent->svFlags &= ~SVF_NOCLIENT;
+    ent->serverFlags &= ~EntityServerFlags::NoClient;
     ent->solid = Solid::Trigger;
     gi.LinkEntity(ent);
 
     // send an effect
-    ent->s.event = EV_ITEM_RESPAWN;
+    ent->state.event = EntityEvent::ItemRespawn;
 }
 
 void SetRespawn(entity_t *ent, float delay)
@@ -130,8 +130,8 @@ void SetRespawn(entity_t *ent, float delay)
     if (!ent)
         return;
 
-    ent->flags |= FL_RESPAWN;
-    ent->svFlags |= SVF_NOCLIENT;
+    ent->flags |= EntityFlags::Respawn;
+    ent->serverFlags |= EntityServerFlags::NoClient;
     ent->solid = Solid::Not;
     ent->nextThink = level.time + delay;
     ent->Think = DoRespawn;
@@ -182,17 +182,17 @@ qboolean Add_Ammo(entity_t *ent, gitem_t *item, int count)
     if (!ent->client)
         return false;
 
-    if (item->tag == AMMO_BULLETS)
+    if (item->tag == AmmoType::Bullets)
         max = ent->client->persistent.max_bullets;
-    else if (item->tag == AMMO_SHELLS)
+    else if (item->tag == AmmoType::Shells)
         max = ent->client->persistent.max_shells;
-    else if (item->tag == AMMO_ROCKETS)
+    else if (item->tag == AmmoType::Rockets)
         max = ent->client->persistent.max_rockets;
-    else if (item->tag == AMMO_GRENADES)
+    else if (item->tag == AmmoType::Grenade)
         max = ent->client->persistent.max_grenades;
-    else if (item->tag == AMMO_CELLS)
+    else if (item->tag == AmmoType::Cells)
         max = ent->client->persistent.max_cells;
-    else if (item->tag == AMMO_SLUGS)
+    else if (item->tag == AmmoType::Slugs)
         max = ent->client->persistent.max_slugs;
     else
         return false;
@@ -252,8 +252,8 @@ void Drop_Ammo(entity_t *ent, gitem_t *item)
         dropped->count = ent->client->persistent.inventory[index];
 
     if (ent->client->persistent.weapon &&
-        ent->client->persistent.weapon->tag == AMMO_GRENADES &&
-        item->tag == AMMO_GRENADES &&
+        ent->client->persistent.weapon->tag == AmmoType::Grenade &&
+        item->tag == AmmoType::Grenade &&
         ent->client->persistent.inventory[index] - dropped->count <= 0) {
         gi.CPrintf(ent, PRINT_HIGH, "Can't drop current weapon\n");
         G_FreeEntity(dropped);
@@ -298,8 +298,8 @@ qboolean Pickup_Health(entity_t *ent, entity_t *other)
         ent->Think = MegaHealth_think;
         ent->nextThink = level.time + 5;
         ent->owner = other;
-        ent->flags |= FL_RESPAWN;
-        ent->svFlags |= SVF_NOCLIENT;
+        ent->flags |= EntityFlags::Respawn;
+        ent->serverFlags |= EntityServerFlags::NoClient;
         ent->solid = Solid::Not;
     } else {
         if (!(ent->spawnFlags & DROPPED_ITEM) && (deathmatch->value))
@@ -438,8 +438,8 @@ void Touch_Item(entity_t *ent, entity_t *other, cplane_t *plane, csurface_t *sur
         return;
 
     if (!((coop->value) && (ent->item->flags & IT_STAY_COOP)) || (ent->spawnFlags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM))) {
-        if (ent->flags & FL_RESPAWN)
-            ent->flags &= ~FL_RESPAWN;
+        if (ent->flags & EntityFlags::Respawn)
+            ent->flags &= ~EntityFlags::Respawn;
         else
             G_FreeEntity(ent);
     }
@@ -475,8 +475,8 @@ entity_t *Drop_Item(entity_t *ent, gitem_t *item)
     dropped->classname = item->classname;
     dropped->item = item;
     dropped->spawnFlags = DROPPED_ITEM;
-    dropped->s.effects = item->worldModelFlags;
-    dropped->s.renderfx = RenderEffects::Glow;
+    dropped->state.effects = item->worldModelFlags;
+    dropped->state.renderfx = RenderEffects::Glow;
     VectorSet(dropped->mins, -15, -15, -15);
     VectorSet(dropped->maxs, 15, 15, 15);
     gi.SetModel(dropped, dropped->item->worldModel);
@@ -490,13 +490,13 @@ entity_t *Drop_Item(entity_t *ent, gitem_t *item)
 
         AngleVectors(ent->client->aimAngles, &forward, &right, NULL);
         VectorSet(offset, 24, 0, -16);
-        dropped->s.origin = G_ProjectSource(ent->s.origin, offset, forward, right);
-        trace = gi.Trace(ent->s.origin, dropped->mins, dropped->maxs,
-                         dropped->s.origin, ent, CONTENTS_SOLID);
-        VectorCopy(trace.endPosition, dropped->s.origin);
+        dropped->state.origin = G_ProjectSource(ent->state.origin, offset, forward, right);
+        trace = gi.Trace(ent->state.origin, dropped->mins, dropped->maxs,
+                         dropped->state.origin, ent, CONTENTS_SOLID);
+        VectorCopy(trace.endPosition, dropped->state.origin);
     } else {
-        AngleVectors(ent->s.angles, &forward, &right, NULL);
-        VectorCopy(ent->s.origin, dropped->s.origin);
+        AngleVectors(ent->state.angles, &forward, &right, NULL);
+        VectorCopy(ent->state.origin, dropped->state.origin);
     }
 
     VectorScale(forward, 100, dropped->velocity);
@@ -512,7 +512,7 @@ entity_t *Drop_Item(entity_t *ent, gitem_t *item)
 
 void Use_Item(entity_t *ent, entity_t *other, entity_t *activator)
 {
-    ent->svFlags &= ~SVF_NOCLIENT;
+    ent->serverFlags &= ~EntityServerFlags::NoClient;
     ent->Use = NULL;
 
     if (ent->spawnFlags & ITEM_NO_TOUCH) {
@@ -550,23 +550,23 @@ void droptofloor(entity_t *ent)
     ent->Touch = Touch_Item;
 
     // Calculate trace destination
-    dest = ent->s.origin + vec3_t(0.f, 0.f, 128.f);
+    dest = ent->state.origin + vec3_t(0.f, 0.f, 128.f);
 
-    tr = gi.Trace(ent->s.origin, ent->mins, ent->maxs, dest, ent, CONTENTS_MASK_SOLID);
+    tr = gi.Trace(ent->state.origin, ent->mins, ent->maxs, dest, ent, CONTENTS_MASK_SOLID);
     if (tr.startSolid) {
-        gi.DPrintf("droptofloor: %s startsolid at %s\n", ent->classname, Vec3ToString(ent->s.origin));
+        gi.DPrintf("droptofloor: %s startsolid at %s\n", ent->classname, Vec3ToString(ent->state.origin));
         G_FreeEntity(ent);
         return;
     }
 
-    VectorCopy(tr.endPosition, ent->s.origin);
+    VectorCopy(tr.endPosition, ent->state.origin);
 
     if (ent->team) {
-        ent->flags &= ~FL_TEAMSLAVE;
+        ent->flags &= ~EntityFlags::TeamSlave;
         ent->chain = ent->teamChainPtr;
         ent->teamChainPtr = NULL;
 
-        ent->svFlags |= SVF_NOCLIENT;
+        ent->serverFlags |= EntityServerFlags::NoClient;
         ent->solid = Solid::Not;
         if (ent == ent->teamMasterPtr) {
             ent->nextThink = level.time + FRAMETIME;
@@ -577,12 +577,12 @@ void droptofloor(entity_t *ent)
     if (ent->spawnFlags & ITEM_NO_TOUCH) {
         ent->solid = Solid::BoundingBox;
         ent->Touch = NULL;
-        ent->s.effects &= ~EntityEffectType::Rotate;
-        ent->s.renderfx &= ~RenderEffects::Glow;
+        ent->state.effects &= ~EntityEffectType::Rotate;
+        ent->state.renderfx &= ~RenderEffects::Glow;
     }
 
     if (ent->spawnFlags & ITEM_TRIGGER_SPAWN) {
-        ent->svFlags |= SVF_NOCLIENT;
+        ent->serverFlags |= EntityServerFlags::NoClient;
         ent->solid = Solid::Not;
         ent->Use = Use_Item;
     }
@@ -673,7 +673,7 @@ void SpawnItem(entity_t *ent, gitem_t *item)
     if (ent->spawnFlags) {
         if (strcmp(ent->classname, "key_power_cube") != 0) {
             ent->spawnFlags = 0;
-            gi.DPrintf("%s at %s has invalid spawnFlags set\n", ent->classname, Vec3ToString(ent->s.origin));
+            gi.DPrintf("%s at %s has invalid spawnFlags set\n", ent->classname, Vec3ToString(ent->state.origin));
         }
     }
 
@@ -718,8 +718,8 @@ void SpawnItem(entity_t *ent, gitem_t *item)
     ent->item = item;
     ent->nextThink = level.time + 2 * FRAMETIME;    // items start after other solids
     ent->Think = droptofloor;
-    ent->s.effects = item->worldModelFlags;
-    ent->s.renderfx = RenderEffects::Glow;
+    ent->state.effects = item->worldModelFlags;
+    ent->state.renderfx = RenderEffects::Glow;
     if (ent->model)
         gi.ModelIndex(ent->model);
 }
@@ -878,7 +878,7 @@ gitem_t itemlist[] = {
         IT_AMMO,
         0,
         NULL,
-        AMMO_SHELLS,
+        AmmoType::Shells,
         /* precache */ ""
     },
 
@@ -901,7 +901,7 @@ gitem_t itemlist[] = {
         IT_AMMO,
         0,
         NULL,
-        AMMO_BULLETS,
+        AmmoType::Bullets,
         /* precache */ ""
     },
 

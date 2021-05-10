@@ -39,7 +39,7 @@ void weapon_supershotgun_fire(entity_t* ent)
     ent->client->kickAngles[0] = -2;
 
     VectorSet(offset, 0, 8, ent->viewHeight - 8);
-    start = P_ProjectSource(ent->client, ent->s.origin, offset, forward, right);
+    start = P_ProjectSource(ent->client, ent->state.origin, offset, forward, right);
 
     if (is_quad) {
         damage *= 4;
@@ -59,9 +59,9 @@ void weapon_supershotgun_fire(entity_t* ent)
     gi.WriteByte(svg_muzzleflash);
     gi.WriteShort(ent - g_edicts);
     gi.WriteByte(MuzzleFlashType::SuperShotgun | is_silenced);
-    gi.Multicast(&ent->s.origin, MULTICAST_PVS);
+    gi.Multicast(&ent->state.origin, MultiCast::PVS);
 
-    ent->client->playerState.gunframe++;
+    ent->client->playerState.gunFrame++;
     PlayerNoise(ent, start, PNOISE_WEAPON);
 
     if (!((int)dmflags->value & DeathMatchFlags::InfiniteAmmo))
